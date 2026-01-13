@@ -1,1 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>NMDC Samalwar – Proposed Model Village Planning Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet"/>
+<script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
+
+/* HEADER */
+.app-header{
+  position:fixed;top:0;left:0;right:0;height:60px;
+  background:#0f4c81;color:#fff;
+  display:flex;align-items:center;
+  padding:0 16px;z-index:3000
+}
+.app-header img{height:40px;margin-right:12px}
+.app-header span{font-size:18px;font-weight:600}
+
+/* MAIN */
+.main{
+  position:absolute;top:60px;bottom:0;left:0;right:0;
+  display:grid;grid-template-columns:1fr 360px
+}
+
+/* MAP */
+#map{width:100%;height:100%}
+
+/* DASHBOARD */
+.dashboard{
+  background:#ffffff;
+  border-left:1px solid #ddd;
+  padding:14px;
+  overflow-y:auto
+}
+
+/* KPI */
+.kpis{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-bottom:14px
+}
+.kpi{
+  background:#0f4c81;color:#fff;
+  padding:12px;border-radius:6px;
+  text-align:center
+}
+.kpi span{font-size:12px;opacity:.85}
+.kpi h2{font-size:22px}
+
+/* CHART */
+.chart-box{
+  background:#f8fafc;
+  padding:10px;border-radius:6px;
+  margin-bottom:14px
+}
+.chart-box h4{
+  font-size:13px;
+  margin-bottom:6px;
+  color:#0f4c81
+}
+.chart-box canvas{
+  max-height:280px;
+}
+
+@media(max-width:900px){
+  .chart-box canvas{
+    max-height:220px;
+  }
+}
+
+
+/* HAMBURGER */
+#hamburger{
+  position:absolute;top:80px;left:14px;
+  width:44px;height:44px;
+  background:#0f4c81;color:#fff;
+  font-size:22px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:6px;cursor:pointer;
+  z-index:5000;
+  box-shadow:0 4px 10px rgba(0,0,0,.25)
+}
+
+/* LAYER PANEL */
+#layerPanel{
+  position:absolute;top:130px;left:14px;
+  background:#fff;padding:12px 14px;
+  font-size:13px;border-radius:6px;
+  box-shadow:0 4px 10px rgba(0,0,0,.25);
+  display:none;z-index:5000;min-width:220px
+}
+#layerPanel label{display:block;margin-bottom:6px}
+
+/* MOBILE */
+@media(max-width:900px){
+
+  .main{
+    grid-template-columns:1fr;
+  }
+
+  .dashboard{
+    position:fixed;
+    bottom:-100%;
+    left:0;
+    right:0;
+    height:70vh;
+    background:#ffffff;
+    z-index:6000;
+    border-top-left-radius:14px;
+    border-top-right-radius:14px;
+    box-shadow:0 -6px 20px rgba(0,0,0,0.25);
+    transition:bottom 0.3s ease;
+    overflow-y:auto;
+  }
+
+  .dashboard.open{
+    bottom:0;
+  }
+}
+
+/* MOBILE DASHBOARD BUTTON */
+#mobileDashBtn{
+  display:none;
+}
+
+@media(max-width:900px){
+  #mobileDashBtn{
+    display:flex;
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:56px;
+    height:56px;
+    background:#0f4c81;
+    color:#ffffff;
+    font-size:24px;
+    border-radius:50%;
+    align-items:center;
+    justify-content:center;
+    z-index:7000;
+    box-shadow:0 6px 16px rgba(0,0,0,0.35);
+    cursor:pointer;
+  }
+}
+
+
+</style>
+</head>
+
+<body>
+
+<header class="app-header">
+  <img src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png">
+  <span>NMDC Samalwar – Proposed Model Village Planning Dashboard</span>
+</header>
+
+<div class="main">
+  <div id="map"></div>
+
+  <div class="dashboard">
+    <div class="kpis">
+      <div class="kpi"><span>Proposed Assets</span><h2 id="kpiAssets">–</h2></div>
+<div class="kpi">  <span>Proposed BT Road Length (km)</span><h2 id="kpiBT">–</h2></div>
+<div class="kpi">
+  <span>Proposed CC Road Length (km)</span>
+  <h2 id="kpiCC">–</h2>
+</div>
+
+      <div class="kpi"><span>Proposed Asset Categories</span><h2 id="kpiTypes">–</h2></div>
+    </div>
+
+    <div class="chart-box">
+      <h4>Proposed Infrastructure Distribution</h4>
+      <canvas id="assetChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h4>Proposed Road Network (BT / CC)</h4>
+      <canvas id="roadChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<div id="hamburger">☰</div>
+<div id="mobileDashBtn">📊</div>
+
+
+<!-- FULL LAYER CONTROL -->
+<div id="layerPanel">
+  <b>Basemap</b>
+  <label>
+    <input type="checkbox" onchange="toggleSatellite(this)">
+    Satellite
+  </label>
+  <hr>
+  <b>Layers</b>
+  <label><input type="checkbox" checked onchange="toggle('boundary',this)"> Village Boundary</label>
+  <label><input type="checkbox" checked onchange="toggle('points',this)"> Proposed Assets</label>
+  <label><input type="checkbox" checked onchange="toggle('roads',this)"> Proposed Roads</label>
+  <label><input type="checkbox" checked onchange="toggle('drain',this)"> Proposed Drainage</label>
+  <label><input type="checkbox" checked onchange="toggle('para',this)"> Habitation / Para</label>
+</div>
+
+<script>
+const map=new maplibregl.Map({
+ container:'map',
+ style:'https://api.maptiler.com/maps/streets-v4/style.json?key=E6ZRsLot4eQsQImxowwm',
+ center:[81.31,18.60],
+ zoom:13
+});
+map.addControl(new maplibregl.NavigationControl());
+
+hamburger.onclick=()=>layerPanel.style.display=
+ layerPanel.style.display==='block'?'none':'block';
+
+map.on('load',()=>{
+
+/* SATELLITE */
+map.addSource('satellite',{
+ type:'raster',
+ tiles:['https://api.maptiler.com/maps/satellite/256/{z}/{x}/{y}.jpg?key=E6ZRsLot4eQsQImxowwm'],
+ tileSize:256
+});
+map.addLayer({
+ id:'satellite',
+ type:'raster',
+ source:'satellite',
+ layout:{visibility:'none'}
+});
+
+/* VILLAGE BOUNDARY */
+map.addSource('boundary',{
+ type:'geojson',
+ data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_vbs.geojson'
+});
+map.addLayer({
+ id:'boundary',
+ type:'line',
+ source:'boundary',
+ paint:{'line-color':'#7b4a12','line-width':5}
+});
+
+/* PARA (HOME SYMBOL) */
+map.loadImage(
+ 'https://img.icons8.com/ios-filled/50/0f4c81/home.png',
+ (e,img)=>{
+  map.addImage('home',img);
+  map.addSource('para',{
+    type:'geojson',
+    data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Location_Name.geojson'
+  });
+  map.addLayer({
+    id:'para',
+    type:'symbol',
+    source:'para',
+    layout:{
+      'icon-image':'home',
+      'icon-size':0.8,
+      'text-field':['get','LAYER'],
+      'text-size':14,
+      'text-offset':[0,1.5],
+      'text-font':['Open Sans Bold']
+    },
+    paint:{
+      'text-color':'#0f4c81',
+      'text-halo-color':'#fff',
+      'text-halo-width':2
+    }
+  });
+});
+
+/* PROPOSED ASSETS – COLORED AS PER ACTUAL LAYER VALUES */
+map.addSource('points',{
+  type:'geojson',
+  data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Points.geojson'
+});
+
+map.addLayer({
+  id:'points',
+  type:'circle',
+  source:'points',
+  paint:{
+    'circle-radius':6,
+    'circle-stroke-color':'#ffffff',
+    'circle-stroke-width':1.2,
+    'circle-color':[
+      'match',['get','LAYER'],
+
+      'ANGANWADI BUILDING', '#f59e0b',
+      'COMMUNITY HALL',    '#7c3aed',
+      'MARKET COMPLEX',    '#16a34a',
+      'TOILETS',           '#92400e',
+
+      'SOLAR WATERTANK',   '#0ea5e9',
+      'STREETLIGHTS',      '#fde047',
+      'HIGH MUST LIGHT',   '#facc15',
+
+      'CHECKDAM',          '#0284c7',
+      'POND RENNOVATION',  '#38bdf8',
+
+      'BRIDGE',            '#334155',
+      'CULVERT',           '#475569',
+
+      'MANDAP',            '#dc2626',
+      'DOME SHED',         '#ef4444',
+
+      'WHS',               '#059669',
+      'LBCD',              '#10b981',
+
+      /* default */
+      '#64748b'
+    ]
+  }
+});
+
+map.addLayer({
+  id:'asset-labels',
+  type:'symbol',
+  source:'points',
+  layout:{
+    'text-field':['get','LAYER'],
+    'text-size':11,
+    'text-offset':[0,1.4]
+  },
+  paint:{
+    'text-color':'#111827',
+    'text-halo-color':'#ffffff',
+    'text-halo-width':2
+  }
+});
+
+// ===== POPUP FOR PROPOSED ASSETS =====
+map.on('click', 'points', (e) => {
+  const props = e.features[0].properties;
+
+  new maplibregl.Popup({ offset: 10 })
+    .setLngLat(e.lngLat)
+    .setHTML(`
+      <div style="font-size:13px;">
+        <b>Proposed Activity</b><br/>
+        ${props.NAME || 'N/A'}
+      </div>
+    `)
+    .addTo(map);
+});
+
+// Change cursor on hover
+map.on('mouseenter', 'points', () => {
+  map.getCanvas().style.cursor = 'pointer';
+});
+map.on('mouseleave', 'points', () => {
+  map.getCanvas().style.cursor = '';
+});
+
+
+
+/* PROPOSED ROADS */
+map.addSource('roads-src',{
+ type:'geojson',
+ data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson'
+});
+map.addLayer({
+ id:'roads',
+ type:'line',
+ source:'roads-src',
+ paint:{
+  'line-color':['match',['get','LAYER'],
+   'BT ROAD','#f97316',
+   'CC ROAD','#22c55e',
+   '#999'
+  ],
+  'line-width':4
+ }
+});
+
+// ===== POPUP FOR PROPOSED ROADS =====
+map.on('click', 'roads', (e) => {
+  const props = e.features[0].properties;
+
+  // Convert meters to kilometers
+  const lengthKm = props.Shape_Leng
+    ? (props.Shape_Leng / 1000).toFixed(2)
+    : 'N/A';
+
+  new maplibregl.Popup({ offset: 10 })
+    .setLngLat(e.lngLat)
+    .setHTML(`
+      <div style="font-size:13px;">
+        <b>Proposed Road</b><br/>
+        <b>Name:</b> ${props.NAME || 'N/A'}<br/>
+        <b>Length:</b> ${lengthKm} km
+      </div>
+    `)
+    .addTo(map);
+});
+
+// Change cursor on hover (roads)
+map.on('mouseenter', 'roads', () => {
+  map.getCanvas().style.cursor = 'pointer';
+});
+map.on('mouseleave', 'roads', () => {
+  map.getCanvas().style.cursor = '';
+});
+
+
+/* PROPOSED DRAIN */
+map.addSource('drain-src',{
+ type:'geojson',
+ data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Drainage_Lines.geojson'
+});
+map.addLayer({
+ id:'drain',
+ type:'line',
+ source:'drain-src',
+ paint:{'line-color':'#0284c7','line-width':2}
+});
+
+/* DASHBOARD DATA */
+Promise.all([
+ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Points.geojson').then(r=>r.json()),
+ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson').then(r=>r.json()),
+ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Drainage_Lines.geojson').then(r=>r.json())
+]).then(([p,r,d])=>{
+ let assetCounts={},types=new Set(),assets=0,bt=0,cc=0,drainLen=0;
+
+ p.features.forEach(f=>{
+  assets++;
+  types.add(f.properties.LAYER);
+  assetCounts[f.properties.LAYER]=(assetCounts[f.properties.LAYER]||0)+1;
+ });
+ 
+
+
+ 
+ /* ===== PROPOSED INFRASTRUCTURE CATEGORY DISTRIBUTION ===== */
+
+// CATEGORY MAPPING (PLANNING-CORRECT)
+const infraCategoryMap = {
+
+  // SOCIAL INFRASTRUCTURE
+  "ANGANWADI BUILDING": "Social Infrastructure",
+  "COMMUNITY HALL": "Social Infrastructure",
+  "MANDAP": "Social Infrastructure",
+  "DOME SHED": "Social Infrastructure",
+  "TOILETS": "Social Infrastructure",
+
+  // TRANSPORT INFRASTRUCTURE
+  "BRIDGE": "Transport Infrastructure",
+  "CULVERT": "Transport Infrastructure",
+
+  // NATURAL RESOURCE MANAGEMENT (NRM)
+  "CHECKDAM": "Natural Resource Management",
+  "POND RENNOVATION": "Natural Resource Management",
+  "WHS": "Natural Resource Management",
+  "LBCD": "Natural Resource Management",
+
+  // DRINKING WATER SUPPLY
+  "SOLAR WATERTANK": "Drinking Water Infrastructure",
+
+  // ENERGY & LIGHTING
+  "STREETLIGHTS": "Energy & Lighting",
+  "HIGH MUST LIGHT": "Energy & Lighting",
+
+  // ECONOMIC INFRASTRUCTURE
+  "MARKET COMPLEX": "Economic Infrastructure"
+};
+
+// INITIALIZE COUNTS
+let infraCategoryCounts = {
+  "Social Infrastructure": 0,
+  "Transport Infrastructure": 0,
+  "Natural Resource Management": 0,
+  "Drinking Water Infrastructure": 0,
+  "Energy & Lighting": 0,
+  "Economic Infrastructure": 0
+};
+
+// COUNT POINT FEATURES INTO CATEGORIES
+p.features.forEach(f => {
+  const assetType = f.properties.LAYER;
+  const category = infraCategoryMap[assetType];
+  if (category) {
+    infraCategoryCounts[category]++;
+  }
+});
+
+
+ r.features.forEach(f=>{
+  const len=f.properties.Shape_Leng/1000;
+  if(f.properties.LAYER==='BT ROAD') bt+=len;
+  if(f.properties.LAYER==='CC ROAD') cc+=len;
+ });
+
+ d.features.forEach(f=>drainLen+=f.properties.Shape_Leng/1000);
+
+ kpiAssets.innerText=assets;
+kpiTypes.innerText = Object.keys(infraCategoryCounts).length;
+kpiBT.innerText = bt.toFixed(2);
+kpiCC.innerText = cc.toFixed(2);
+
+
+/* ===== FINAL DONUT WITH FULL LEGEND + CLICK PERCENT ===== */
+
+const infraLabels = [
+  "Social Infrastructure",
+  "Transport Infrastructure",
+  "Natural Resource Management",
+  "Drinking Water Infrastructure",
+  "Energy & Lighting",
+  "Economic Infrastructure"
+];
+
+const infraValues = infraLabels.map(l => infraCategoryCounts[l] || 0);
+
+
+
+// ===== CREATE DONUT CHART (FINAL WORKING VERSION) =====
+
+// TOTAL FOR PERCENTAGE
+const infraTotal = infraValues.reduce((a, b) => a + b, 0);
+
+const infraChart = new Chart(assetChart, {
+  type: 'doughnut',
+
+  data: {
+    labels: infraLabels,
+    datasets: [{
+      data: infraValues,
+      backgroundColor: [
+        '#2563eb', // Social
+        '#f97316', // Transport
+        '#16a34a', // NRM
+        '#0ea5e9', // Drinking Water
+        '#eab308', // Energy & Lighting
+        '#7c3aed'  // Economic
+      ],
+      borderWidth: 1
+    }]
+  },
+
+options: {
+  responsive: true,
+
+  plugins: {
+
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          const value = context.parsed;
+          const data = context.chart.data.datasets[0].data;
+          const total = data.reduce((a, b) => a + b, 0);
+          const percent = total > 0
+            ? ((value / total) * 100).toFixed(1)
+            : 0;
+
+          return context.label + ' : ' + percent + '%';
+        }
+      }
+    },
+
+    legend: {
+      position: 'bottom',
+      labels: {
+        boxWidth: 14,
+        padding: 12,
+        font: {
+          size: 11,
+          weight: '600'
+        }
+      }
+    },
+
+    title: {
+      display: true,
+      text: 'Proposed Infrastructure Distribution'
+    }
+    }
+  }
+});
+
+const mobileDashBtn = document.getElementById('mobileDashBtn');
+const dashboard = document.querySelector('.dashboard');
+
+if (mobileDashBtn) {
+  mobileDashBtn.onclick = () => {
+    dashboard.classList.toggle('open');
+  };
+}
+
+
+
+
+ new Chart(roadChart,{
+  type:'bar',
+  data:{labels:['BT Road','CC Road'],
+        datasets:[{data:[bt.toFixed(2),cc.toFixed(2)]}]},
+  options:{plugins:{legend:{display:false}}}
+ });
+});
+});
+
+/* TOGGLE FUNCTIONS */
+function toggle(id,cb){
+ map.setLayoutProperty(id,'visibility',cb.checked?'visible':'none');
+}
+function toggleSatellite(cb){
+ map.setLayoutProperty('satellite','visibility',cb.checked?'visible':'none');
+}
+</script>
+
+</body>
+</html>
 
