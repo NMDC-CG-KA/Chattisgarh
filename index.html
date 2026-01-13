@@ -339,9 +339,43 @@ map.addLayer({
   }
 });
 
-// ===== POPUP FOR PROPOSED ASSETS =====
+// ===== HIGHLIGHT SOURCE FOR POINTS =====
+map.addSource('point-highlight', {
+  type: 'geojson',
+  data: {
+    type: 'FeatureCollection',
+    features: []
+  }
+});
+
+map.addLayer({
+  id: 'point-highlight-layer',
+  type: 'circle',
+  source: 'point-highlight',
+  paint: {
+    'circle-radius': 10,
+    'circle-color': '#ff0000',
+    'circle-opacity': 0.6,
+    'circle-stroke-color': '#ffffff',
+    'circle-stroke-width': 2
+  }
+});
+
 map.on('click', 'points', (e) => {
-  const props = e.features[0].properties;
+  const feature = e.features[0];
+  const props = feature.properties;
+
+  // Highlight selected point
+  map.getSource('point-highlight').setData({
+    type: 'FeatureCollection',
+    features: [feature]
+  });
+
+  // Clear road highlight
+  map.getSource('road-highlight').setData({
+    type: 'FeatureCollection',
+    features: []
+  });
 
   new maplibregl.Popup({ offset: 10 })
     .setLngLat(e.lngLat)
@@ -353,6 +387,10 @@ map.on('click', 'points', (e) => {
     `)
     .addTo(map);
 });
+
+
+
+
 
 // Change cursor on hover
 map.on('mouseenter', 'points', () => {
@@ -383,14 +421,45 @@ map.addLayer({
  }
 });
 
-// ===== POPUP FOR PROPOSED ROADS =====
-map.on('click', 'roads', (e) => {
-  const props = e.features[0].properties;
+// ===== HIGHLIGHT SOURCE FOR ROADS =====
+map.addSource('road-highlight', {
+  type: 'geojson',
+  data: {
+    type: 'FeatureCollection',
+    features: []
+  }
+});
 
-  // Convert meters to kilometers
+map.addLayer({
+  id: 'road-highlight-layer',
+  type: 'line',
+  source: 'road-highlight',
+  paint: {
+    'line-color': '#ff0000',
+    'line-width': 7
+  }
+});
+
+
+map.on('click', 'roads', (e) => {
+  const feature = e.features[0];
+  const props = feature.properties;
+
   const lengthKm = props.Shape_Leng
     ? (props.Shape_Leng / 1000).toFixed(2)
     : 'N/A';
+
+  // Highlight selected road
+  map.getSource('road-highlight').setData({
+    type: 'FeatureCollection',
+    features: [feature]
+  });
+
+  // Clear point highlight
+  map.getSource('point-highlight').setData({
+    type: 'FeatureCollection',
+    features: []
+  });
 
   new maplibregl.Popup({ offset: 10 })
     .setLngLat(e.lngLat)
@@ -404,12 +473,31 @@ map.on('click', 'roads', (e) => {
     .addTo(map);
 });
 
+
 // Change cursor on hover (roads)
 map.on('mouseenter', 'roads', () => {
   map.getCanvas().style.cursor = 'pointer';
 });
 map.on('mouseleave', 'roads', () => {
   map.getCanvas().style.cursor = '';
+});
+
+
+map.on('click', (e) => {
+  const features = map.queryRenderedFeatures(e.point, {
+    layers: ['points', 'roads']
+  });
+
+  if (!features.length) {
+    map.getSource('point-highlight').setData({
+      type: 'FeatureCollection',
+      features: []
+    });
+    map.getSource('road-highlight').setData({
+      type: 'FeatureCollection',
+      features: []
+    });
+  }
 });
 
 
@@ -620,4 +708,3 @@ function toggleSatellite(cb){
 
 </body>
 </html>
-
