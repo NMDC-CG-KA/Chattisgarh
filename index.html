@@ -202,6 +202,12 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
     <input type="checkbox" onchange="toggleSatellite(this)">
     Satellite
   </label>
+  
+  <label>
+  <input type="checkbox" onchange="toggleCustomTiles(this)">
+  Drone Image
+</label>
+
   <hr>
   <b>Layers</b>
   <label><input type="checkbox" checked onchange="toggle('boundary',this)"> Village Boundary</label>
@@ -237,6 +243,25 @@ map.addLayer({
  source:'satellite',
  layout:{visibility:'none'}
 });
+
+/* CUSTOM MAPTILER TILESET */
+map.addSource('custom-tiles', {
+  type: 'raster',
+  tiles: [
+    'https://api.maptiler.com/tiles/019bdfd4-0367-7856-b471-411354ec9456/{z}/{x}/{y}.webp?key=IIOg8XrNVRxxY7Q8FZq9'
+  ],
+  tileSize: 256
+});
+
+map.addLayer({
+  id: 'custom-tiles',
+  type: 'raster',
+  source: 'custom-tiles',
+  layout: {
+    visibility: 'none'   // IMPORTANT: starts OFF
+  }
+});
+
 
 /* VILLAGE BOUNDARY */
 map.addSource('boundary',{
@@ -704,6 +729,15 @@ function toggle(id,cb){
 function toggleSatellite(cb){
  map.setLayoutProperty('satellite','visibility',cb.checked?'visible':'none');
 }
+function toggleCustomTiles(cb){
+  map.setLayoutProperty(
+    'custom-tiles',
+    'visibility',
+    cb.checked ? 'visible' : 'none'
+  );
+}
+
+
 </script>
 
 </body>
