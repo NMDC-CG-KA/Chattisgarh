@@ -9,6 +9,8 @@
 <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
 
 
 <style>
@@ -56,6 +58,21 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 }
 .kpi span{font-size:12px;opacity:.85}
 .kpi h2{font-size:22px}
+
+#categoryButtons button{
+  padding:8px;
+  border:none;
+  border-radius:6px;
+  background:#e5e7eb;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+#categoryButtons button.active{
+  background:#0f4c81;
+  color:#fff;
+}
+
 
 /* CHART */
 .chart-box{
@@ -178,6 +195,46 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
       <div class="kpi"><span>Proposed Asset Categories</span><h2 id="kpiTypes">–</h2></div>
     </div>
+	
+	<div class="chart-box">
+  <h4>Infrastructure Categories</h4>
+
+  <div id="categoryButtons" style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;">
+<button data-category="Social Infrastructure"
+        onclick="toggleCategory('Social Infrastructure')">Social</button>
+
+<button data-category="Transport Infrastructure"
+        onclick="toggleCategory('Transport Infrastructure')">Transport</button>
+
+<button data-category="Natural Resource Management"
+        onclick="toggleCategory('Natural Resource Management')">NRM</button>
+
+<button data-category="Drinking Water Infrastructure"
+        onclick="toggleCategory('Drinking Water Infrastructure')">Water</button>
+
+<button data-category="Energy & Lighting"
+        onclick="toggleCategory('Energy & Lighting')">Energy</button>
+
+<button data-category="Economic Infrastructure"
+        onclick="toggleCategory('Economic Infrastructure')">Economic</button>
+  </div>
+</div>
+<div class="chart-box">
+  <h4>Asset List</h4>
+  <div style="max-height:220px;overflow:auto;">
+    <table border="1" width="100%" cellpadding="4" style="font-size:11px;border-collapse:collapse;">
+      <thead style="background:#f1f5f9;">
+        <tr>
+          <th>Asset Name</th>
+          <th>Type</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+      <tbody id="assetTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
 
     <div class="chart-box">
       <h4>Proposed Infrastructure Distribution</h4>
@@ -205,26 +262,103 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 </label>
 
 <label>
-  <input type="checkbox" onchange="toggleCustomTiles(this)">
-  Drone Image Patel para
+  <input type="checkbox" onchange="toggleAllDroneImages(this)">
+  Drone Images
 </label>
 
-<label>
-  <input type="checkbox" onchange="toggleCustomTiles2(this)">
-  Drone Image vicha para
-</label>
+
 
 
   <hr>
   <b>Layers</b>
   <label><input type="checkbox" checked onchange="toggle('boundary',this)"> Village Boundary</label>
   <label><input type="checkbox" checked onchange="toggle('points',this)"> Proposed Assets</label>
-  <label><input type="checkbox" checked onchange="toggle('roads',this)"> Proposed Roads</label>
+<label>
+  <input type="checkbox" checked onchange="toggle('roads-bt',this)">
+  Proposed BT Roads
+</label>
+
+<label>
+  <input type="checkbox" checked onchange="toggle('roads-cc',this)">
+  Proposed CC Roads
+</label>
+<label>
+  <input type="checkbox" checked onchange="toggle('wall-3d',this)">
+  Boundary Wall (3D)
+</label>
+
+
+
   <label><input type="checkbox" checked onchange="toggle('drain',this)"> Proposed Drainage</label>
   <label><input type="checkbox" checked onchange="toggle('para',this)"> Habitation / Para</label>
 </div>
 
 <script>
+// CATEGORY MAPPING (MUST BE GLOBAL)
+const infraCategoryMap = {
+
+  "ANGANWADI BUILDING": "Social Infrastructure",
+  "COMMUNITY HALL": "Social Infrastructure",
+  "MANDAP": "Social Infrastructure",
+  "DOME SHED": "Social Infrastructure",
+  "TOILETS": "Social Infrastructure",
+
+  "BRIDGE": "Transport Infrastructure",
+  "CULVERT": "Transport Infrastructure",
+
+  "CHECKDAM": "Natural Resource Management",
+  "POND RENNOVATION": "Natural Resource Management",
+  "WHS": "Natural Resource Management",
+  "LBCD": "Natural Resource Management",
+
+  "SOLAR WATERTANK": "Drinking Water Infrastructure",
+
+  "STREETLIGHTS": "Energy & Lighting",
+  "HIGH MUST LIGHT": "Energy & Lighting",
+
+  "MARKET COMPLEX": "Economic Infrastructure"
+};
+
+let allAssetsData = null;
+let activeCategory = null;
+
+
+function setActiveButton(category){
+  document.querySelectorAll('#categoryButtons button')
+    .forEach(btn=>{
+      btn.classList.remove('active');
+      if(category && btn.dataset.category === category){
+        btn.classList.add('active');
+      }
+    });
+}
+
+function renderTable(features){
+
+  // SAFETY CHECK
+  if (!Array.isArray(features)) {
+    console.warn('renderTable skipped: features not ready');
+    return;
+  }
+
+  const tbody = document.getElementById('assetTableBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = '';
+
+  features.forEach(f=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${f.properties?.NAME || '-'}</td>
+      <td>${f.properties?.LAYER || '-'}</td>
+      <td>${infraCategoryMap[f.properties?.LAYER] || '-'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+
+
 const map=new maplibregl.Map({
  container:'map',
  style:'https://api.maptiler.com/maps/streets-v4/style.json?key=E6ZRsLot4eQsQImxowwm',
@@ -287,6 +421,23 @@ map.addLayer({
   }
 });
 
+/* CUSTOM MAPTILER TILESET – 3 */
+map.addSource('custom-tiles-3', {
+  type: 'raster',
+  tiles: [
+    'https://api.maptiler.com/tiles/019be01f-0291-7f9e-a4ac-b6643e91a5aa/{z}/{x}/{y}.webp?key=C8Txr9n6hdQqTYvqjBMn'
+  ],
+  tileSize: 256
+});
+
+map.addLayer({
+  id: 'custom-tiles-3',
+  type: 'raster',
+  source: 'custom-tiles-3',
+  layout: {
+    visibility: 'none'
+  }
+});
 
 
 /* VILLAGE BOUNDARY */
@@ -374,6 +525,21 @@ map.addLayer({
   }
 });
 
+let activeCategory = null;
+let allAssetsData = null;
+
+map.on('sourcedata', (e) => {
+  if (e.sourceId === 'points' && map.isSourceLoaded('points')) {
+    const src = map.getSource('points');
+    if (src && src._data && !allAssetsData) {
+      allAssetsData = src._data;
+      renderTable(allAssetsData.features);
+    }
+  }
+});
+
+
+
 map.addLayer({
   id:'asset-labels',
   type:'symbol',
@@ -389,6 +555,19 @@ map.addLayer({
     'text-halo-width':2
   }
 });
+
+/* LOAD ASSET DATA FOR TABLE & FILTER (FILE:// SAFE) */
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Points.geojson')
+  .then(r => r.json())
+  .then(data => {
+    allAssetsData = data;
+    renderTable(allAssetsData.features);
+    console.log('Asset data loaded:', allAssetsData.features.length);
+  })
+  .catch(err => {
+    console.error('Failed to load asset data', err);
+  });
+
 
 // ===== HIGHLIGHT SOURCE FOR POINTS =====
 map.addSource('point-highlight', {
@@ -453,24 +632,118 @@ map.on('mouseleave', 'points', () => {
 
 
 
+
+window.toggleCategory = function(category){
+
+
+  // Toggle OFF
+  if(activeCategory === category){
+    activeCategory = null;
+
+    map.setFilter('points', null);
+    map.setFilter('asset-labels', null);
+
+    renderTable(allAssetsData.features);
+    setActiveButton(null);
+    return;
+  }
+
+  activeCategory = category;
+
+  const allowedTypes = Object.keys(infraCategoryMap)
+    .filter(k => infraCategoryMap[k] === category);
+
+  const filterExpr = ['in', ['get','LAYER'], ['literal', allowedTypes]];
+
+  map.setFilter('points', filterExpr);
+  map.setFilter('asset-labels', filterExpr);
+
+  const filtered = allAssetsData.features.filter(f =>
+    allowedTypes.includes(f.properties.LAYER)
+  );
+
+  renderTable(filtered);
+  setActiveButton(category);
+};
+
+
 /* PROPOSED ROADS */
 map.addSource('roads-src',{
  type:'geojson',
  data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson'
 });
+/* BT ROADS */
 map.addLayer({
- id:'roads',
- type:'line',
- source:'roads-src',
- paint:{
-  'line-color':['match',['get','LAYER'],
-   'BT ROAD','#f97316',
-   'CC ROAD','#22c55e',
-   '#999'
-  ],
-  'line-width':4
- }
+  id: 'roads-bt',
+  type: 'line',
+  source: 'roads-src',
+  filter: ['==', ['get', 'LAYER'], 'BT ROAD'],
+  paint: {
+    'line-color': '#f97316',
+    'line-width': 8
+  }
 });
+
+/* CC ROADS */
+map.addLayer({
+  id: 'roads-cc',
+  type: 'line',
+  source: 'roads-src',
+  filter: ['==', ['get', 'LAYER'], 'CC ROAD'],
+  paint: {
+    'line-color': '#22c55e',
+    'line-width': 4
+  }
+});
+
+/* =======================
+   3D BOUNDARY WALL (LINE → POLYGON → EXTRUSION)
+   ======================= */
+
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson')
+  .then(r => r.json())
+  .then(data => {
+
+    // 1️⃣ Filter only boundary wall lines
+    const wallLines = data.features.filter(
+      f => f.properties.LAYER === 'BOUNDARY WALL'
+    );
+
+    // 2️⃣ Convert line → thin polygon (0.3m thickness)
+    const wallPolygons = wallLines.map(f =>
+      turf.buffer(f, 0.15, { units: 'meters' })
+    );
+
+    // 3️⃣ Add polygon source
+    map.addSource('wall-3d', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: wallPolygons
+      }
+    });
+
+    // 4️⃣ Add 3D extrusion layer
+    map.addLayer({
+      id: 'wall-3d',
+      type: 'fill-extrusion',
+      source: 'wall-3d',
+      minzoom: 15,
+      paint: {
+        'fill-extrusion-color': '#6b7280',
+        'fill-extrusion-height': 2.5,   // 🔥 wall height (meters)
+        'fill-extrusion-base': 0,
+        'fill-extrusion-opacity': 0.9
+      }
+    });
+});
+
+map.easeTo({
+  pitch: 60,
+  bearing: -20,
+  duration: 1200
+});
+
 
 // ===== HIGHLIGHT SOURCE FOR ROADS =====
 map.addSource('road-highlight', {
@@ -492,7 +765,7 @@ map.addLayer({
 });
 
 
-map.on('click', 'roads', (e) => {
+function roadClickHandler(e){
   const feature = e.features[0];
   const props = feature.properties;
 
@@ -500,13 +773,11 @@ map.on('click', 'roads', (e) => {
     ? (props.Shape_Leng / 1000).toFixed(2)
     : 'N/A';
 
-  // Highlight selected road
   map.getSource('road-highlight').setData({
     type: 'FeatureCollection',
     features: [feature]
   });
 
-  // Clear point highlight
   map.getSource('point-highlight').setData({
     type: 'FeatureCollection',
     features: []
@@ -517,26 +788,33 @@ map.on('click', 'roads', (e) => {
     .setHTML(`
       <div style="font-size:13px;">
         <b>Proposed Road</b><br/>
+        <b>Type:</b> ${props.LAYER}<br/>
         <b>Name:</b> ${props.NAME || 'N/A'}<br/>
         <b>Length:</b> ${lengthKm} km
       </div>
     `)
     .addTo(map);
-});
+}
+
+map.on('click', 'roads-bt', roadClickHandler);
+map.on('click', 'roads-cc', roadClickHandler);
+map.on('click', 'wall-3d', roadClickHandler);
+
 
 
 // Change cursor on hover (roads)
-map.on('mouseenter', 'roads', () => {
-  map.getCanvas().style.cursor = 'pointer';
+['roads-bt','roads-cc','wall-3d'].forEach(layer=>{
+  map.on('mouseenter', layer, ()=>map.getCanvas().style.cursor='pointer');
+  map.on('mouseleave', layer, ()=>map.getCanvas().style.cursor='');
 });
-map.on('mouseleave', 'roads', () => {
-  map.getCanvas().style.cursor = '';
-});
+
+
 
 
 map.on('click', (e) => {
   const features = map.queryRenderedFeatures(e.point, {
-    layers: ['points', 'roads']
+    layers: ['points', 'roads-bt', 'roads-cc', 'roads-boundary-wall']
+
   });
 
   if (!features.length) {
@@ -583,36 +861,6 @@ Promise.all([
  
  /* ===== PROPOSED INFRASTRUCTURE CATEGORY DISTRIBUTION ===== */
 
-// CATEGORY MAPPING (PLANNING-CORRECT)
-const infraCategoryMap = {
-
-  // SOCIAL INFRASTRUCTURE
-  "ANGANWADI BUILDING": "Social Infrastructure",
-  "COMMUNITY HALL": "Social Infrastructure",
-  "MANDAP": "Social Infrastructure",
-  "DOME SHED": "Social Infrastructure",
-  "TOILETS": "Social Infrastructure",
-
-  // TRANSPORT INFRASTRUCTURE
-  "BRIDGE": "Transport Infrastructure",
-  "CULVERT": "Transport Infrastructure",
-
-  // NATURAL RESOURCE MANAGEMENT (NRM)
-  "CHECKDAM": "Natural Resource Management",
-  "POND RENNOVATION": "Natural Resource Management",
-  "WHS": "Natural Resource Management",
-  "LBCD": "Natural Resource Management",
-
-  // DRINKING WATER SUPPLY
-  "SOLAR WATERTANK": "Drinking Water Infrastructure",
-
-  // ENERGY & LIGHTING
-  "STREETLIGHTS": "Energy & Lighting",
-  "HIGH MUST LIGHT": "Energy & Lighting",
-
-  // ECONOMIC INFRASTRUCTURE
-  "MARKET COMPLEX": "Economic Infrastructure"
-};
 
 // INITIALIZE COUNTS
 let infraCategoryCounts = {
@@ -755,21 +1003,14 @@ function toggle(id,cb){
 function toggleSatellite(cb){
  map.setLayoutProperty('satellite','visibility',cb.checked?'visible':'none');
 }
-function toggleCustomTiles(cb){
-  map.setLayoutProperty(
-    'custom-tiles',
-    'visibility',
-    cb.checked ? 'visible' : 'none'
-  );
+function toggleAllDroneImages(cb){
+  const visibility = cb.checked ? 'visible' : 'none';
+
+  map.setLayoutProperty('custom-tiles',   'visibility', visibility);
+  map.setLayoutProperty('custom-tiles-2', 'visibility', visibility);
+  map.setLayoutProperty('custom-tiles-3', 'visibility', visibility);
 }
 
-function toggleCustomTiles2(cb){
-  map.setLayoutProperty(
-    'custom-tiles-2',
-    'visibility',
-    cb.checked ? 'visible' : 'none'
-  );
-}
 
 
 
