@@ -197,16 +197,23 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
 <!-- FULL LAYER CONTROL -->
 <div id="layerPanel">
-  <b>Basemap</b>
-  <label>
-    <input type="checkbox" onchange="toggleSatellite(this)">
-    Satellite
-  </label>
-  
-  <label>
-  <input type="checkbox" onchange="toggleCustomTiles(this)">
-  Drone Image
+<b>Basemap</b>
+
+<label>
+  <input type="checkbox" onchange="toggleSatellite(this)">
+  Satellite
 </label>
+
+<label>
+  <input type="checkbox" onchange="toggleCustomTiles(this)">
+  Drone Image Patel para
+</label>
+
+<label>
+  <input type="checkbox" onchange="toggleCustomTiles2(this)">
+  Drone Image vicha para
+</label>
+
 
   <hr>
   <b>Layers</b>
@@ -261,6 +268,25 @@ map.addLayer({
     visibility: 'none'   // IMPORTANT: starts OFF
   }
 });
+
+/* CUSTOM MAPTILER TILESET – 2 */
+map.addSource('custom-tiles-2', {
+  type: 'raster',
+  tiles: [
+    'https://api.maptiler.com/tiles/019be00b-1035-7f33-8e71-17a439354ddc/{z}/{x}/{y}.webp?key=ImWmkzmSRgV6JxtUNT4L'
+  ],
+  tileSize: 256
+});
+
+map.addLayer({
+  id: 'custom-tiles-2',
+  type: 'raster',
+  source: 'custom-tiles-2',
+  layout: {
+    visibility: 'none'   // OFF by default
+  }
+});
+
 
 
 /* VILLAGE BOUNDARY */
@@ -736,6 +762,15 @@ function toggleCustomTiles(cb){
     cb.checked ? 'visible' : 'none'
   );
 }
+
+function toggleCustomTiles2(cb){
+  map.setLayoutProperty(
+    'custom-tiles-2',
+    'visibility',
+    cb.checked ? 'visible' : 'none'
+  );
+}
+
 
 
 </script>
