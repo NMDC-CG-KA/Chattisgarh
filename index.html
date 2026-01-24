@@ -170,6 +170,41 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   }
 }
 
+.kpis {
+  display: none;
+}
+
+/* EXECUTIVE SUMMARY – CMD STYLE (SMALLER TEXT) */
+.executive-summary {
+  background: #0f4c81;
+  color: #ffffff !important;
+  border-left: 6px solid #08365c;
+  padding: 10px 12px;
+}
+
+/* Title */
+.executive-summary h4 {
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #ffffff !important;
+}
+
+/* Paragraph text */
+.executive-summary p {
+  font-size: 11.5px;      /* 🔽 reduced */
+  line-height: 1.45;      /* compact */
+  margin-bottom: 6px;
+  color: #ffffff !important;
+}
+
+/* Bold text inside */
+.executive-summary b {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #ffffff !important;
+}
+
+
 
 </style>
 </head>
@@ -185,15 +220,31 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   <div id="map"></div>
 
   <div class="dashboard">
-    <div class="kpis">
-      <div class="kpi"><span>Proposed Assets</span><h2 id="kpiAssets">–</h2></div>
-<div class="kpi">  <span>Proposed BT Road Length (km)</span><h2 id="kpiBT">–</h2></div>
-<div class="kpi">
-  <span>Proposed CC Road Length (km)</span>
-  <h2 id="kpiCC">–</h2>
+  <div class="chart-box executive-summary">
+  <h4>Executive Summary</h4>
+
+  <p>
+    <b>128 proposed development assets</b> proposed under an
+    <b>integrated village development plan</b>, encompassing
+    <b>NRM interventions for agriculture</b>, road connectivity,
+    drinking water, social, energy and economic infrastructure
+    in Samalwar village.
+  </p>
+
+  <p>
+    The plan aims to improve <b>livelihoods, basic services,
+    connectivity and environmental sustainability</b> through
+    coordinated infrastructure interventions aligned with
+    <b>NMDC’s CSR objectives</b>.
+  </p>
 </div>
 
-      <div class="kpi"><span>Proposed Asset Categories</span><h2 id="kpiTypes">–</h2></div>
+
+    <div class="kpis">
+<div class="kpi"><span>Proposed Assets</span><h2 id="kpiAssets">–</h2></div>
+<div class="kpi">  <span>Proposed BT Road Length (km)</span><h2 id="kpiBT">–</h2></div>
+<div class="kpi">  <span>Proposed CC Road Length (km)</span><h2 id="kpiCC">–</h2></div>
+<div class="kpi"><span>Proposed Asset Categories</span><h2 id="kpiTypes">–</h2></div>
     </div>
 	
 	<div class="chart-box">
@@ -243,9 +294,10 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
     <table border="1" width="100%" cellpadding="4" style="font-size:11px;border-collapse:collapse;">
       <thead style="background:#f1f5f9;">
         <tr>
-          <th>Asset Name</th>
-          <th>Type</th>
-          <th>Category</th>
+    <th>Sl. No</th>
+    <th>Asset Name</th>
+    <th>Type</th>
+    <th>Category</th>
         </tr>
       </thead>
       <tbody id="assetTableBody"></tbody>
@@ -491,21 +543,20 @@ function renderTable(features){
   tbody.innerHTML = '';
   currentTableData = features;
 
-  features.forEach(f=>{
+features.forEach((f, index)=>{
     const tr = document.createElement('tr');
     tr.style.cursor='pointer';
 
     const isLine = f.geometry.type !== 'Point';
 	
 
-    tr.innerHTML = `
-      <td>${f.properties.NAME || '—'}</td>
-      <td>${f.properties.LAYER || '—'}</td>
-      <td>${isLine && f.properties.Shape_Leng 
-            ? (f.properties.Shape_Leng/1000).toFixed(2)+' km'
-            : infraCategoryMap[f.properties.LAYER] || '—'}
-      </td>
-    `;
+tr.innerHTML = `
+  <td>${index + 1}</td>
+  <td>${f.properties.NAME || '—'}</td>
+  <td>${f.properties.LAYER || '—'}</td>
+  <td>${infraCategoryMap[f.properties.LAYER] || '—'}</td>
+`;
+
 
 tr.onclick = () => {
 
@@ -548,7 +599,7 @@ function renderRoadTable(features){
   currentTableData = features;
 
 
-  features.forEach(f=>{
+  features.forEach((f, index)=>{
     const lenKm = f.properties.Shape_Leng
       ? (f.properties.Shape_Leng / 1000).toFixed(2)
       : '-';
@@ -556,11 +607,13 @@ function renderRoadTable(features){
     const tr = document.createElement('tr');
     tr.style.cursor = 'pointer';
 
-    tr.innerHTML = `
-      <td>${f.properties.NAME || 'Road'}</td>
-      <td>${f.properties.LAYER}</td>
-      <td>${lenKm} km</td>
-    `;
+tr.innerHTML = `
+  <td>${index + 1}</td>
+  <td>${f.properties.NAME || 'Road'}</td>
+  <td>${f.properties.LAYER}</td>
+  <td>${lenKm} km</td>
+`;
+
 
 tr.onclick = () => {
 
@@ -784,7 +837,7 @@ function toggleSatellite(cb){
 
 const map=new maplibregl.Map({
  container:'map',
- style:'https://api.maptiler.com/maps/streets-v4/style.json?key=E6ZRsLot4eQsQImxowwm',
+ style:'https://api.maptiler.com/maps/streets-v4/style.json?key=CrM6DtW2lDzoc91uhUpc',
  center:[81.31,18.60],
  zoom:13
 });
@@ -827,7 +880,7 @@ map.on('load', () => {
     filter: ['==', '$type', 'LineString'],
     paint: {
       'line-color': '#ff0000',
-      'line-width': 15
+      'line-width': 10
     }
   });
 
@@ -836,7 +889,7 @@ map.on('load', () => {
 /* SATELLITE */
 map.addSource('satellite',{
  type:'raster',
- tiles:['https://api.maptiler.com/maps/satellite/256/{z}/{x}/{y}.jpg?key=E6ZRsLot4eQsQImxowwm'],
+ tiles:['https://api.maptiler.com/maps/streets-v4/style.json?key=CrM6DtW2lDzoc91uhUpc'],
  tileSize:256
 });
 map.addLayer({
@@ -913,7 +966,7 @@ map.addLayer({
  id:'boundary',
  type:'line',
  source:'boundary',
- paint:{'line-color':'#7b4a12','line-width':5}
+ paint:{'line-color':'#5b3a0e','line-width':10}
 });
 
 /* PARA (HOME SYMBOL) */
@@ -957,7 +1010,7 @@ map.addLayer({
   type:'circle',
   source:'points',
   paint:{
-    'circle-radius':6,
+    'circle-radius':4,
     'circle-stroke-color':'#ffffff',
     'circle-stroke-width':1.2,
     'circle-color':[
@@ -1033,8 +1086,8 @@ map.addLayer({
   source: 'roads-src',
   filter: ['==', ['get', 'LAYER'], 'BT ROAD'],
   paint: {
-    'line-color': '#f97316',
-    'line-width': 8
+    'line-color': '#7c3aed',
+    'line-width': 5
   }
 });
 
@@ -1426,20 +1479,41 @@ if (mobileDashBtn) {
 }
 
 
-new Chart(roadChart,{
-  type:'bar',
-  data:{
-    labels:['BT Road','CC Road'],
-    datasets:[{
-      data:[bt.toFixed(2), cc.toFixed(2)]
+new Chart(roadChart, {
+  type: 'bar',
+  data: {
+    labels: ['BT Road', 'CC Road'],
+    datasets: [{
+      data: [bt.toFixed(2), cc.toFixed(2)],
+      backgroundColor: ['#7c3aed', '#22c55e']
     }]
   },
-  options:{
-    plugins:{
-      legend:{display:false}
+  options: {
+    plugins: {
+      legend: { display: false },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        formatter: (value) => value + ' km',
+        font: {
+          weight: 'bold',
+          size: 12
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Length (km)'
+        }
+      }
     }
-  }
+  },
+  plugins: [ChartDataLabels]
 });
+
 
 }); // Promise.all .then()
 
@@ -1448,5 +1522,3 @@ new Chart(roadChart,{
 </script>
 </body>
 </html>
-
-
