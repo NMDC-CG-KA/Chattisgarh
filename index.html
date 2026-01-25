@@ -98,7 +98,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
 /* HAMBURGER */
 #hamburger{
-  position:absolute;top:80px;left:14px;
+  position:absolute;top:30px;left:14px;
   width:44px;height:44px;
   background:#0f4c81;color:#fff;
   font-size:22px;
@@ -204,6 +204,166 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   color: #ffffff !important;
 }
 
+.map-widgets{
+  position:absolute;
+  bottom:20px;
+  left:20px;
+  display:flex;
+  gap:12px;
+  z-index:4000;
+}
+
+.map-widget{
+  background:rgba(255,255,255,0.95);
+  border-radius:8px;
+  padding:10px;
+  width:260px;
+  height:230px;                 /* ✅ REDUCED */
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  overflow: visible;             /* ✅ IMPORTANT */
+}
+
+
+
+.map-widget h4{
+  font-size:12px;
+  margin-bottom:6px;
+  color:#0f4c81;
+}
+
+.map-widget canvas {
+  width: 100% !important;
+  height: 160px !important;
+}
+/* ================= MAP LEGEND ================= */
+
+
+#mapLegend h4{
+  margin-bottom:6px;
+  font-size:13px;
+  color:#0f4c81;
+}
+
+.legend-group{
+  margin-bottom:8px;
+}
+
+/* DOT SYMBOLS */
+.dot{
+  width:10px;
+  height:10px;
+  display:inline-block;
+  border-radius:50%;
+  margin-right:6px;
+}
+.social{background:#2563eb}
+.transport{background:#f97316}
+.nrm{background:#16a34a}
+.water{background:#0ea5e9}
+.energy{background:#eab308}
+.economic{background:#7c3aed}
+
+/* ===== EXISTING ASSETS MARKER ICONS IN LEGEND ===== */
+
+.legend-marker{
+  width:18px;
+  height:18px;
+  display:inline-block;
+  margin-right:6px;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  vertical-align:middle;
+}
+
+/* 🔵 WORKING */
+.working-marker{
+  background-image:url('https://img.icons8.com/ios-filled/50/2563eb/marker.png');
+}
+
+/* 🔴 NOT WORKING */
+.notworking-marker{
+  background-image:url('https://img.icons8.com/ios-filled/50/ef4444/marker.png');
+}
+
+
+
+/* LINE SYMBOLS */
+.line{
+  width:18px;
+  height:3px;
+  display:inline-block;
+  margin-right:6px;
+}
+.bt{background:#7c3aed}
+.cc{background:#22c55e}
+.drain{background:#0284c7}
+.boundary{background:#5b3a0e}
+
+/* MAP CONTAINER */
+#map-container{
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* MAP */
+#map{
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== MAP LEGEND (FLOATING, COLLAPSIBLE) ===== */
+
+#mapLegend{
+  position:absolute;              /* 🔥 NOT fixed */
+  bottom:20px;
+  right:20px;
+  width:240px;
+  background:#ffffff;
+  border-radius:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  font-size:12px;
+  z-index:9999;
+  overflow:hidden;
+  pointer-events:auto;
+}
+
+/* header */
+.legend-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 10px;
+  background:#0f172a;
+  color:#ffffff;
+  font-weight:600;
+}
+
+/* toggle button */
+.legend-header button{
+  background:#ffffff;
+  color:#0f172a;
+  border:none;
+  width:22px;
+  height:22px;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:16px;
+  line-height:1;
+}
+
+/* legend content */
+.legend-group{
+  padding:8px 10px;
+  border-bottom:1px solid #e5e7eb;
+}
+
+/* collapsed state */
+#mapLegend.collapsed .legend-group{
+  display:none;
+}
+
 
 
 </style>
@@ -217,7 +377,67 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 </header>
 
 <div class="main">
+<div id="map-container">
   <div id="map"></div>
+
+  <!-- MAP LEGEND -->
+  <div id="mapLegend" class="collapsed">
+    <div class="legend-header">
+      <span>Legend</span>
+      <button id="legendToggle" onclick="toggleLegend()">+</button>
+    </div>
+
+    <div class="legend-group">
+      <b>Proposed Assets</b>
+      <div><span class="dot social"></span> Social Infrastructure</div>
+      <div><span class="dot transport"></span> Transport Infrastructure</div>
+      <div><span class="dot nrm"></span> Natural Resource Management</div>
+      <div><span class="dot water"></span> Drinking Water</div>
+      <div><span class="dot energy"></span> Energy & Lighting</div>
+      <div><span class="dot economic"></span> Economic Infrastructure</div>
+    </div>
+
+<div class="legend-group">
+  <b>Existing Assets</b>
+  <div>
+    <span class="legend-marker working-marker"></span>
+    Working
+  </div>
+  <div>
+    <span class="legend-marker notworking-marker"></span>
+    Not Working
+  </div>
+</div>
+
+
+    <div class="legend-group">
+      <b>Linear Assets</b>
+      <div><span class="line bt"></span> BT Road</div>
+      <div><span class="line cc"></span> CC Road</div>
+      <div><span class="line drain"></span> Drain</div>
+    </div>
+
+    <div class="legend-group">
+      <b>Boundary</b>
+      <div><span class="line boundary"></span> Village Boundary</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="map-widgets">
+
+  <div class="map-widget">
+    <h4>Infrastructure Distribution</h4>
+    <canvas id="assetChart"></canvas>
+  </div>
+
+  <div class="map-widget">
+    <h4>Road Network (BT / CC)</h4>
+    <canvas id="roadChart"></canvas>
+  </div>
+
+</div>
 
   <div class="dashboard">
   <div class="chart-box executive-summary">
@@ -306,20 +526,11 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 </div>
 
 
-    <div class="chart-box">
-      <h4>Proposed Infrastructure Distribution</h4>
-      <canvas id="assetChart"></canvas>
-    </div>
 
-    <div class="chart-box">
-      <h4>Proposed Road Network (BT / CC)</h4>
-      <canvas id="roadChart"></canvas>
-    </div>
-  </div>
-</div>
 
 <div id="hamburger">☰</div>
 <div id="mobileDashBtn">📊</div>
+
 
 
 <!-- FULL LAYER CONTROL -->
@@ -330,9 +541,10 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   <input type="checkbox" onchange="toggleSatellite(this)"> Satellite</label>
 
 <label>
-  <input type="checkbox" checked onchange="toggleAllDroneImages(this)">
+  <input type="checkbox" onchange="toggleAllDroneImages(this)">
   Drone Images
 </label>
+
 
 
 
@@ -358,8 +570,17 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
 
 
-  <label><input type="checkbox" checked onchange="toggle('drain',this)"> Natural Drainage Network</label>
+  <label><input type="checkbox" onchange="toggle('drain',this)"> Natural Drainage Network</label>
   <label><input type="checkbox" checked onchange="toggle('para',this)"> Habitation / Para</label>
+<label>
+ <label>
+  <input type="checkbox" onchange="toggleExistingAssets(this)">
+  Existing Assets
+</label>
+
+
+
+
 </div>
 
 <script>
@@ -400,7 +621,16 @@ const infraCategoryMap = {
 
   "MARKET COMPLEX": "Economic Infrastructure"
 };
+const ALL_INFRA_CATEGORIES = [
+  "Social Infrastructure",
+  "Transport Infrastructure",
+  "Natural Resource Management",
+  "Drinking Water Infrastructure",
+  "Energy & Lighting",
+  "Economic Infrastructure"
+];
 
+let infraChart = null;
 let allAssetsData = null;
 let activeCategory = null;
 let allRoadsData = null;
@@ -408,6 +638,54 @@ let currentTableData = [];
 let assetsLoaded = false;
 let roadsLoaded = false;
 let activeRoadType = null; // 'BT' | 'CC' | null
+
+const CATEGORY_ASSET_MAP = {
+  "Social Infrastructure": [
+    "ANGANWADI BUILDING",
+    "HANDWASHING PLATFORM",
+    "MULTILINGUAL AIDS",
+    "TOILET REFURBISHING",
+    "COMMUNITY HALL",
+    "MANDAP",
+    "DOME SHED",
+    "TOILETS"
+  ],
+  "Transport Infrastructure": [
+    "BRIDGE",
+    "CULVERT"
+  ],
+  "Natural Resource Management": [
+    "CHECKDAM",
+    "POND RENNOVATION",
+    "WHS",
+    "LBCD"
+  ],
+  "Drinking Water Infrastructure": [
+    "SOLAR WATERTANK"
+  ],
+  "Energy & Lighting": [
+    "STREETLIGHTS",
+    "HIGH MUST LIGHT"
+  ],
+  "Economic Infrastructure": [
+    "MARKET COMPLEX"
+  ]
+};
+
+
+
+function updateDonut(features){
+
+  if (!infraChart) return; // 🔥 IMPORTANT
+
+  const counts = buildInfraCategoryCounts(features);
+
+  infraChart.data.datasets[0].data =
+    ALL_INFRA_CATEGORIES.map(c => counts[c]);
+
+  infraChart.update();
+}
+
 
 
 function setLayersVisibility(layerIds, visible){
@@ -665,13 +943,13 @@ function zoomToFullExtent(){
   });
 }
 
-
 function resetAllFilters(){
 
-  // existing reset logic
+  // Clear filters
   map.setFilter('points', null);
   map.setFilter('asset-labels', null);
 
+  // Show all layers
   [
     'points','asset-labels',
     'roads-bt','roads-cc',
@@ -682,15 +960,21 @@ function resetAllFilters(){
     }
   });
 
+  // Reset table + KPIs
   renderTable(getDefaultTableData());
   updateKPIs(allAssetsData.features);
 
+  // 🔥 THIS IS THE KEY
+  resetDonut();
+
+  // Clear buttons
   document.querySelectorAll('#categoryButtons button')
     .forEach(b => b.classList.remove('active'));
 
-  // 🔥 NEW ADDITION
   zoomToFullExtent();
 }
+
+
 
 
 
@@ -752,6 +1036,30 @@ function exportTable(){
   link.click();
 }
 
+function toggleExistingAssets(cb){
+
+  const visibility = cb.checked ? 'visible' : 'none';
+
+  // ICON layer
+  if (map.getLayer('existing-assets-icon')) {
+    map.setLayoutProperty(
+      'existing-assets-icon',
+      'visibility',
+      visibility
+    );
+  }
+
+  // LABEL layer
+  if (map.getLayer('existing-assets-label')) {
+    map.setLayoutProperty(
+      'existing-assets-label',
+      'visibility',
+      visibility
+    );
+  }
+}
+
+
 function toggleRoad(type, btn){
 
   // 1️⃣ HIDE EVERYTHING
@@ -793,6 +1101,18 @@ function syncRoadCheckboxes(btVisible, ccVisible) {
   });
 }
 
+function buildInfraCategoryCounts(features){
+
+  let counts = {};
+  ALL_INFRA_CATEGORIES.forEach(c => counts[c] = 0);
+
+  features.forEach(f => {
+    const cat = infraCategoryMap[f.properties.LAYER];
+    if (cat) counts[cat]++;
+  });
+
+  return counts;
+}
 
 
 
@@ -838,8 +1158,11 @@ function toggleSatellite(cb){
 const map=new maplibregl.Map({
  container:'map',
  style:'https://api.maptiler.com/maps/streets-v4/style.json?key=CrM6DtW2lDzoc91uhUpc',
- center:[81.31,18.60],
- zoom:13
+ center:[ 81.312614, 18.606753],
+  zoom: 19,               // 👈 close village view
+  pitch: 60,                // 👈 3D angle
+  bearing: -25,             // 👈 same oblique feel
+  duration: 0               // 👈 instant (no animation)
 });
 map.addControl(new maplibregl.NavigationControl());
 
@@ -914,7 +1237,7 @@ map.addLayer({
   source: 'custom-tiles',
    minzoom: 15,
   layout: {
-    visibility: 'visible'   // IMPORTANT: starts OFF
+    visibility: 'none'   // IMPORTANT: starts OFF
   }
 });
 
@@ -933,7 +1256,7 @@ map.addLayer({
   source: 'custom-tiles-2',
    minzoom: 15,
   layout: {
-    visibility: 'visible'   // OFF by default
+    visibility: 'none'   // OFF by default
   }
 });
 
@@ -952,7 +1275,7 @@ map.addLayer({
   source: 'custom-tiles-3',
    minzoom: 15,
   layout: {
-    visibility: 'visible'
+    visibility: 'none'
   }
 });
 
@@ -997,6 +1320,142 @@ map.loadImage(
     }
   });
   });
+  
+// 🔵 WORKING ICON
+map.loadImage(
+  'https://img.icons8.com/ios-filled/50/2563eb/marker.png',
+  (error, image) => {
+    if (error) throw error;
+    if (!map.hasImage('existing-working')) {
+      map.addImage('existing-working', image);
+    }
+  }
+);
+
+// 🔴 NOT WORKING ICON
+map.loadImage(
+  'https://img.icons8.com/ios-filled/50/ef4444/marker.png',
+  (error, image) => {
+    if (error) throw error;
+    if (!map.hasImage('existing-not-working')) {
+      map.addImage('existing-not-working', image);
+    }
+  }
+);
+
+
+map.addSource('existing-assets', {
+  type: 'geojson',
+  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Existing_Assets.geojson'
+});
+
+map.addLayer({
+  id: 'existing-assets-icon',
+  type: 'symbol',
+  source: 'existing-assets',
+  layout: {
+    visibility: 'none',   // 🔥 DEFAULT OFF
+    'icon-image': [
+      'case',
+      ['in', 'NOT WORKING', ['upcase', ['get', 'DESCRIPTIO']]],
+      'existing-not-working',
+      'existing-working'
+    ],
+    'icon-size': 0.6,
+    'icon-allow-overlap': true,
+    'icon-ignore-placement': true,
+    'symbol-placement': 'point'
+  }
+});
+
+
+map.addLayer({
+  id: 'existing-assets-label',
+  type: 'symbol',
+  source: 'existing-assets',
+  minzoom: 15,
+  layout: {
+    visibility: 'none',   // 🔥 DEFAULT OFF
+    'text-field': ['get', 'DESCRIPTIO'],
+    'text-size': 11,
+    'text-offset': [0, 1.4],
+    'text-anchor': 'top',
+    'text-allow-overlap': false
+  },
+  paint: {
+    'text-color': '#0f172a',
+    'text-halo-color': '#ffffff',
+    'text-halo-width': 2
+  }
+});
+
+
+
+
+/* ===============================
+   EXISTING ASSETS – CLICK POPUP
+   =============================== */
+
+// 🔥 Click on ICON layer
+map.on('click', 'existing-assets-icon', (e) => {
+
+  const f = e.features[0];
+  const desc = f.properties.DESCRIPTIO;
+
+  const status = desc.toUpperCase().includes('NOT WORKING')
+    ? '❌ Not Working'
+    : '✅ Working';
+
+  new maplibregl.Popup({ offset: 10 })
+    .setLngLat(f.geometry.coordinates)
+    .setHTML(`
+      <div style="font-size:13px;">
+        <b>Existing Asset</b><br/>
+        ${desc}<br/>
+        <b>Status:</b> ${status}
+      </div>
+    `)
+    .addTo(map);
+});
+
+// 🔥 Click on LABEL layer (important)
+map.on('click', 'existing-assets-label', (e) => {
+
+  const f = e.features[0];
+  const desc = f.properties.DESCRIPTIO;
+
+  const status = desc.toUpperCase().includes('NOT WORKING')
+    ? '❌ Not Working'
+    : '✅ Working';
+
+  new maplibregl.Popup({ offset: 10 })
+    .setLngLat(f.geometry.coordinates)
+    .setHTML(`
+      <div style="font-size:13px;">
+        <b>Existing Asset</b><br/>
+        ${desc}<br/>
+        <b>Status:</b> ${status}
+      </div>
+    `)
+    .addTo(map);
+});
+
+/* ===============================
+   CURSOR CHANGE (ICON + LABEL)
+   =============================== */
+
+['existing-assets-icon', 'existing-assets-label'].forEach(layer => {
+
+  map.on('mouseenter', layer, () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  map.on('mouseleave', layer, () => {
+    map.getCanvas().style.cursor = '';
+  });
+
+});
+
 
 
 /* PROPOSED ASSETS – COLORED AS PER ACTUAL LAYER VALUES */
@@ -1006,42 +1465,73 @@ map.addSource('points',{
 });
 
 map.addLayer({
-  id:'points',
-  type:'circle',
-  source:'points',
-  paint:{
-    'circle-radius':4,
-    'circle-stroke-color':'#ffffff',
-    'circle-stroke-width':1.2,
-    'circle-color':[
-      'match',['get','LAYER'],
+  id: 'points',
+  type: 'circle',
+  source: 'points',
+  paint: {
 
-      'ANGANWADI BUILDING', '#f59e0b',
-      'COMMUNITY HALL',    '#7c3aed',
-      'MARKET COMPLEX',    '#16a34a',
-      'TOILETS',           '#92400e',
+    'circle-radius': 6,
+    'circle-stroke-color': '#ffffff',
+    'circle-stroke-width': 1.2,
 
-      'SOLAR WATERTANK',   '#0ea5e9',
-      'STREETLIGHTS',      '#fde047',
-      'HIGH MUST LIGHT',   '#facc15',
+    // 🔥 CATEGORY-BASED COLORING
+    'circle-color': [
+      'case',
 
-      'CHECKDAM',          '#0284c7',
-      'POND RENNOVATION',  '#38bdf8',
+      // 🟦 Social Infrastructure
+      ['in', ['get', 'LAYER'], ['literal', [
+        'ANGANWADI BUILDING',
+        'HANDWASHING PLATFORM',
+        'MULTILINGUAL AIDS',
+        'TOILET REFURBISHING',
+        'COMMUNITY HALL',
+        'MANDAP',
+        'DOME SHED',
+        'TOILETS'
+      ]]],
+      '#2563eb',
 
-      'BRIDGE',            '#334155',
-      'CULVERT',           '#475569',
+      // 🟧 Transport Infrastructure
+      ['in', ['get', 'LAYER'], ['literal', [
+        'BRIDGE',
+        'CULVERT'
+      ]]],
+      '#f97316',
 
-      'MANDAP',            '#dc2626',
-      'DOME SHED',         '#ef4444',
+      // 🟩 Natural Resource Management
+      ['in', ['get', 'LAYER'], ['literal', [
+        'CHECKDAM',
+        'POND RENNOVATION',
+        'WHS',
+        'LBCD'
+      ]]],
+      '#16a34a',
 
-      'WHS',               '#059669',
-      'LBCD',              '#10b981',
+      // 🟦 Drinking Water Infrastructure
+      ['in', ['get', 'LAYER'], ['literal', [
+        'SOLAR WATERTANK'
+      ]]],
+      '#0ea5e9',
 
-      /* default */
+      // 🟨 Energy & Lighting
+      ['in', ['get', 'LAYER'], ['literal', [
+        'STREETLIGHTS',
+        'HIGH MUST LIGHT'
+      ]]],
+      '#eab308',
+
+      // 🟪 Economic Infrastructure
+      ['in', ['get', 'LAYER'], ['literal', [
+        'MARKET COMPLEX'
+      ]]],
+      '#7c3aed',
+
+      // 🔘 Default (fallback)
       '#64748b'
     ]
   }
 });
+
 
 
 
@@ -1167,7 +1657,13 @@ map.addLayer({
  id:'drain',
  type:'line',
  source:'drain-src',
- paint:{'line-color':'#0284c7','line-width':2}
+ layout: {
+   visibility: 'none'   // 🔥 DEFAULT OFF
+ },
+ paint:{
+   'line-color':'#0284c7',
+   'line-width':2
+ }
 });
 
 
@@ -1275,6 +1771,9 @@ window.toggleCategory = function(category){
 
   // 6️⃣ KPIs
   updateKPIs(filtered);
+  updateDonutByCategory(category, filtered);
+
+
 
   // 7️⃣ Button UI
   setActiveButton(category);
@@ -1390,6 +1889,7 @@ kpiBT.innerText = bt.toFixed(2);
 kpiCC.innerText = cc.toFixed(2);
 
 
+
 /* ===== FINAL DONUT WITH FULL LEGEND + CLICK PERCENT ===== */
 
 const infraLabels = [
@@ -1405,70 +1905,198 @@ const infraValues = infraLabels.map(l => infraCategoryCounts[l] || 0);
 
 
 
-// ===== CREATE DONUT CHART (FINAL WORKING VERSION) =====
+/* =========================================================
+   FINAL CHART INITIALIZATION BLOCK (COPY–PASTE)
+   ========================================================= */
 
-// TOTAL FOR PERCENTAGE
-const infraTotal = infraValues.reduce((a, b) => a + b, 0);
+// 🔥 MAKE infraChart GLOBAL (VERY IMPORTANT)
+window.infraChart = null;
 
-const infraChart = new Chart(assetChart, {
-  type: 'doughnut',
+/* ---------- BUILD DONUT DATA ---------- */
+function buildInfraCategoryCounts(features){
+  let counts = {};
+  ALL_INFRA_CATEGORIES.forEach(c => counts[c] = 0);
 
-  data: {
-    labels: infraLabels,
-    datasets: [{
-      data: infraValues,
-      backgroundColor: [
-        '#2563eb', // Social
-        '#f97316', // Transport
-        '#16a34a', // NRM
-        '#0ea5e9', // Water
-        '#eab308', // Energy
-        '#7c3aed'  // Economic
-      ],
-      borderWidth: 1
-    }]
-  },
+  features.forEach(f => {
+    const cat = infraCategoryMap[f.properties.LAYER];
+    if (cat) counts[cat]++;
+  });
 
-  options: {
-    responsive: true,
+  return counts;
+}
 
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: function (context) {
-            const value = context.parsed;
-            const data = context.chart.data.datasets[0].data;
-            const total = data.reduce((a, b) => a + b, 0);
-            const percent = total > 0
-              ? ((value / total) * 100).toFixed(1)
-              : 0;
+/* ---------- CREATE DONUT ONCE ---------- */
+const initialCounts = buildInfraCategoryCounts(p.features);
+const rawCounts = ALL_INFRA_CATEGORIES.map(c => initialCounts[c]);
 
-            return context.label + ' : ' + percent + '%';
+infraChart = new Chart(
+  document.getElementById('assetChart'),
+  {
+    type: 'doughnut',
+    data: {
+      labels: ALL_INFRA_CATEGORIES,
+      datasets: [{
+        data: rawCounts,
+        backgroundColor: [
+          '#2563eb',
+          '#f97316',
+          '#16a34a',
+          '#0ea5e9',
+          '#eab308',
+          '#7c3aed'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '50%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {boxWidth: 10,
+    padding: 6, 
+            font: { size: 11, weight: '600' }
           }
-        }
-      },
-
-      legend: {
-        position: 'bottom',
-        labels: {
-          boxWidth: 14,
-          padding: 12,
-          font: {
-            size: 11,
-            weight: '600'
-          }
-        }
-      },
-
-      title: {
-        display: true,
-        text: 'Proposed Infrastructure Distribution'
-      }
+        },
+tooltip: {
+  callbacks: {
+    title: function (items) {
+      const chart = items[0].chart;              // 🔥 CORRECT SOURCE
+      const idx = items[0].dataIndex;
+      return chart.data.labels[idx];             // ✅ correct label
+    },
+    label: function (ctx) {
+      const chart = ctx.chart;                   // 🔥 CORRECT SOURCE
+      const idx = ctx.dataIndex;
+      const value = chart.data.datasets[0].data[idx];
+      return `Count: ${value}`;
     }
+  }
+},
+
+
+        // ✅ FINAL, STABLE COUNT DISPLAY
+        datalabels: {
+          color: '#ffffff',
+          font: {
+            weight: 'bold',
+            size: 11
+          },
+          formatter: (value) => {
+            return value > 0 ? value : '';
+          }
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  }
+);
+
+
+
+/* ---------- UPDATE DONUT (CALLED FROM BUTTONS) ---------- */
+/* ---------- UPDATE DONUT (CALLED FROM BUTTONS) ---------- */
+window.updateDonutByCategory = function(category, features){
+
+  if (!infraChart) return;
+
+  const assetTypes = CATEGORY_ASSET_MAP[category];
+
+  let counts = {};
+  assetTypes.forEach(a => counts[a] = 0);
+
+  features.forEach(f => {
+    if (assetTypes.includes(f.properties.LAYER)) {
+      counts[f.properties.LAYER]++;
+    }
+  });
+
+  // 🔁 BUILD RAW COUNTS ARRAY (VERY IMPORTANT)
+  const newRawCounts = assetTypes.map(a => counts[a]);
+
+  // 🔁 UPDATE CHART
+  infraChart.data.labels = assetTypes;
+  infraChart.data.datasets[0].data = newRawCounts;
+
+  // 🔥 THIS IS THE MISSING LINE
+  infraChart.config.data.__rawCounts = newRawCounts;
+
+  infraChart.update();
+};
+
+
+
+/* ---------- RESET DONUT (FULL DATA) ---------- */
+window.resetDonut = function(){
+
+  const rawCounts =
+    ALL_INFRA_CATEGORIES.map(c => initialCounts[c]);
+
+  infraChart.data.labels = ALL_INFRA_CATEGORIES;
+  infraChart.data.datasets[0].data = rawCounts;
+
+  // 🔥 REQUIRED
+  infraChart.config.data.__rawCounts = rawCounts;
+
+  infraChart.update();
+};
+
+
+
+/* ---------- ROAD BAR CHART ---------- */
+new Chart(
+  document.getElementById('roadChart'),
+  {
+    type: 'bar',
+    data: {
+      labels: ['BT Road', 'CC Road'],
+      datasets: [{
+        data: [bt.toFixed(2), cc.toFixed(2)],
+        backgroundColor: ['#7c3aed', '#22c55e']
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          formatter: (v) => v + ' km',
+          font: { weight: 'bold', size: 12 }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Length (km)'
+          }
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  }
+);
+
+document.getElementById('legendToggle').addEventListener('click', () => {
+  const legend = document.getElementById('mapLegend');
+  const btn = document.getElementById('legendToggle');
+
+  if (legend.classList.contains('collapsed')) {
+    legend.classList.remove('collapsed');
+    btn.innerText = '−';
+  } else {
+    legend.classList.add('collapsed');
+    btn.innerText = '+';
   }
 });
 
 
+
+/* ---------- MOBILE DASHBOARD TOGGLE ---------- */
 const mobileDashBtn = document.getElementById('mobileDashBtn');
 const dashboard = document.querySelector('.dashboard');
 
@@ -1477,47 +2105,9 @@ if (mobileDashBtn) {
     dashboard.classList.toggle('open');
   };
 }
-
-
-new Chart(roadChart, {
-  type: 'bar',
-  data: {
-    labels: ['BT Road', 'CC Road'],
-    datasets: [{
-      data: [bt.toFixed(2), cc.toFixed(2)],
-      backgroundColor: ['#7c3aed', '#22c55e']
-    }]
-  },
-  options: {
-    plugins: {
-      legend: { display: false },
-      datalabels: {
-        anchor: 'end',
-        align: 'top',
-        formatter: (value) => value + ' km',
-        font: {
-          weight: 'bold',
-          size: 12
-        }
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Length (km)'
-        }
-      }
-    }
-  },
-  plugins: [ChartDataLabels]
+}); // ✅ CLOSE Promise.all
 });
 
-
-}); // Promise.all .then()
-
-}); // 🔥 THIS WAS MISSING — closes map.on('load')
 
 </script>
 </body>
