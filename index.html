@@ -398,12 +398,28 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   font-weight: 800 !important;
   color: #fde047 !important;   /* visible yellow */
 }
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .mobile-only {
+    display: block;
+  }
+}
+@media (max-width: 900px) {
+  #mobileDashBtn {
+    display: flex !important;
+    z-index: 99999 !important;
+  }
+}
 
 
 </style>
 </head>
 
 <body>
+<div id="mobileDashBtn">📊</div>
 
 <header class="app-header">
   <img src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png">
@@ -474,6 +490,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 </div>
 
   <div class="dashboard">
+  
   <div class="chart-box executive-summary">
 <h4>Executive Summary</h4>
 
@@ -555,6 +572,16 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
       <tbody id="assetTableBody"></tbody>
     </table>
   </div>
+</div>
+<!-- MOBILE CHARTS -->
+<div class="chart-box mobile-only">
+  <h4>Infrastructure Distribution</h4>
+  <canvas id="assetChartMobile"></canvas>
+</div>
+
+<div class="chart-box mobile-only">
+  <h4>Road Network (BT / CC)</h4>
+  <canvas id="roadChartMobile"></canvas>
 </div>
 
 
@@ -2112,6 +2139,40 @@ new Chart(
     plugins: [ChartDataLabels]
   }
 );
+
+// 📱 MOBILE DONUT
+new Chart(
+  document.getElementById('assetChartMobile'),
+  JSON.parse(JSON.stringify(infraChart.config))
+);
+
+// 📱 MOBILE ROAD CHART
+new Chart(
+  document.getElementById('roadChartMobile'),
+  {
+    type: 'bar',
+    data: {
+      labels: ['BT Road', 'CC Road'],
+      datasets: [{
+        data: [bt.toFixed(2), cc.toFixed(2)],
+        backgroundColor: ['#7c3aed', '#22c55e']
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          formatter: (v) => v + ' km'
+        }
+      },
+      scales: { y: { beginAtZero: true } }
+    },
+    plugins: [ChartDataLabels]
+  }
+);
+
 
 document.getElementById('legendToggle').addEventListener('click', () => {
   const legend = document.getElementById('mapLegend');
