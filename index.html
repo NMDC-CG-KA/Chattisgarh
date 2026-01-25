@@ -182,6 +182,13 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   padding: 10px 12px;
 }
 
+/* 🔥 Highlight numbers only inside executive summary */
+.executive-summary b {
+  font-weight: 800;          /* STRONGER */
+  color: #fde047 !important; /* soft yellow highlight */
+}
+
+
 /* Title */
 .executive-summary h4 {
   font-size: 13px;
@@ -378,6 +385,19 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
     font-size: 11px;
   }
 }
+.exec-text{
+  text-align: justify;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.exec-text b{
+  font-weight: 600;
+}
+/* 🔥 FORCE NUMBER HIGHLIGHT – FINAL OVERRIDE */
+.executive-summary .exec-text b {
+  font-weight: 800 !important;
+  color: #fde047 !important;   /* visible yellow */
+}
 
 
 </style>
@@ -455,22 +475,20 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
   <div class="dashboard">
   <div class="chart-box executive-summary">
-  <h4>Executive Summary</h4>
+<h4>Executive Summary</h4>
 
-  <p>
-    <b>128 proposed development assets</b> proposed under an
-    <b>integrated village development plan</b>, encompassing
-    <b>NRM interventions for agriculture</b>, road connectivity,
-    drinking water, social, energy and economic infrastructure
-    in Samalwar village.
-  </p>
+<p class="exec-text">
+  <b>128</b> development assets are proposed under an integrated village
+  development plan for Samalwar, covering NRM interventions for agriculture,
+  road connectivity, drinking water, social, energy, and economic infrastructure.
+</p>
 
-  <p>
-    The plan aims to improve <b>livelihoods, basic services,
-    connectivity and environmental sustainability</b> through
-    coordinated infrastructure interventions aligned with
-    <b>NMDC’s CSR objectives</b>.
-  </p>
+<p class="exec-text">
+  The plan aims to strengthen livelihoods, improve basic services, enhance
+  connectivity, and ensure environmental sustainability through coordinated
+  infrastructure interventions aligned with NMDC’s CSR objectives, benefiting
+  approximately <b>1,220</b> people across <b>330</b> households.
+</p>
 </div>
 
 
