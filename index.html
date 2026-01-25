@@ -1417,6 +1417,127 @@ map.loadImage(
   }
 );
 
+function createHandPumpIcon(colorPipe) {
+  const size = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  // Platform
+  ctx.fillStyle = '#9ca3af';
+  ctx.beginPath();
+  ctx.ellipse(32, 54, 22, 6, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Vertical pipe
+  ctx.fillStyle = colorPipe;
+  ctx.fillRect(30, 20, 4, 30);
+
+  // Pump head
+  ctx.fillStyle = colorPipe;
+  ctx.fillRect(25, 16, 14, 6);
+
+  // Pivot
+  ctx.beginPath();
+  ctx.arc(26, 18, 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Handle (LEFT)
+  ctx.save();
+  ctx.translate(26, 18);
+  ctx.rotate(18 * Math.PI / 180);
+  ctx.fillRect(-24, -1.5, 24, 3);
+  ctx.restore();
+
+  // Water outlet (RIGHT)
+  ctx.save();
+  ctx.translate(34, 24);
+  ctx.rotate(10 * Math.PI / 180);
+  ctx.fillRect(0, 0, 12, 3);
+  ctx.restore();
+
+  // Water drop
+  ctx.fillStyle = '#0ea5e9';
+  ctx.beginPath();
+  ctx.moveTo(46, 28);
+  ctx.bezierCurveTo(43, 32, 43, 36, 46, 38);
+  ctx.bezierCurveTo(49, 36, 49, 32, 46, 28);
+  ctx.fill();
+
+  return ctx.getImageData(0, 0, size, size);
+}
+
+// ✅ WORKING = GREY
+map.addImage(
+  'hand-pump-working',
+  createHandPumpIcon('#6b7280')
+);
+
+// ❌ NOT WORKING = RED
+map.addImage(
+  'hand-pump-not-working',
+  createHandPumpIcon('#dc2626')
+);
+
+
+function createSolarTankIcon() {
+  const size = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  // Solar panel
+  ctx.fillStyle = '#eab308';
+  ctx.fillRect(22, 2, 20, 8);
+  ctx.strokeStyle = '#78350f';
+  ctx.beginPath();
+  ctx.moveTo(22, 6);
+  ctx.lineTo(42, 6);
+  ctx.stroke();
+
+  // Tank top
+  ctx.fillStyle = '#0ea5e9';
+  ctx.beginPath();
+  ctx.ellipse(32, 16, 10, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Tank body
+  ctx.fillStyle = '#38bdf8';
+  ctx.fillRect(22, 16, 20, 12);
+
+  // Tank bottom
+  ctx.fillStyle = '#0284c7';
+  ctx.beginPath();
+  ctx.ellipse(32, 28, 10, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Tower legs
+  ctx.fillStyle = '#64748b';
+  ctx.fillRect(20, 28, 4, 26);
+  ctx.fillRect(40, 28, 4, 26);
+
+  // Cross braces
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(20, 32);
+  ctx.lineTo(44, 48);
+  ctx.moveTo(44, 32);
+  ctx.lineTo(20, 48);
+  ctx.stroke();
+
+  // Base
+  ctx.fillStyle = '#6b7280';
+  ctx.fillRect(16, 54, 32, 4);
+
+  return ctx.getImageData(0, 0, size, size);
+}
+
+map.addImage('solar-tank-icon', createSolarTankIcon());
+
+
 
 map.addSource('existing-assets', {
   type: 'geojson',
@@ -1428,19 +1549,39 @@ map.addLayer({
   type: 'symbol',
   source: 'existing-assets',
   layout: {
-    visibility: 'none',   // 🔥 DEFAULT OFF
+    visibility: 'none',
+
     'icon-image': [
       'case',
-      ['in', 'NOT WORKING', ['upcase', ['get', 'DESCRIPTIO']]],
-      'existing-not-working',
+
+      // 🔆 SOLAR WATER TANK
+      ['in', 'SOLAR', ['upcase', ['get', 'DESCRIPTIO']]],
+      'solar-tank-icon',
+
+      // ❌ NOT WORKING HAND PUMP / TUBE WELL
+      [
+        'all',
+        ['in', 'TUBE', ['upcase', ['get', 'DESCRIPTIO']]],
+        ['in', 'NOT', ['upcase', ['get', 'DESCRIPTIO']]]
+      ],
+      'hand-pump-not-working',
+
+      // ✅ WORKING HAND PUMP / TUBE WELL
+      ['in', 'TUBE', ['upcase', ['get', 'DESCRIPTIO']]],
+      'hand-pump-working',
+
+      // fallback
       'existing-working'
     ],
-    'icon-size': 0.6,
+
+    'icon-size': 0.8,
     'icon-allow-overlap': true,
-    'icon-ignore-placement': true,
-    'symbol-placement': 'point'
+    'icon-ignore-placement': true
   }
 });
+
+
+
 
 
 map.addLayer({
@@ -1449,12 +1590,11 @@ map.addLayer({
   source: 'existing-assets',
   minzoom: 15,
   layout: {
-    visibility: 'none',   // 🔥 DEFAULT OFF
+    visibility: 'none',
     'text-field': ['get', 'DESCRIPTIO'],
     'text-size': 11,
-    'text-offset': [0, 1.4],
-    'text-anchor': 'top',
-    'text-allow-overlap': false
+    'text-offset': [0, 1.6],
+    'text-anchor': 'top'
   },
   paint: {
     'text-color': '#0f172a',
@@ -1462,6 +1602,7 @@ map.addLayer({
     'text-halo-width': 2
   }
 });
+
 
 
 
