@@ -96,17 +96,24 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 }
 
 
-/* HAMBURGER */
 #hamburger{
-  position:absolute;top:30px;left:14px;
-  width:44px;height:44px;
-  background:#0f4c81;color:#fff;
-  font-size:22px;
-  display:flex;align-items:center;justify-content:center;
-  border-radius:6px;cursor:pointer;
-  z-index:5000;
-  box-shadow:0 4px 10px rgba(0,0,0,.25)
+  position: fixed;          /* 🔥 FIXED TO SCREEN */
+  top: 80px;                /* below header */
+  left: 14px;
+  width: 44px;
+  height: 44px;
+  background: #0f4c81;
+  color: #fff;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 99999;           /* 🔥 ABOVE DASHBOARD */
+  box-shadow: 0 4px 10px rgba(0,0,0,.25);
 }
+
 
 /* LAYER PANEL */
 #layerPanel{
@@ -132,7 +139,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
     right:0;
     height:70vh;
     background:#ffffff;
-    z-index:6000;
+    z-index:5000;
     border-top-left-radius:14px;
     border-top-right-radius:14px;
     box-shadow:0 -6px 20px rgba(0,0,0,0.25);
@@ -413,6 +420,12 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
     z-index: 99999 !important;
   }
 }
+#mobileDashBtn{
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 99999;   /* 🔥 ABOVE EVERYTHING */
+}
 
 
 </style>
@@ -588,7 +601,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
 
 <div id="hamburger">☰</div>
-<div id="mobileDashBtn">📊</div>
+
 
 
 
@@ -697,6 +710,8 @@ let currentTableData = [];
 let assetsLoaded = false;
 let roadsLoaded = false;
 let activeRoadType = null; // 'BT' | 'CC' | null
+let mobileInfraChart = null;
+
 
 const CATEGORY_ASSET_MAP = {
   "Social Infrastructure": [
@@ -1218,7 +1233,7 @@ const map=new maplibregl.Map({
  container:'map',
  style:'https://api.maptiler.com/maps/streets-v4/style.json?key=CrM6DtW2lDzoc91uhUpc',
  center:[ 81.312614, 18.606753],
-  zoom: 19,               // 👈 close village view
+  zoom: 18,               // 👈 close village view
   pitch: 60,                // 👈 3D angle
   bearing: -25,             // 👈 same oblique feel
   duration: 0               // 👈 instant (no animation)
@@ -2053,6 +2068,9 @@ tooltip: {
   }
 );
 
+const mobileCounts = ALL_INFRA_CATEGORIES.map(c => initialCounts[c]);
+createMobileDonut(mobileCounts);
+
 
 
 /* ---------- UPDATE DONUT (CALLED FROM BUTTONS) ---------- */
@@ -2140,11 +2158,56 @@ new Chart(
   }
 );
 
-// 📱 MOBILE DONUT
-new Chart(
-  document.getElementById('assetChartMobile'),
-  JSON.parse(JSON.stringify(infraChart.config))
-);
+
+// 📱 MOBILE DONUT CHART
+function createMobileDonut(counts){
+
+  const ctx = document.getElementById('assetChartMobile');
+  if (!ctx) return;
+
+  if (mobileInfraChart) {
+    mobileInfraChart.destroy();
+  }
+
+  mobileInfraChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ALL_INFRA_CATEGORIES,
+      datasets: [{
+        data: counts,
+        backgroundColor: [
+          '#2563eb',
+          '#f97316',
+          '#16a34a',
+          '#0ea5e9',
+          '#eab308',
+          '#7c3aed'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '55%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 10,
+            font: { size: 11 }
+          }
+        },
+        datalabels: {
+          color: '#ffffff',
+          font: { weight: 'bold', size: 11 },
+          formatter: v => v > 0 ? v : ''
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
 
 // 📱 MOBILE ROAD CHART
 new Chart(
@@ -2188,16 +2251,23 @@ document.getElementById('legendToggle').addEventListener('click', () => {
 });
 
 
-
-/* ---------- MOBILE DASHBOARD TOGGLE ---------- */
+/* ---------- MOBILE DASHBOARD TOGGLE (FIXED) ---------- */
 const mobileDashBtn = document.getElementById('mobileDashBtn');
 const dashboard = document.querySelector('.dashboard');
 
 if (mobileDashBtn) {
   mobileDashBtn.onclick = () => {
     dashboard.classList.toggle('open');
+
+    // 🔥 IMPORTANT: resize charts AFTER dashboard becomes visible
+    setTimeout(() => {
+      if (window.mobileInfraChart) {
+        window.mobileInfraChart.resize();
+      }
+    }, 300);
   };
 }
+
 }); // ✅ CLOSE Promise.all
 });
 
