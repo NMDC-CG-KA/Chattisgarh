@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>NMDC Samalwar – Proposed Model Village Planning Dashboard</title>
+<title> Samalwar – Proposed Model Village Planning Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet"/>
@@ -961,7 +961,16 @@ document.addEventListener("DOMContentLoaded", () => {
     Completed CSR Works-NMDC
   </label>
 
+  <hr style="margin:6px 0; opacity:0.3">
+ <b>Landuse</b>
+<label>
+  <input type="checkbox" onchange="toggle('landuse-3d', this)">
+  Presnt Land use
+</label>
+
+
 </div> <!-- ✅ END right-col -->
+
 
 
   </div>
@@ -970,7 +979,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <header class="app-header">
   <img src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png">
-  <span>NMDC Samalwar – Proposed Model Village Planning Dashboard</span>
+  <span> Samalwar – Proposed Model Village Planning Dashboard</span>
 </header>
 
 <div class="main">
@@ -1067,7 +1076,7 @@ document.addEventListener("DOMContentLoaded", () => {
     community and transport infrastructure assets such as an
     <b>Anganwadi Centre with Kitchen at Patel Para</b>,
     an <b>Anganwadi Kitchen and Store at Vichha Para</b>,
-    construction of a <b>CC Road (110 meters) at Sarpanch Para</b>, and an
+    construction of a <b>CC Road Constructed by NMDC at Sarpanch Para</b>, and an
     <b>Indian Overseas Bank–cum–Community Hall at Patel Para</b>.
     These interventions have significantly strengthened social amenities
     and local connectivity within the village.
@@ -1240,7 +1249,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 
   <div class="kpi" id="kpiCCCard">
-    <span>Proposed CC Road Length (km)</span>
+    <span>Proposed CC Road With Drain Length (km)</span>
     <h2 id="kpiCC">–</h2>
   </div>
   
@@ -1280,7 +1289,7 @@ document.addEventListener("DOMContentLoaded", () => {
         onclick="toggleCategory('Economic Infrastructure')">Economic</button>
 
 <button class="road-btn" onclick="toggleRoad('BT', this)">BT Roads</button>
-<button class="road-btn" onclick="toggleRoad('CC', this)">CC Roads</button>
+<button class="road-btn" onclick="toggleRoad('CC', this)">CC Roads With Drain</button>
 <button class="road-btn" onclick="toggleBoundaryWall(this)">
   Boundary Wall
 </button>
@@ -1390,6 +1399,20 @@ const EXISTING_ASSET_CATEGORIES = {
   "Institutional & Public Services": false
 };
 
+/* ===============================
+   LANDUSE COLOR DEFINITIONS
+   =============================== */
+const LANDUSE_COLORS = {
+  "WATER BODY": "#0ea5e9",           // blue
+  "RIVER": "#0284c7",                // darker blue
+
+  "LOW LAND-CULTIVATION": "#7dd3fc", // 🔵 light blue
+  "UPLAND-CULTIVATION": "#facc15",   // 🟡 yellow
+
+  "SCRUB LAND": "#d6d3d1",           // grey
+  "VILLAGE FOREST": "#14532d",       // dark green
+  "SETTLEMENT": "#ef4444"            // red
+};
 
 
 
@@ -2449,6 +2472,128 @@ map.addLayer({
  source:'boundary',
  paint:{'line-color':'#5b3a0e','line-width':10}
 });
+
+  /* ===============================
+   LANDUSE SOURCE
+   =============================== */
+map.addSource('landuse', {
+  type: 'geojson',
+  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Landuse_Samalwar.geojson'
+});
+
+/* ===============================
+   LANDUSE PICK LAYER (2D, INVISIBLE)
+   =============================== */
+map.addLayer({
+  id: 'landuse-pick',
+  type: 'fill',
+  source: 'landuse',
+  layout: {
+    visibility: 'visible'
+  },
+  paint: {
+    'fill-color': '#000000',
+    'fill-opacity': 0.01   // 🔥 invisible but clickable
+  }
+});
+
+
+/* ===============================
+   LANDUSE 3D LAYER
+   =============================== */
+map.addLayer({
+  id: 'landuse-3d',
+  type: 'fill-extrusion',
+  source: 'landuse',
+  minzoom: 14,
+  layout: {
+    visibility: 'none'   // controlled by layer panel
+  },
+  paint: {
+
+    /* COLOR */
+    'fill-extrusion-color': [
+      'match',
+      ['get', 'LAYER'],
+      'WATER BODY', '#0ea5e9',
+      'RIVER', '#0284c7',
+      'LOW LAND-CULTIVATION', '#7dd3fc',
+      'UPLAND-CULTIVATION', '#facc15',
+      'SCRUB LAND', '#d6d3d1',
+      'VILLAGE FOREST', '#14532d',
+      'SETTLEMENT', '#ef4444',
+      '#9ca3af'
+    ],
+
+    /* HEIGHT LOGIC (NEGATIVE → POSITIVE) */
+    'fill-extrusion-height': [
+      'match',
+      ['get', 'LAYER'],
+      'WATER BODY', -2,
+      'RIVER', -1.5,
+      'LOW LAND-CULTIVATION', 1,
+      'UPLAND-CULTIVATION', 3,
+      'SCRUB LAND', 0.8,
+      'VILLAGE FOREST', 2.5,
+      'SETTLEMENT', 0,
+      1
+    ],
+
+    'fill-extrusion-base': 0,
+    'fill-extrusion-opacity': 0.85
+  }
+});
+
+/* ===============================
+   LANDUSE HIGHLIGHT (VIOLET)
+   =============================== */
+map.addLayer({
+  id: 'landuse-highlight',
+  type: 'fill-extrusion',
+  source: 'feature-highlight',
+  filter: ['==', '$type', 'Polygon'],
+  paint: {
+    'fill-extrusion-color': '#8b5cf6',
+    'fill-extrusion-height': 4,
+    'fill-extrusion-opacity': 0.95
+  }
+});
+
+/* ===============================
+   LANDUSE CLICK + POPUP
+   =============================== */
+map.on('click', 'landuse-pick', (e) => {
+
+  const feature = e.features[0];
+
+  // 🔥 highlight EXACT polygon
+  map.getSource('feature-highlight').setData({
+    type: 'FeatureCollection',
+    features: [feature]
+  });
+
+  new maplibregl.Popup({ offset: 10 })
+    .setLngLat(e.lngLat)
+    .setHTML(`
+      <div style="font-size:13px;">
+        <b>Present Landuse</b><br>
+        <b>Class:</b> ${feature.properties.LAYER}<br>
+        <b>Area (Ha):</b> ${Number(feature.properties.AREAHA).toFixed(2)}
+      </div>
+    `)
+    .addTo(map);
+});
+
+
+
+map.on('mouseenter', 'landuse-pick', () => {
+  map.getCanvas().style.cursor = 'pointer';
+});
+map.on('mouseleave', 'landuse-pick', () => {
+  map.getCanvas().style.cursor = '';
+});
+
+
 
 /* PARA (HOME SYMBOL) */
 map.loadImage(
@@ -3574,6 +3719,11 @@ map.addLayer({
   // ===============================
   addCSRPopup('csr-buildings-3d');
   addCSRPopup('csr-ccroad-3d');
+  
+  
+  
+
+
 
 	
 	/* PROPOSED DRAIN */
