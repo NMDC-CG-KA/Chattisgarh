@@ -686,12 +686,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 }
 
 
-.dashboard {
-  display: none;
-}
-.dashboard.open {
-  display: block;
-}
+
 /* ===== TWO COLUMN LAYER PANEL ===== */
 
 .layer-grid{
@@ -882,6 +877,11 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   background: rgba(255,255,255,0.08);
   border-left: 4px solid #fde047;
 }
+@media(max-width:900px){
+  .dashboard{
+    display:block !important;
+  }
+}
 
 
 
@@ -964,7 +964,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <hr style="margin:6px 0; opacity:0.3">
  <b>Landuse</b>
 <label>
-  <input type="checkbox" onchange="toggle('landuse-3d', this)">
+  <input type="checkbox" onchange="toggleLanduse(this)">
   Presnt Land use
 </label>
 
@@ -2326,6 +2326,27 @@ function toggleSatellite(cb){
     cb.checked ? 'visible' : 'none'
   );
 }
+function toggleLanduse(cb) {
+  const visibility = cb.checked ? 'visible' : 'none';
+
+  // 3D landuse
+  if (map.getLayer('landuse-3d')) {
+    map.setLayoutProperty('landuse-3d', 'visibility', visibility);
+  }
+
+  // 🔥 IMPORTANT: pick layer
+  if (map.getLayer('landuse-pick')) {
+    map.setLayoutProperty('landuse-pick', 'visibility', visibility);
+  }
+
+  // clear highlight when OFF
+  if (!cb.checked && map.getSource('feature-highlight')) {
+    map.getSource('feature-highlight').setData({
+      type: 'FeatureCollection',
+      features: []
+    });
+  }
+}
 
 
 
@@ -2564,9 +2585,13 @@ map.addLayer({
    =============================== */
 map.on('click', 'landuse-pick', (e) => {
 
+  // 🛑 ignore if landuse is OFF
+  if (map.getLayoutProperty('landuse-pick', 'visibility') !== 'visible') {
+    return;
+  }
+
   const feature = e.features[0];
 
-  // 🔥 highlight EXACT polygon
   map.getSource('feature-highlight').setData({
     type: 'FeatureCollection',
     features: [feature]
@@ -4169,18 +4194,23 @@ const dashBtn = document.getElementById('mobileDashBtn');
 const main = document.querySelector('.main');
 
 dashBtn.onclick = () => {
-  main.classList.toggle('dashboard-open');
+
+  if (window.innerWidth <= 900) {
+    // MOBILE MODE
+    document.querySelector('.dashboard')
+      .classList.toggle('open');
+  } else {
+    // DESKTOP MODE
+    document.querySelector('.main')
+      .classList.toggle('dashboard-open');
+  }
 
   setTimeout(() => {
     map.resize();
-
-    // 🔥 FIX DONUT RENDER ISSUE
-    if (window.assetChart) {
-      assetChart.resize();
-      assetChart.update();
-    }
+    if (infraChart) infraChart.resize();
   }, 350);
 };
+
 
 
 
