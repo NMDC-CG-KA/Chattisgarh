@@ -1515,18 +1515,29 @@ function toggleAllCSR(cb) {
 }
 
 function addCSRPopup(layerId) {
-  map.on('click', layerId, (e) => {
-    const p = e.features[0].properties;
 
-    new maplibregl.Popup()
+  map.on('click', layerId, (e) => {
+
+    const feature = e.features[0];
+
+    // 🔥 ADD TO HIGHLIGHT SOURCE
+    map.getSource('feature-highlight').setData({
+      type: 'FeatureCollection',
+      features: [feature]
+    });
+
+    new maplibregl.Popup({ offset: 10 })
       .setLngLat(e.lngLat)
       .setHTML(`
-        <b>${p.NAME}</b><br>
-        Category: ${p.LAYER}
+        <div style="font-size:13px;">
+          <b>${feature.properties.NAME}</b><br>
+          Category: ${feature.properties.LAYER}
+        </div>
       `)
       .addTo(map);
   });
 
+  // 🔥 CURSOR CHANGE
   map.on('mouseenter', layerId, () => {
     map.getCanvas().style.cursor = 'pointer';
   });
@@ -2409,6 +2420,18 @@ map.on('load', () => {
     }
   });
 
+// 🔴 CSR POLYGON HIGHLIGHT
+map.addLayer({
+  id: 'feature-highlight-csr',
+  type: 'fill-extrusion',
+  source: 'feature-highlight',
+  filter: ['==', '$type', 'Polygon'],
+  paint: {
+    'fill-extrusion-color': '#ff0000',
+    'fill-extrusion-height': 12,
+    'fill-extrusion-opacity': 0.95
+  }
+});
 
 
 /* SATELLITE */
@@ -2510,7 +2533,7 @@ map.addLayer({
   type: 'fill',
   source: 'landuse',
   layout: {
-    visibility: 'visible'
+    visibility: 'none'
   },
   paint: {
     'fill-color': '#000000',
