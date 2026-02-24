@@ -17,13 +17,78 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
-/* HEADER */
+/* ===== NMDC HEADER WITH TOOLBAR ===== */
 .app-header{
-  position:fixed;top:0;left:0;right:0;height:60px;
-  background:#0f4c81;color:#fff;
-  display:flex;align-items:center;
-  padding:0 16px;z-index:3000
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:54px;
+  background:#0f4c81;   /* ✅ NMDC BLUE */
+  color:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  z-index:3000;
+  box-shadow:0 2px 8px rgba(0,0,0,0.25);
 }
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.header-left img{
+  height:40px;
+}
+
+.header-left span{
+  font-size:18px;
+  font-weight:600;
+}
+
+/* RIGHT TOOLBAR */
+.header-toolbar{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+
+.header-toolbar select{
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid #cbd5f5;
+  font-size:12px;
+}
+
+.header-toolbar button{
+  padding:6px 14px;
+  border:none;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.header-toolbar .search-btn{
+  background:#2563eb;
+  color:#ffffff;
+}
+
+.header-toolbar .reset-btn{
+  background:#ef4444;
+  color:#ffffff;
+}
+
+/* MOBILE */
+@media(max-width:900px){
+  .header-toolbar{
+    display:none; /* hide toolbar on mobile */
+  }
+}
+
 .app-header img{height:40px;margin-right:12px}
 .app-header span{font-size:18px;font-weight:600}
 
@@ -883,6 +948,74 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   }
 }
 
+/* ===============================
+   TOP MIDDLE MAP TOOLBAR
+   =============================== */
+#topFilterBar{
+  position:absolute;
+  top:12px;                       /* below header */
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:6px;
+  padding:10px 12px;
+  background:#ffffff;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+  z-index:6000;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* dropdowns */
+#topFilterBar select{
+  min-width:140px;
+  padding:6px 8px;
+  border-radius:6px;
+  border:1px solid #cbd5f5;
+  font-size:12px;
+}
+
+/* buttons */
+#topFilterBar button{
+  padding:6px 14px;
+  border:none;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.search-btn{
+  background:#2563eb;
+  color:#ffffff;
+}
+
+.reset-btn{
+  background:#ef4444;
+  color:#ffffff;
+}
+
+/* 📱 MOBILE FIX */
+@media(max-width:900px){
+  #topFilterBar{
+    top:70px;
+    width:95%;
+    justify-content:center;
+  }
+
+  #topFilterBar select{
+    min-width:120px;
+  }
+}
+
+/* CSR legend polish */
+.legend-group img {
+  border-radius: 4px;
+  background: #ffffff;
+  padding: 0.5px;
+}
+
 
 
 </style>
@@ -978,13 +1111,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 <header class="app-header">
-  <img src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png">
-  <span> Samalwar – Proposed Model Village Planning Dashboard</span>
-</header>
 
+
+  <!-- LEFT : LOGO + TITLE -->
+  <div class="header-left">
+    <img src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png">
+    <span>Samalwar – Proposed Model Village Planning Dashboard</span>
+  </div>
+
+  <!-- RIGHT : TOOLBAR -->
+  <div class="header-toolbar">
+
+    <select id="stateSelect">
+      <option value="">Select State</option>
+    </select>
+
+
+    <select id="blockSelect">
+      <option value="">Select Block</option>
+    </select>
+
+    <select id="villageSelect">
+      <option value="">Select Village</option>
+    </select>
+
+    <button class="search-btn">Search</button>
+    <button class="reset-btn">Reset</button>
+
+  </div>
+</header>
 <div class="main">
 <div id="map-container">
+
   <div id="map"></div>
+  
+  <div id="csrNarrative" style="
+  position:absolute;
+  top:90px;
+  right:20px;
+  width:360px;
+  background:rgba(15,76,129,0.95);
+  color:#fff;
+  padding:14px;
+  border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.35);
+  font-size:12.5px;
+  line-height:1.5;
+  display:none;
+  z-index:6000;
+">
+  <b style="color:#fde047;">Existing CSR Works – NMDC</b><br><br>
+
+  Existing CSR Works implemented by NMDC include development of key community
+  and transport infrastructure assets such as an <b>Anganwadi Centre with Kitchen
+  at Patel Para</b>, an <b>Anganwadi Kitchen and Store at Vichha Para</b>,
+  construction of a <b>CC Road at Sarpanch Para</b>, and an
+  <b>Indian Overseas Bank–cum–Community Hall at Patel Para</b>.
+  These interventions have significantly strengthened social amenities
+  and local connectivity within the village.
+</div>
 
   <!-- EXECUTIVE SUMMARY (BOTTOM LEFT) -->
 <div id="execSummary" class="map-box executive-summary collapsed">
@@ -1101,6 +1286,23 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 
     <div class="legend-content">
+	
+	<!-- ===============================
+     CSR – NMDC (LEGEND)
+     =============================== -->
+<div class="legend-group">
+
+  <b style="display:flex;align-items:center;gap:8px;">
+    <img
+      src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png"
+      style="width:22px;height:22px;"
+      alt="NMDC Logo">
+    CSR – Completed Works (NMDC)
+  </b>
+
+
+
+</div>
 
       <div class="legend-group">
         <b>Proposed Assets</b>
@@ -1343,6 +1545,8 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 
 <script>
+
+
 const ALL_MAP_LAYERS = {
   assets: ['points', 'asset-labels'],
   roads: ['roads-bt', 'roads-cc'],
@@ -1502,6 +1706,29 @@ const CSR_LAYERS = [
   'csr-buildings-3d',
   'csr-ccroad-3d',
   'csr-labels'
+];
+
+const CSR_FLY_ASSETS = [
+  {
+    title: 'Indian Overseas Bank – Patel Para',
+    center: [81.3139771558, 18.6058387257],
+    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/bank.jpeg'
+  },
+  {
+    title: 'Anganwadi Centre – Patel Para',
+    center: [81.312659257, 18.6066494816],
+    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/anganwadi.jpeg'
+  },
+  {
+    title: 'Anganwadi Kitchen – Vichha Para',
+    center: [81.3053881561, 18.6036578765],
+    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/kitchen.jpeg'
+  },
+  {
+    title: 'CC Road – Sarpanch Para',
+    center: [81.3153714383, 18.6054242084],
+    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/ccroad.jpeg'
+  }
 ];
 
 function toggleAllCSR(cb) {
@@ -1851,8 +2078,17 @@ function toggleProposedAssets(cb) {
 
 
 function getDefaultTableData(){
-  const points = allAssetsData ? allAssetsData.features : [];
-  const roads  = allRoadsData  ? allRoadsData.features  : [];
+
+  const points = (
+    allAssetsData &&
+    Array.isArray(allAssetsData.features)
+  ) ? allAssetsData.features : [];
+
+  const roads = (
+    allRoadsData &&
+    Array.isArray(allRoadsData.features)
+  ) ? allRoadsData.features : [];
+
   return [...points, ...roads];
 }
 
@@ -2361,17 +2597,116 @@ function toggleLanduse(cb) {
 
 
 
+function showCSRFlyStep(asset) {
+
+  // 🔴 remove old popups
+  document.querySelectorAll('.maplibregl-popup')
+    .forEach(p => p.remove());
+
+  // 🔴 clear old highlight
+  if (map.getSource('feature-highlight')) {
+    map.getSource('feature-highlight').setData({
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: asset.center
+        }
+      }]
+    });
+  }
+
+  // 🖼 PHOTO POPUP
+  new maplibregl.Popup({
+    closeButton: false,
+    offset: 30,
+    maxWidth: '320px'
+  })
+  .setLngLat(asset.center)
+  .setHTML(`
+    <div style="font-family:Segoe UI;">
+      <b style="font-size:14px;">${asset.title}</b><br>
+      <img src="${asset.image}"
+           style="width:100%;margin-top:6px;border-radius:8px;">
+    </div>
+  `)
+  .addTo(map);
+}
+
+function runCSRFlyThrough() {
+document.getElementById('csrNarrative').style.display = 'block';
+
+  map.boxZoom.disable();
+  map.dragPan.disable();
+  map.dragRotate.disable();
+  map.scrollZoom.disable();
+  map.doubleClickZoom.disable();
+  map.keyboard.disable();
+  map.touchZoomRotate.disable();
+
+  setTimeout(() => {
+
+    // 1️⃣ BANK
+    map.flyTo({ center: CSR_FLY_ASSETS[0].center, zoom:18.6, pitch:65, bearing:-25, speed:0.6 });
+    showCSRFlyStep(CSR_FLY_ASSETS[0]);
+
+    // 2️⃣ ANGANWADI
+    setTimeout(() => {
+      map.flyTo({ center: CSR_FLY_ASSETS[1].center, zoom:18.6, pitch:65, bearing:-15, speed:0.6 });
+      showCSRFlyStep(CSR_FLY_ASSETS[1]);
+    }, 3000);
+
+    // 3️⃣ KITCHEN
+    setTimeout(() => {
+      map.flyTo({ center: CSR_FLY_ASSETS[2].center, zoom:18.4, pitch:65, bearing:5, speed:0.6 });
+      showCSRFlyStep(CSR_FLY_ASSETS[2]);
+    }, 6000);
+
+    // 4️⃣ CC ROAD
+    setTimeout(() => {
+      map.flyTo({ center: CSR_FLY_ASSETS[3].center, zoom:17.9, pitch:55, bearing:-15, speed:0.6 });
+      showCSRFlyStep(CSR_FLY_ASSETS[3]);
+    }, 9000);
+
+    // 🔓 unlock
+    setTimeout(() => {
+      map.boxZoom.enable();
+      map.dragPan.enable();
+      map.dragRotate.enable();
+      map.scrollZoom.enable();
+      map.doubleClickZoom.enable();
+      map.keyboard.enable();
+      map.touchZoomRotate.enable();
+	  document.getElementById('csrNarrative').style.display = 'none';
+    }, 12000);
+
+  }, 1000);
+}
+
+
+
 
 const map=new maplibregl.Map({
- container:'map',
- style: 'https://api.maptiler.com/maps/topo-v2/style.json?key=VTyVRu9eUsVOXeBj5TqJ',
- center:[ 81.312614, 18.606753],
-  zoom: 18,               // 👈 close village view
-  pitch: 60,                // 👈 3D angle
-  bearing: -25,             // 👈 same oblique feel
-  duration: 0               // 👈 instant (no animation)
+  container: 'map',
+  style: 'https://api.maptiler.com/maps/streets-v4/style.json?key=CrM6DtW2lDzoc91uhUpc',
+  center: [78.9629, 20.5937],   // 🇮🇳 India center
+  zoom: 4.5,
+  pitch: 0,
+  bearing: 0
 });
 map.addControl(new maplibregl.NavigationControl());
+
+// 🇮🇳 INDIA – FORCE 2D VIEW
+function resetToIndia2D() {
+  map.easeTo({
+    center: [78.9629, 20.5937], // India
+    zoom: 4.5,
+    pitch: 0,     // 🔥 FORCE 2D
+    bearing: 0,   // 🔥 NORTH UP
+    duration: 1200
+  });
+}
 
 const hamburger = document.getElementById('hamburger');
 const layerPanel = document.getElementById('layerPanel');
@@ -2381,17 +2716,188 @@ hamburger.onclick = () => {
     layerPanel.style.display === 'block' ? 'none' : 'block';
 };
 
+function addCSRPhotoPopup(layerId) {
+  map.on('click', layerId, (e) => {
+    const f = e.features[0];
+    const name = f.properties.NAME;
+
+    const asset = CSR_FLY_ASSETS.find(a =>
+      name && a.title.toUpperCase().includes(name.toUpperCase().split(' ')[0])
+    );
+
+    if (!asset) return;
+
+    new maplibregl.Popup({ maxWidth: '320px', offset: 20 })
+      .setLngLat(e.lngLat)
+      .setHTML(`
+        <div style="font-family:Segoe UI;">
+          <b>${asset.title}</b><br>
+          <img src="${asset.image}"
+               style="width:100%;margin-top:6px;border-radius:8px;">
+        </div>
+      `)
+      .addTo(map);
+  });
+}
+
 
 map.on('load', () => {
 
-  // 🔴 HIGHLIGHT SOURCE (ONE TIME)
-  map.addSource('feature-highlight', {
-    type: 'geojson',
-    data: {
+
+// 🔴 GLOBAL HIGHLIGHT SOURCE (MISSING – CRITICAL)
+map.addSource('feature-highlight', {
+  type: 'geojson',
+  data: {
+    type: 'FeatureCollection',
+    features: []
+  }
+});
+
+// ===============================
+// VILLAGE FILTER – STATE / BLOCK / VILLAGE
+// ===============================
+let villageData = null;
+
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_vbs.geojson')
+  .then(r => r.json())
+  .then(data => {
+    villageData = data;
+    populateVillageFilters(data);
+  });
+
+function populateVillageFilters(data) {
+
+  const stateSel = document.getElementById('stateSelect');
+  const blockSel = document.getElementById('blockSelect');
+  const villageSel = document.getElementById('villageSelect');
+
+  if (!stateSel || !blockSel || !villageSel) return;
+
+  const states = [...new Set(data.features.map(f => f.properties.State))];
+
+  states.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s;
+    o.textContent = s;
+    stateSel.appendChild(o);
+  });
+
+  stateSel.onchange = () => {
+    blockSel.innerHTML = '<option value="">Select Block</option>';
+    villageSel.innerHTML = '<option value="">Select Village</option>';
+
+    const blocks = [...new Set(
+      data.features
+        .filter(f => f.properties.State === stateSel.value)
+        .map(f => f.properties.Block)
+    )];
+
+    blocks.forEach(b => {
+      const o = document.createElement('option');
+      o.value = b;
+      o.textContent = b;
+      blockSel.appendChild(o);
+    });
+  };
+
+  blockSel.onchange = () => {
+    villageSel.innerHTML = '<option value="">Select Village</option>';
+
+    const villages = data.features.filter(
+      f => f.properties.State === stateSel.value &&
+           f.properties.Block === blockSel.value
+    );
+
+    villages.forEach(v => {
+      const o = document.createElement('option');
+      o.value = v.properties.Village;
+      o.textContent = v.properties.Village;
+      villageSel.appendChild(o);
+    });
+  };
+
+  villageSel.onchange = () => {
+    const village = villageSel.value;
+
+    map.setLayoutProperty('boundary', 'visibility', 'visible');
+    map.setFilter('boundary', ['==', ['get', 'Village'], village]);
+
+    const feature = data.features.find(
+      f => f.properties.Village === village
+    );
+
+    if (feature) {
+      map.fitBounds(turf.bbox(feature), {
+        padding: 50,
+        duration: 1000
+      });
+    }
+  };
+}
+
+// ===============================
+// STEP-5: SEARCH & RESET BUTTONS
+// ===============================
+
+document.querySelector('.search-btn').onclick = () => {
+  const village = document.getElementById('villageSelect').value;
+  if (!village) {
+    alert('Please select a village');
+    return;
+  }
+
+  map.setLayoutProperty('boundary', 'visibility', 'visible');
+  map.setFilter('boundary', ['==', ['get', 'Village'], village]);
+
+  const feature = villageData.features.find(
+    f => f.properties.Village === village
+  );
+
+  if (feature) {
+    map.fitBounds(turf.bbox(feature), {
+      padding: 60,
+      duration: 1200
+    });
+
+    // 🔥 START FLY-THROUGH AFTER ZOOM
+    setTimeout(() => {
+      runCSRFlyThrough();
+    }, 1500);
+  }
+};
+
+document.querySelector('.reset-btn').onclick = () => {
+
+  // 🔹 Reset dropdowns
+  document.getElementById('stateSelect').value = '';
+  document.getElementById('blockSelect').innerHTML =
+    '<option value="">Select Block</option>';
+  document.getElementById('villageSelect').innerHTML =
+    '<option value="">Select Village</option>';
+
+  // 🔥 SHOW ALL VILLAGE BOUNDARIES
+  map.setFilter('boundary', null);
+  map.setLayoutProperty('boundary', 'visibility', 'visible');
+
+  // 🔹 Hide CSR narrative
+  const csrBox = document.getElementById('csrNarrative');
+  if (csrBox) csrBox.style.display = 'none';
+
+  // 🔹 Remove all popups
+  document.querySelectorAll('.maplibregl-popup')
+    .forEach(p => p.remove());
+
+  // 🔹 Clear highlight
+  if (map.getSource('feature-highlight')) {
+    map.getSource('feature-highlight').setData({
       type: 'FeatureCollection',
       features: []
-    }
-  });
+    });
+  }
+
+  // 🔥 FORCE INDIA 2D VIEW
+  resetToIndia2D();
+};
 
   // 🔴 POINT HIGHLIGHT
   map.addLayer({
@@ -2434,18 +2940,26 @@ map.addLayer({
 });
 
 
-/* SATELLITE */
+
+
 map.addSource('satellite',{
- type:'raster',
- tiles:['https://api.maptiler.com/maps/hybrid-v4/256/{z}/{x}/{y}.jpg?key=VTyVRu9eUsVOXeBj5TqJ'],
- tileSize:256
+  type:'raster',
+  tiles:[
+    'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'
+  ],
+  tileSize:256,
+  attribution: '© Google'
 });
+
 map.addLayer({
- id:'satellite',
- type:'raster',
- source:'satellite',
- layout:{visibility:'none'}
+  id:'satellite',
+  type:'raster',
+  source:'satellite',
+  layout:{ visibility:'none' }
 });
+
+
+
 
 /* CUSTOM MAPTILER TILESET */
 map.addSource('custom-tiles', {
@@ -3686,22 +4200,28 @@ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samal
 
     // 4️⃣ Add 3D extrusion layer
     map.addLayer({
-      id: 'wall-3d',
-      type: 'fill-extrusion',
-      source: 'wall-3d',
-      minzoom: 15,
-      paint: {
-        'fill-extrusion-color': '#6b7280',
-        'fill-extrusion-height': 2.5,   // 🔥 wall height (meters)
-        'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': 0.9
-      }
-    });
+  id: 'wall-3d',
+  type: 'fill-extrusion',
+  source: 'wall-3d',
+  minzoom: 15,
+  layout: {
+    visibility: 'none'   // 🔥 THIS IS THE KEY FIX
+  },
+  paint: {
+    'fill-extrusion-color': '#6b7280',
+    'fill-extrusion-height': 2.5,
+    'fill-extrusion-base': 0,
+    'fill-extrusion-opacity': 0.9
+  }
+});
 	
 	map.addLayer({
   id: 'feature-highlight-wall',
   type: 'fill-extrusion',
   source: 'feature-highlight',
+  layout: {
+    visibility: 'none'
+  },
   filter: ['==', '$type', 'Polygon'],
   paint: {
     'fill-extrusion-color': '#ff0000',
@@ -3710,6 +4230,8 @@ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samal
     'fill-extrusion-opacity': 0.9
   }
 });
+
+
 /* NMDC WORK COMPLETED */
 map.addSource('existing-csr', {
   type: 'geojson',
@@ -3743,23 +4265,39 @@ map.addLayer({
   }
 });
 
+map.loadImage(
+  'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png',
+  (e, img) => {
+    if (!map.hasImage('nmdc-logo')) {
+      map.addImage('nmdc-logo', img, { pixelRatio: 2 });
+    }
+  }
+);
+
 map.addLayer({
   id: 'csr-labels',
   type: 'symbol',
   source: 'existing-csr',
   layout: {
-    'text-field': ['get', 'NAME'],
+    'icon-image': 'nmdc-logo',
+    'icon-size': 0.35,
+    'icon-offset': [0, -12],
+
+    'text-field': [
+      'concat',
+      'CSR – ',
+      ['get', 'NAME']
+    ],
     'text-size': 12,
-    'text-offset': [0, 1.2],
+    'text-offset': [0, 1.4],
     'text-anchor': 'top',
-    'text-allow-overlap': false
+    'text-allow-overlap': true
   },
   paint: {
-    'text-color': '#111827',
+    'text-color': '#0f4c81',
     'text-halo-color': '#ffffff',
-    'text-halo-width': 1.5
+    'text-halo-width': 2
   }
-
 });
 
   // ===============================
@@ -3767,6 +4305,8 @@ map.addLayer({
   // ===============================
   addCSRPopup('csr-buildings-3d');
   addCSRPopup('csr-ccroad-3d');
+  addCSRPhotoPopup('csr-buildings-3d');
+addCSRPhotoPopup('csr-ccroad-3d');
   
   
   
@@ -3791,14 +4331,123 @@ map.addLayer({
    'line-width':2
  }
 });
+applyInitialMapState();
 
 
-map.easeTo({
-  pitch: 60,
-  bearing: -20,
-  duration: 1200
-});
+
 }); // ✅ CLOSE map.on('load')
+
+function applyInitialMapState() {
+
+  const ON = ['boundary', 'csr-buildings-3d', 'csr-ccroad-3d', 'csr-labels'];
+
+  const OFF = [
+    'points',
+    'asset-labels',
+    'roads-bt',
+    'roads-cc',
+    'wall-3d',
+    'drain',
+    'existing-assets-icon',
+    'existing-assets-label',
+    'landuse-3d',
+    'landuse-pick'
+  ];
+
+  ON.forEach(id => {
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', 'visible');
+    }
+  });
+
+  OFF.forEach(id => {
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', 'none');
+    }
+  });
+
+  syncLayerPanelCheckboxes();
+}
+
+function syncLayerPanelCheckboxes() {
+
+  document
+    .querySelectorAll('#layerPanel input[type="checkbox"]')
+    .forEach(cb => {
+
+      const fn = cb.getAttribute('onchange') || '';
+
+      if (fn.includes("toggle('boundary'")) cb.checked = true;
+      else if (fn.includes('toggleAllCSR')) cb.checked = true;
+      else cb.checked = false;
+    });
+}
+
+  
+const CSR_ASSETS = {
+  bank: {
+    name: 'Indian Overseas Bank – Community Hall',
+    center: [81.3139771558, 18.6058387257],
+    geometry: {
+      type: 'Point',
+      coordinates: [81.3139771558, 18.6058387257]
+    }
+  },
+
+  anganwadi: {
+    name: 'Anganwadi Centre – Patel Para',
+    center: [81.312659257, 18.6066494816],
+    geometry: {
+      type: 'Point',
+      coordinates: [81.312659257, 18.6066494816]
+    }
+  },
+
+  kitchen: {
+    name: 'Anganwadi Kitchen – Vichha Para',
+    center: [81.3053881561, 18.6036578765],
+    geometry: {
+      type: 'Point',
+      coordinates: [81.3053881561, 18.6036578765]
+    }
+  },
+
+  ccroad: {
+    name: 'CC Road – Sarpanch Para',
+    center: [81.3153714383, 18.6054242084],
+    geometry: {
+      type: 'LineString',
+      coordinates: [
+        [81.31510, 18.60520],
+        [81.31537, 18.60542],
+        [81.31560, 18.60560]
+      ]
+    }
+  }
+};
+
+// =========================================
+// STEP-B: CSR ASSET HIGHLIGHT FUNCTION
+// =========================================
+function highlightAsset(assetKey) {
+  const asset = CSR_ASSETS[assetKey];
+
+  if (!asset || !map.getSource('feature-highlight')) return;
+
+  map.getSource('feature-highlight').setData({
+    type: 'FeatureCollection',
+    features: [{
+      type: 'Feature',
+      geometry: asset.geometry,
+      properties: { name: asset.name }
+    }]
+  });
+}
+  
+  // =========================================
+// 🎥 AUTO CSR FLY-THROUGH ON LOAD
+// =========================================
+
 
 
 /* LOAD ASSET DATA FOR TABLE & FILTER (FILE:// SAFE) */
