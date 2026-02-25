@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 
 
@@ -1465,7 +1466,28 @@ document.addEventListener("DOMContentLoaded", () => {
     <span>Proposed Asset Categories</span>
     <h2 id="kpiTypes">–</h2>
   </div>
+  
+  
+
 </div>
+
+
+
+<!-- ✅ CSR KPIs (SEPARATE) -->
+<div id="csrKpis" style="display:none; margin-top:10px;">
+
+  <div class="kpi" style="background:#16a34a;">
+    <span>Completed CSR Works</span>
+    <h2 id="csrCompleted">0</h2>
+  </div>
+
+  <div class="kpi" style="background:#dc2626;">
+    <span>Not Started CSR Works</span>
+    <h2 id="csrNotStarted">0</h2>
+  </div>
+
+</div>
+
 
 	
 	<div class="chart-box">
@@ -1495,6 +1517,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <button class="road-btn" onclick="toggleBoundaryWall(this)">
   Boundary Wall
 </button>
+<button onclick="showCSRWorks()">Existing CSR Works</button>
 
 
 
@@ -1513,7 +1536,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   </div>
 </div>
-<div class="chart-box">
+<div class="chart-box" id="assetTableBox">
   <h4>Asset List</h4>
   <div style="max-height:220px;overflow:auto;">
     <table border="1" width="100%" cellpadding="4" style="font-size:11px;border-collapse:collapse;">
@@ -1530,7 +1553,26 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 
+<!-- ===== CSR TABLE (CSV ONLY) ===== -->
+<div class="chart-box" id="csrTableBox" style="display:none;">
+  <h4>NMDC CSR Works (as per CSV)</h4>
 
+  <div style="max-height:220px;overflow:auto;">
+    <table border="1" width="100%" cellpadding="4"
+           style="font-size:11px;border-collapse:collapse;">
+      <thead style="background:#fef3c7;">
+        <tr>
+          <th>Sl No</th>
+          <th>NMDC CSR - Activity description</th>
+          <th>Work Status</th>
+          <th>Civil Works / Financial Assistance</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody id="csrTableBody"></tbody>
+    </table>
+  </div>
+</div>
 
 
 
@@ -1630,7 +1672,9 @@ let roadsLoaded = false;
 let activeRoadType = null; // 'BT' | 'CC' | null
 let mobileInfraChart = null;
 let donutMode = 'percent'; // 'percent' | 'count'
-
+let csrTableData = [];
+let csrCompletedCount = 0;
+let csrNotStartedCount = 0;
 
 
 const CATEGORY_ASSET_MAP = {
@@ -1873,8 +1917,30 @@ function showRoadKPIs(type) {
 }
 
 
+function showCSRKPIs() {
 
+  const kpiWrap = document.querySelector('.kpis');
+  const csrBox  = document.getElementById('csrKpis');
 
+  // 🔥 SINGLE KPI MODE
+  kpiWrap.classList.add('single-kpi');
+
+  // 🔴 Hide all normal KPI cards
+  kpiWrap.querySelectorAll('.kpi').forEach(k => {
+    k.style.display = 'none';
+    k.style.outline = 'none';
+  });
+
+  // 🔴 Hide normal KPI wrapper
+  kpiWrap.style.display = 'none';
+
+  // ✅ SHOW CSR KPIs
+  csrBox.style.display = 'grid';
+
+  // ✅ SET VALUES
+  document.getElementById('csrCompleted').innerText = csrCompletedCount;
+  document.getElementById('csrNotStarted').innerText = csrNotStartedCount;
+}
 
 
 function buildAssetTypeCounts(features, allowedTypes) {
@@ -2059,6 +2125,8 @@ function focusMode({ layers=[], tableData=[] }){
   // 5️⃣ Update KPIs
   updateKPIs(tableData);
 }
+
+
 
 
 function toggleProposedAssets(cb) {
@@ -2272,14 +2340,17 @@ function resetAllFilters(){
   renderTable(getDefaultTableData());
   updateKPIs(allAssetsData.features);
 
-  // 🔥 THIS IS THE KEY
-  hideKPIs();
-showDonut();
-resetDonut();
+  // ✅ DONUT ONLY MODE
+  hideKPIs();        // 🔴 hide KPI box
+  showDonut();       // 🟢 show donut
+  resetDonut();
 
-document.querySelector('.kpis').classList.remove('single-kpi');
+  // ❌ CSR KPIs OFF
+  document.getElementById('csrKpis').style.display = 'none';
 
-
+  // 🔁 Default table
+  document.getElementById('csrTableBox').style.display = 'none';
+  document.getElementById('assetTableBox').style.display = 'block';
 
   // Clear buttons
   document.querySelectorAll('#categoryButtons button')
@@ -2287,8 +2358,6 @@ document.querySelector('.kpis').classList.remove('single-kpi');
 
   zoomToFullExtent();
 }
-
-
 
 
 
@@ -2419,13 +2488,14 @@ function hideKpiHeader() {
 }
 
 
-
 function toggleRoad(type, btn){
-document.getElementById('kpiHeader').style.display = 'block';
 
+  // 🔥 EXIT CSR MODE
+  exitCSRMode();
 
+  document.getElementById('kpiHeader').style.display = 'block';
 
-  // 1️⃣ Hide everything on map
+  // 1️⃣ Hide everything
   hideAllMapLayers();
 
   // 2️⃣ Show only selected road
@@ -2433,43 +2503,77 @@ document.getElementById('kpiHeader').style.display = 'block';
   map.setLayoutProperty(layerId,'visibility','visible');
 
   // 3️⃣ Hide donut, show KPIs
-hideDonut();
-showRoadKPIs(type);
-showKpiHeader();
+  hideDonut();
+  showRoadKPIs(type);
+  showKpiHeader();
 
-
-
-  // 4️⃣ Highlight correct KPI
-  document.querySelectorAll('.kpi').forEach(k => {
-    k.style.outline = 'none';
-  });
-
-  if (type === 'BT') {
-    document.getElementById('kpiBT').parentElement.style.outline =
-      '3px solid #7c3aed';
-  }
-
-  if (type === 'CC') {
-    document.getElementById('kpiCC').parentElement.style.outline =
-      '3px solid #22c55e';
-  }
-
-  // 5️⃣ Table
+  // 4️⃣ Table
   const filtered = allRoadsData.features.filter(
     f => f.properties.LAYER === (type === 'BT' ? 'BT ROAD' : 'CC ROAD')
   );
   renderRoadTable(filtered);
 
-  // 6️⃣ Button UI
+  // 5️⃣ Button UI
   document.querySelectorAll('#categoryButtons button')
     .forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 
+function restoreNormalKPIState() {
+
+  const kpiWrap = document.querySelector('.kpis');
+  const csrBox  = document.getElementById('csrKpis');
+
+  // 🔁 Hide CSR KPIs
+  csrBox.style.display = 'none';
+
+  // 🔁 Restore normal KPI layout
+  kpiWrap.style.display = 'grid';
+  kpiWrap.classList.remove('single-kpi');
+
+  // 🔁 Show ONLY normal KPI cards
+  kpiWrap.querySelectorAll('.kpi').forEach(k => {
+    k.style.display = 'block';
+    k.style.outline = 'none';
+  });
+
+  // 🔁 Restore donut + header
+hideKPIs();
+showDonut();
+resetDonut();
+document.getElementById('kpiHeader').style.display = 'none';
+}
+
+function exitCSRMode() {
+
+  // 🔁 TABLES
+  document.getElementById('csrTableBox').style.display = 'none';
+  document.getElementById('assetTableBox').style.display = 'block';
+
+  // 🔁 CSR MAP LAYERS OFF
+  CSR_LAYERS.forEach(id => {
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', 'none');
+    }
+  });
+
+  // 🔁 CSR narrative OFF
+  const csrNarrative = document.getElementById('csrNarrative');
+  if (csrNarrative) csrNarrative.style.display = 'none';
+
+  // 🔥 RESTORE KPI STATE
+  restoreNormalKPIState();
+}
+
+
+
+
 function toggleBoundaryWall(btn){
-document.getElementById('kpiHeader').style.display = 'block';
 
+  // 🔥 EXIT CSR MODE FIRST
+  exitCSRMode();
 
+  document.getElementById('kpiHeader').style.display = 'block';
 
   // 1️⃣ Hide everything
   hideAllMapLayers();
@@ -2480,32 +2584,21 @@ document.getElementById('kpiHeader').style.display = 'block';
   }
 
   // 3️⃣ Hide donut, show KPIs
-hideDonut();
-showRoadKPIs('BOUNDARY');
-showKpiHeader();
+  hideDonut();
+  showRoadKPIs('BOUNDARY');
+  showKpiHeader();
 
-
-
-
-
-
-  // 4️⃣ Clear KPI highlight (wall is length-based only)
-  document.querySelectorAll('.kpi').forEach(k => {
-    k.style.outline = 'none';
-  });
-
-  // 5️⃣ Table (only wall features)
+  // 4️⃣ Table (only wall features)
   const filtered = allRoadsData.features.filter(
     f => f.properties.LAYER === 'BOUNDARY WALL'
   );
   renderRoadTable(filtered);
 
-  // 6️⃣ Button UI
+  // 5️⃣ Button UI
   document.querySelectorAll('#categoryButtons button')
     .forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
-
 
 
 
@@ -2740,6 +2833,57 @@ function addCSRPhotoPopup(layerId) {
   });
 }
 
+function renderCSRTable() {
+  const tbody = document.getElementById('csrTableBody');
+  tbody.innerHTML = '';
+
+  csrTableData.forEach(r => {
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td>${r.slno}</td>
+      <td style="text-align:left;">${r.activity}</td>
+      <td>${r.status}</td>
+      <td>${r.type}</td>
+      <td>${r.remarks || ''}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+function showCSRWorks(){
+
+  // 🔥 FORCE EXIT ANY PREVIOUS MODE
+  exitCSRMode();
+
+  // Tables
+  document.getElementById('assetTableBox').style.display = 'none';
+  document.getElementById('csrTableBox').style.display = 'block';
+
+  // 🔥 HARD RESET KPI UI
+  hideKPIs();
+  hideDonut();
+  document.getElementById('kpiHeader').style.display = 'none';
+
+  // 🔥 CSR KPI MODE
+  showCSRKPIs();
+
+  // Map layers
+  hideAllMapLayers();
+  CSR_LAYERS.forEach(id => {
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', 'visible');
+    }
+  });
+
+  // Render CSR table
+  renderCSRTable();
+
+  // Button UI
+  document.querySelectorAll('#categoryButtons button')
+    .forEach(b => b.classList.remove('active'));
+}
 
 map.on('load', () => {
 
@@ -2898,6 +3042,46 @@ document.querySelector('.reset-btn').onclick = () => {
   // 🔥 FORCE INDIA 2D VIEW
   resetToIndia2D();
 };
+
+
+Papa.parse(
+  'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/SAMALWAR-NMDC%20CSR%20Works_25022026.csv',
+  {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: h => h.replace(/\uFEFF/g, '').trim(), // 🔥 BOM FIX
+
+    complete: function (results) {
+
+      csrTableData = [];
+      csrCompletedCount = 0;
+      csrNotStartedCount = 0;
+
+      results.data.forEach(row => {
+
+        const status = (row['Work Status'] || row['Work status'] || '').trim();
+
+        csrTableData.push({
+          slno: row['Sl No'] || row['Sl. No'] || '',
+          activity: row['NMDC CSR - Activity description']
+                    || row['NMDC CSR – Activity description']
+                    || '',
+          status: status,
+          type: row['Civil Worlks / Financial Assistance']
+                || row['Civil Worlks / Financial Assistance']
+                || '',
+          remarks: row['Remarks (if any)'] || ''
+        });
+
+        if (status === 'Completed') csrCompletedCount++;
+        if (status === 'Not Started') csrNotStartedCount++;
+      });
+
+      renderCSRTable();   // 🔥 IMPORTANT
+    }
+  }
+);
 
   // 🔴 POINT HIGHLIGHT
   map.addLayer({
@@ -4528,6 +4712,8 @@ window.updateDonutByCategory = function(category, features) {
 
 window.toggleCategory = function(category){
 donutMode = 'count';
+
+
 
 
   // 1️⃣ Hide everything
