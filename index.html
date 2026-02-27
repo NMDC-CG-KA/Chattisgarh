@@ -11,6 +11,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 
 
@@ -31,6 +32,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   align-items:center;
   justify-content:space-between;
   padding:0 16px;
+  gap:12px;
   z-index:3000;
   box-shadow:0 2px 8px rgba(0,0,0,0.25);
 }
@@ -48,6 +50,10 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 .header-left span{
   font-size:18px;
   font-weight:600;
+}
+
+#hamburger:hover{
+  background:#e5e7eb;
 }
 
 /* RIGHT TOOLBAR */
@@ -194,21 +200,17 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
 
 #hamburger{
-  position: fixed;          /* 🔥 FIXED TO SCREEN */
-  top: 80px;                /* below header */
-  left: 14px;
-  width: 44px;
-  height: 44px;
-  background: #0f4c81;
-  color: #fff;
-  font-size: 22px;
+  margin-left: auto;
+  width: 42px;
+  height: 42px;
+  background: #ffffff;
+  color: #0f4c81;
+  font-size: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 6px;
   cursor: pointer;
-  z-index: 10000;           /* 🔥 ABOVE DASHBOARD */
-  box-shadow: 0 4px 10px rgba(0,0,0,.25);
 }
 #hamburger{
   display: flex !important;   /* ✅ FORCE SHOW */
@@ -218,7 +220,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
 /* LAYER PANEL */
 #layerPanel{
-  position:fixed;top:125px;left:14px;
+  position:absolute;top:60px;right:455px;
   background:#fff;padding:12px 14px;
   font-size:13px;border-radius:6px;
   box-shadow:0 4px 10px rgba(0,0,0,.25);
@@ -328,9 +330,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   }
 }
 
-.kpis {
-  display: none;
-}
+
 
 .executive-summary {
   background:#0f4c81;
@@ -1017,24 +1017,59 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   padding: 0.5px;
 }
 
+#hhButton{
+  position:fixed;
+  top:80px;
+  left:14px;
+  width:44px;
+  height:44px;
+  background:#16a34a;
+  color:#fff;
+  font-size:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:6px;
+  cursor:pointer;
+  z-index:10000;
+}
 
+#householdPanel{
+  position: fixed;
+  top: 60px;
+  left: -360px;
+  width: 340px;
+  height: 100%;
+  background: #ffffff;
+  padding: 16px;
+  padding-top: 60px;   /* 🔥 add this */
+  text-align: center;  /* 🔥 add this */
+  box-shadow: 4px 0 16px rgba(0,0,0,0.2);
+  transition: 0.3s;
+  z-index: 9000;
+  overflow-y: auto;
+}
+
+#householdPanel.open{
+  left:0;
+}
+
+
+
+#hhMode{
+  width: 80%;
+  margin: 10px auto 20px auto;
+  display: block;
+}
+
+#householdPanel h3{
+  margin-bottom: 8px;
+  font-weight: 600;
+}
 
 </style>
 </head>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
 
-  const execBodies = document.querySelectorAll("#execSummary .exec-body");
-
-  execBodies.forEach(el => {
-    el.innerHTML = el.innerHTML.replace(
-      /(\d{1,3}(?:,\d{3})*(?:\.\d+)?)/g,
-      '<span class="num-inline">$1</span>'
-    );
-  });
-
-});
-</script>
 
 <body>
 <div id="mobileDashBtn" title="Dashboard">
@@ -1044,7 +1079,8 @@ document.addEventListener("DOMContentLoaded", () => {
     <span class="bar green"></span>
   </div>
 </div>
-<div id="hamburger" title="Layers">☰</div>
+
+<div id="hhButton">🏠</div>
 <div id="layerPanel">
 
   <div class="layer-grid">
@@ -1060,6 +1096,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       <b>Layers</b>
       <label><input type="checkbox" checked onchange="toggle('boundary',this)"> Village Boundary</label>
+	  <label>
+  <input type="checkbox"
+         onchange="toggle('para-buildings-3d',this)">
+  Para Household Buildings
+</label>
       <label><input type="checkbox" checked onchange="toggleProposedAssets(this)"> Proposed Assets</label>
       <label><input type="checkbox" checked onchange="toggle('roads-bt',this)"> Proposed BT Roads</label>
       <label><input type="checkbox" checked onchange="toggle('roads-cc',this)"> Proposed CC Roads</label>
@@ -1119,9 +1160,12 @@ document.addEventListener("DOMContentLoaded", () => {
     <img src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png">
     <span>Samalwar – Proposed Model Village Planning Dashboard</span>
   </div>
+  <div id="hamburger" title="Layers">☰</div>
+
 
   <!-- RIGHT : TOOLBAR -->
   <div class="header-toolbar">
+  
 
     <select id="stateSelect">
       <option value="">Select State</option>
@@ -1142,6 +1186,31 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </header>
 <div class="main">
+<div id="householdPanel">
+
+  <h3>Household Analysis</h3>
+
+
+
+<select id="hhMode">
+  <option value="population">Population Structure</option>
+  <option value="gender">Gender Distribution</option>
+  <option value="genderHead">Head of Household (Gender)</option>
+  <option value="literacy">Literacy Distribution</option>
+  <option value="age">Age Structure</option>
+  <option value="caste">Caste Category</option>
+  <option value="house">House Type</option>
+  <option value="land">Landholding Size</option>
+  <option value="waterSource">Water Source</option>
+  <option value="waterAvailability">Water Availability</option>
+  <option value="livelihood">Primary Livelihood</option>
+</select>
+
+  <div class="chart-box">
+    <canvas id="hhChart"></canvas>
+  </div>
+
+</div>
 <div id="map-container">
 
   <div id="map"></div>
@@ -1595,7 +1664,8 @@ const ALL_MAP_LAYERS = {
   drain: ['drain'],
   wall: ['wall-3d'],
   boundary: ['boundary'],
-  para: ['para']
+  para: ['para'],
+  paraBuildings: ['para-buildings-3d'],
 };
 
 
@@ -1675,6 +1745,7 @@ let donutMode = 'percent'; // 'percent' | 'count'
 let csrTableData = [];
 let csrCompletedCount = 0;
 let csrNotStartedCount = 0;
+let clickedBuildingId = null;
 
 
 const CATEGORY_ASSET_MAP = {
@@ -2850,6 +2921,23 @@ function renderCSRTable() {
 
     tbody.appendChild(tr);
   });
+}
+
+function setInitialUIState() {
+
+  // ❌ Hide KPI cards
+  hideKPIs();
+
+  // ❌ Hide CSR KPIs
+  const csrBox = document.getElementById('csrKpis');
+  if (csrBox) csrBox.style.display = 'none';
+
+  // ✅ Show donut only
+  showDonut();
+  resetDonut();
+
+  // ❌ Hide KPI header
+  hideKpiHeader();
 }
 
 function showCSRWorks(){
@@ -4449,6 +4537,231 @@ map.addLayer({
   }
 });
 
+/* ===============================
+   PARA BUILDINGS (EXCEL LINKED)
+   =============================== */
+   
+   let clickedBuildingId = null;
+
+map.addSource('para-buildings', {
+  type: 'geojson',
+  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Buildings_Updated.geojson',
+  generateId: true   // 👈 ADD THIS
+});
+
+map.addLayer({
+  id: 'para-buildings-3d',
+  type: 'fill-extrusion',
+  source: 'para-buildings',
+  layout: {
+    visibility: 'none'
+  },
+  paint: {
+    'fill-extrusion-color': [
+  'case',
+  ['boolean', ['feature-state', 'clicked'], false],
+  '#ef4444',   // RED when clicked
+  '#f97316'   // normal color
+],
+    'fill-extrusion-height': 10,
+    'fill-extrusion-base': 0,
+    'fill-extrusion-opacity': 0.85
+  }
+});
+
+map.addLayer({
+  id: 'para-buildings-label',
+  type: 'symbol',
+  source: 'para-buildings',
+  layout: {
+    visibility: 'none',
+    'text-field': [
+      'concat',
+      ['get','Para_Name'],
+      '\nHH: ',
+      ['to-string',['get','Households']]
+    ],
+    'text-size': 11,
+    'text-offset': [0,1.5]
+  },
+  paint: {
+    'text-color': '#065f46',
+    'text-halo-color': '#ffffff',
+    'text-halo-width': 2
+  }
+});
+
+/* ======================================
+   PARA BUILDING POPUP – TABLE FORMAT
+   ====================================== */
+
+map.on('click', 'para-buildings-3d', (e) => {
+
+  const feature = e.features[0];
+  const props = feature.properties;
+
+  // 🔴 REMOVE PREVIOUS HIGHLIGHT
+  if (clickedBuildingId !== null) {
+    map.setFeatureState(
+      { source: 'para-buildings', id: clickedBuildingId },
+      { clicked: false }
+    );
+  }
+
+  // 🔴 SET NEW HIGHLIGHT
+  clickedBuildingId = feature.id;
+
+  map.setFeatureState(
+    { source: 'para-buildings', id: clickedBuildingId },
+    { clicked: true }
+  );
+  
+  
+
+  // 👇 THEN KEEP YOUR POPUP HTML BELOW THIS
+
+
+
+const popupHTML = `
+<div style="
+  font-family:'Segoe UI',sans-serif;
+  width:540px;              /* reduced */
+  max-width:85vw;
+  max-height:420px;
+  overflow-y:auto;
+  background:#ffffff;
+  border-radius:10px;
+  padding:12px;             /* reduced */
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);">
+
+<h3 style="
+  text-align:center;
+  color:#0f4c81;
+  margin-bottom:10px;
+  font-size:16px;       /* smaller */
+  font-weight:700;
+  border-bottom:2px solid #0f4c81;
+  padding-bottom:6px;">
+  Household Details
+</h3>
+
+  <table style="
+    width:100%;
+    border-collapse:collapse;
+	table-layout: fixed;
+    font-size:13px;
+    color:#1e293b;">
+
+<tr style="background:#e2e8f0;">
+  <th style="border:1px solid #94a3b8;padding:5px;font-size:11px;">Field</th>
+  <th style="border:1px solid #94a3b8;padding:5px;font-size:11px;">Value</th>
+  <th style="border:1px solid #94a3b8;padding:5px;font-size:11px;">Field</th>
+  <th style="border:1px solid #94a3b8;padding:5px;font-size:11px;">Value</th>
+</tr>
+
+    ${row("Village", props["Village Name"], "Para", props["Para_Name"])}
+    ${row("Name", props["Respondent_Name"], "Gender", props["Gender"])}
+    ${row("Age Group", props["Respondent_Age_Group"], "Caste", props["Caste_Category"])}
+    ${row("Land", props["Landholding_Size"], "House", props["House_Type"])}
+    ${row("Water Source", props["Drinking_Water_Source"], "Water Year", props["Water_Available_Year"])}
+    ${row("Total Members", props["total_family_members"], "Male", props["male_members"])}
+    ${row("Female", props["female_members"], "0-5", props["Age_0_5"])}
+    ${row("6-17", props["Age_6_17"], "18-35", props["Age_18_35"])}
+    ${row("36-59", props["Age_36_59"], "60+", props["Age_60_Plus"])}
+    ${row("Literate", props["literate_members"], "Illiterate", props["illiterate_members"])}
+
+  </table>
+</div>
+`;
+
+  new maplibregl.Popup({ offset: 15 })
+    .setLngLat(e.lngLat)
+    .setHTML(popupHTML)
+    .addTo(map);
+
+});
+
+function row(label1, value1, label2, value2) {
+
+  value1 = value1 ?? "-";
+  value2 = value2 ?? "-";
+
+  return `
+    <tr>
+      <td style="
+        border:1px solid #cbd5e1;
+        padding:3px 4px;
+        background:#f1f5f9;
+        font-weight:700;
+        font-size:11px;
+        width:20%;">
+        ${label1}
+      </td>
+
+      <td style="
+        border:1px solid #cbd5e1;
+        padding:3px 4px;
+        font-size:11px;
+        width:30%;
+        word-wrap:break-word;">
+        ${value1}
+      </td>
+
+      <td style="
+        border:1px solid #cbd5e1;
+        padding:3px 4px;
+        background:#f1f5f9;
+        font-weight:700;
+        font-size:11px;
+        width:20%;">
+        ${label2}
+      </td>
+
+      <td style="
+        border:1px solid #cbd5e1;
+        padding:3px 4px;
+        font-size:11px;
+        width:30%;
+        word-wrap:break-word;">
+        ${value2}
+      </td>
+    </tr>
+  `;
+}
+
+
+
+/* Helper function */
+function buildRow(label, value){
+  if(value === undefined || value === null || value === "")
+    return "";
+  
+  return `
+    <tr>
+      <td style="padding:4px;border-bottom:1px solid #eee;
+                 font-weight:600;color:#111;">
+        ${label}
+      </td>
+      <td style="padding:4px;border-bottom:1px solid #eee;">
+        ${value}
+      </td>
+    </tr>
+  `;
+}
+
+map.on('mouseenter', 'para-buildings-3d', () => {
+  map.getCanvas().style.cursor = 'pointer';
+});
+
+map.on('mouseleave', 'para-buildings-3d', () => {
+  map.getCanvas().style.cursor = '';
+});
+
+
+
+
+
+
 map.loadImage(
   'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png',
   (e, img) => {
@@ -4516,6 +4829,423 @@ map.addLayer({
  }
 });
 applyInitialMapState();
+
+const hhBtn = document.getElementById('hhButton');
+const hhPanel = document.getElementById('householdPanel');
+
+hhBtn.onclick = () => {
+  hhPanel.classList.toggle('open');
+};
+
+applyInitialMapState();
+
+
+// ==============================
+// STEP 5 – HOUSEHOLD ANALYSIS LOGIC
+// ==============================
+
+let hhChart = null;
+let hhData = null;
+
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Buildings_Updated.geojson')
+.then(res => res.json())
+.then(data => {
+
+  hhData = data.features;
+
+  updateHHMode('literacy');
+
+});
+
+document.getElementById('hhMode').addEventListener('change', (e)=>{
+  updateHHMode(e.target.value);
+});
+
+
+function updateHHMode(mode){
+
+  if(!hhData) return;
+
+  let counts = {};
+
+  // =======================
+  // POPULATION STRUCTURE
+  // =======================
+  if(mode === 'population'){
+    let total = 0;
+    hhData.forEach(f=>{
+      total += Number(f.properties.total_family_members || 0);
+    });
+    counts["Total Population"] = total;
+  }
+
+// =======================
+// HEAD OF HOUSEHOLD GENDER
+// =======================
+if(mode === 'genderHead'){
+  hhData.forEach(f=>{
+    const head = f.properties.Gender || "Unknown";
+    counts[head] = (counts[head] || 0) + 1;
+  });
+}
+
+// =======================
+// PRIMARY LIVELIHOOD
+// =======================
+if(mode === 'livelihood'){
+  hhData.forEach(f=>{
+    const job = f.properties.Primary_Livelihood || "Unknown";
+    counts[job] = (counts[job] || 0) + 1;
+  });
+}
+
+  // =======================
+  // GENDER
+  // =======================
+  if(mode === 'gender'){
+    let male = 0;
+    let female = 0;
+    hhData.forEach(f=>{
+      male += Number(f.properties.male_members || 0);
+      female += Number(f.properties.female_members || 0);
+    });
+    counts["Male"] = male;
+    counts["Female"] = female;
+  }
+
+  // =======================
+  // LITERACY
+  // =======================
+  if(mode === 'literacy'){
+    let literate = 0;
+    let illiterate = 0;
+    hhData.forEach(f=>{
+      literate += Number(f.properties.literate_members || 0);
+      illiterate += Number(f.properties.illiterate_members || 0);
+    });
+    counts["Literate"] = literate;
+    counts["Illiterate"] = illiterate;
+  }
+
+  // =======================
+  // AGE STRUCTURE
+  // =======================
+  if(mode === 'age'){
+    const fields = [
+      "Age_0_5",
+      "Age_6_17",
+      "Age_18_35",
+      "Age_36_59",
+      "Age_60_Plus"
+    ];
+    fields.forEach(field=>{
+      let total = 0;
+      hhData.forEach(f=>{
+        total += Number(f.properties[field] || 0);
+      });
+      counts[field.replaceAll("_","-")] = total;
+    });
+  }
+
+  // =======================
+  // CASTE
+  // =======================
+  if(mode === 'caste'){
+    hhData.forEach(f=>{
+      const caste = f.properties.Caste_Category || "Unknown";
+      counts[caste] = (counts[caste] || 0) + 1;
+    });
+  }
+
+  // =======================
+  // HOUSE TYPE
+  // =======================
+  if(mode === 'house'){
+    hhData.forEach(f=>{
+      const type = f.properties.House_Type || "Unknown";
+      counts[type] = (counts[type] || 0) + 1;
+    });
+  }
+
+  // =======================
+  // LANDHOLDING
+  // =======================
+  if(mode === 'land'){
+    hhData.forEach(f=>{
+      const land = f.properties.Landholding_Size || "Unknown";
+      counts[land] = (counts[land] || 0) + 1;
+    });
+  }
+
+  // =======================
+  // WATER SOURCE
+  // =======================
+  if(mode === 'waterSource'){
+    hhData.forEach(f=>{
+      const source = f.properties.Drinking_Water_Source || "Unknown";
+      counts[source] = (counts[source] || 0) + 1;
+    });
+  }
+
+  // =======================
+  // WATER AVAILABILITY
+  // =======================
+  if(mode === 'waterAvailability'){
+    hhData.forEach(f=>{
+      const water = f.properties.Water_Available_Year || "Unknown";
+      counts[water] = (counts[water] || 0) + 1;
+    });
+  }
+
+  createHHChart(counts);
+  applyMapColor(mode);
+}
+
+const HH_COLOR_MAP = {
+
+// Age Structure
+"Age-0-5": "#a855f7",
+"Age-6-17": "#2563eb",
+"Age-18-35": "#16a34a",
+"Age-36-59": "#f97316",
+"Age-60-Plus": "#dc2626",
+
+  // Gender
+  "Male": "#2563eb",
+  "Female": "#ec4899",
+
+  // Literacy
+  "Literate": "#16a34a",
+  "Illiterate": "#dc2626",
+  
+  // Head Gender
+"Male": "#2563eb",
+"Female": "#ec4899",
+
+// Livelihood (example colors)
+"Agriculture": "#16a34a",
+"Wage labour": "#f97316",
+"Service": "#2563eb",
+"Business": "#7c3aed",
+"Other": "#9ca3af",
+
+  // Water availability
+  "Yes": "#16a34a",
+  "No": "#dc2626",
+
+  // House type
+  "Kutcha": "#16a34a",
+  "Pucca": "#dc2626",
+  "Semi pucca": "#2563eb",
+
+  // Landholding
+  "<1 acre": "#2563eb",
+  "1-2.5 acre": "#16a34a",
+  "2.5-5 acres": "#facc15",
+  ">5 acres": "#dc2626",
+
+  // Water Source
+  "Handpump": "#2563eb",
+  "Solar Tank": "#facc15"
+};
+function createHHChart(counts){
+
+  const labels = Object.keys(counts);
+  const values = Object.values(counts);
+
+  const total = values.reduce((a,b)=>a+b,0);
+
+  const colors = labels.map(label =>
+    HH_COLOR_MAP[label] || "#f59e0b"
+  );
+
+  if(hhChart) hhChart.destroy();
+
+  hhChart = new Chart(
+    document.getElementById('hhChart'),
+    {
+      type:'doughnut',
+      data:{
+        labels:labels,
+        datasets:[{
+          data:values,
+          backgroundColor:colors
+        }]
+      },
+      plugins:[ChartDataLabels],
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+
+        plugins:{
+          legend:{
+            position:'bottom',
+            labels:{
+              generateLabels(chart){
+                const data = chart.data;
+                return data.labels.map((label, i)=>{
+                  const value = data.datasets[0].data[i];
+                  const percent = ((value/total)*100).toFixed(1)+"%";
+                  return {
+                    text: `${label} (${value} | ${percent})`,
+                    fillStyle: data.datasets[0].backgroundColor[i],
+                    index:i
+                  };
+                });
+              }
+            }
+          },
+
+          datalabels:{
+            color:'#fff',
+            font:{ weight:'bold', size:12 },
+            formatter:(value)=>{
+              const percent = ((value/total)*100).toFixed(1);
+              return percent+"%";
+            }
+          }
+        }
+      }
+    }
+  );
+}
+
+
+function applyMapColor(mode){
+
+  if(!map.getLayer('para-buildings-3d')) return;
+
+  let colorExpression = '#f97316';
+
+  // ================= LITERACY =================
+  if(mode === 'literacy'){
+    colorExpression = [
+      'case',
+      ['>=',
+        ['/',
+          ['coalesce',['get','literate_members'],0],
+          ['max',['get','total_family_members'],1]
+        ],
+        0.7
+      ],
+      '#16a34a',  // High literacy
+      '#dc2626'   // Low literacy
+    ];
+  }
+  
+  else if(mode === 'genderHead'){
+  colorExpression = [
+    'match',
+    ['get','Gender'],
+    'Male', HH_COLOR_MAP["Male"],
+    'Female', HH_COLOR_MAP["Female"],
+    '#9ca3af'
+  ];
+}
+
+else if(mode === 'livelihood'){
+  colorExpression = [
+    'match',
+    ['get','Primary_Livelihood'],
+    'Agriculture', HH_COLOR_MAP["Agriculture"],
+    'Wage labour', HH_COLOR_MAP["Wage labour"],
+    'Service', HH_COLOR_MAP["Service"],
+    'Business', HH_COLOR_MAP["Business"],
+    '#9ca3af'
+  ];
+}
+
+  // ================= GENDER =================
+  else if(mode === 'gender'){
+    colorExpression = [
+      'case',
+      ['>', ['get','male_members'], ['get','female_members']],
+      '#2563eb',
+      '#ec4899'
+    ];
+  }
+  
+  // ================= AGE STRUCTURE =================
+else if(mode === 'age'){
+  colorExpression = [
+    'case',
+
+    ['>=', ['get','Age_60_Plus'], 1], '#dc2626',   // 60+ → Red
+    ['>=', ['get','Age_36_59'], 1], '#f97316',     // 36–59 → Orange
+    ['>=', ['get','Age_18_35'], 1], '#16a34a',     // 18–35 → Green
+    ['>=', ['get','Age_6_17'], 1], '#2563eb',      // 6–17 → Blue
+    ['>=', ['get','Age_0_5'], 1], '#a855f7',       // 0–5 → Purple
+
+    '#9ca3af'
+  ];
+}
+
+  // ================= HOUSE TYPE =================
+  else if(mode === 'house'){
+    colorExpression = [
+      'match',
+      ['get','House_Type'],
+      'Kutcha', '#16a34a',
+      'Pucca', '#dc2626',
+      'Semi pucca', '#2563eb',
+      '#f59e0b'
+    ];
+  }
+  
+  // ================= LANDHOLDING =================
+else if(mode === 'land'){
+  colorExpression = [
+    'match',
+    ['get','Landholding_Size'],
+    '<1 acre', HH_COLOR_MAP["<1 acre"],
+    '1-2.5 acre', HH_COLOR_MAP["1-2.5 acre"],
+    '2.5-5 acres', HH_COLOR_MAP["2.5-5 acres"],
+    '>5 acres', HH_COLOR_MAP[">5 acres"],
+    '#9ca3af'
+  ];
+}
+
+  // ================= WATER AVAILABILITY =================
+  else if(mode === 'waterAvailability'){
+    colorExpression = [
+      'match',
+      ['get','Water_Available_Year'],
+      'Yes','#16a34a',
+      'No','#dc2626',
+      '#f59e0b'
+    ];
+  }
+
+  // ================= WATER SOURCE =================
+else if(mode === 'waterSource'){
+  colorExpression = [
+    'match',
+    ['get','Drinking_Water_Source'],
+    'Handpump', HH_COLOR_MAP["Handpump"],
+    'Solar Tank', HH_COLOR_MAP["Solar Tank"],
+    '#f97316'
+  ];
+}
+
+  // ================= DEFAULT =================
+  else{
+    colorExpression = '#f97316';
+  }
+
+  map.setPaintProperty(
+    'para-buildings-3d',
+    'fill-extrusion-color',
+    [
+      'case',
+      ['boolean',['feature-state','clicked'],false],
+      '#ef4444',
+      colorExpression
+    ]
+  );
+}
+
+
+
 
 
 
@@ -5075,6 +5805,21 @@ dashBtn.onclick = () => {
 }); // ✅ CLOSE Promise.all
 });
 
+// 🔥 INITIAL UI STATE ON PAGE LOAD
+document.addEventListener('DOMContentLoaded', () => {
+
+  // 🔹 Executive summary number highlight
+  const execBodies = document.querySelectorAll("#execSummary .exec-body");
+  execBodies.forEach(el => {
+    el.innerHTML = el.innerHTML.replace(
+      /(\d{1,3}(?:,\d{3})*(?:\.\d+)?)/g,
+      '<span class="num-inline">$1</span>'
+    );
+  });
+
+  // 🔥 Initial dashboard UI state
+  setInitialUIState();
+});
 
 </script>
 </body>
