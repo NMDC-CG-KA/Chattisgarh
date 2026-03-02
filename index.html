@@ -89,10 +89,35 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   color:#ffffff;
 }
 
-/* MOBILE */
 @media(max-width:900px){
+
   .header-toolbar{
-    display:none; /* hide toolbar on mobile */
+    position:fixed;
+    top:60px;
+    left:0;
+    right:0;
+    background:#ffffff;
+    padding:8px;
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    z-index:4000;
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .header-toolbar select{
+    min-width:110px;
+    font-size:12px;
+  }
+
+  .header-toolbar button{
+    font-size:12px;
+    padding:6px 10px;
+  }
+
+  /* Push map down so it doesn't hide */
+  .main{
+    top:110px;
   }
 }
 
@@ -1086,6 +1111,22 @@ button:active {
 .header-toolbar button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
+@media(max-width:900px){
+
+  #execSummary{
+    bottom:140px;   /* move up */
+    left:12px;
+    width:85%;
+  }
+
+  #mapLegend{
+    bottom:20px;
+    right:12px;
+    width:70%;
+  }
+
 }
 
 </style>
