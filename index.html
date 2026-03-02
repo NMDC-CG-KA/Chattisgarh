@@ -1067,6 +1067,27 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   font-weight: 600;
 }
 
+#hhChartContainer .chartjs-legend ul {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* BUTTON PRESS EFFECT */
+button {
+  transition: all 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow: inset 0 4px 8px rgba(0,0,0,0.25);
+}
+
+/* Header buttons hover */
+.header-toolbar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+
 </style>
 </head>
 
@@ -1188,12 +1209,12 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 <div class="main">
 <div id="householdPanel">
 
-  <h3>Household Analysis</h3>
+  <h3>54 No's Of Household Analysis</h3>
 
 
 
 <select id="hhMode">
-  <option value="population">Population Structure</option>
+  <option value="population">Total Population</option>
   <option value="gender">Gender Distribution</option>
   <option value="genderHead">Head of Household (Gender)</option>
   <option value="literacy">Literacy Distribution</option>
@@ -1201,9 +1222,11 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
   <option value="caste">Caste Category</option>
   <option value="house">House Type</option>
   <option value="land">Landholding Size</option>
-  <option value="waterSource">Water Source</option>
-  <option value="waterAvailability">Water Availability</option>
+  <option value="waterSource"> Drinking Water Source</option>
+  <option value="waterAvailability">Drinking Water Availability </option>
   <option value="livelihood">Primary Livelihood</option>
+  <option value="smartphone">Smartphone Availability</option>
+  <option value="needs">Top Needs Priority</option>
 </select>
 
   <div class="chart-box">
@@ -1496,7 +1519,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 
   <div class="dashboard">
   
-<div class="chart-box">
+<div class="chart-box" id="donutBox">
   <h4>Infrastructure Distribution</h4>
   <canvas id="assetChart"></canvas>
 </div>
@@ -1586,7 +1609,7 @@ html,body{height:100%;font-family:"Segoe UI",Arial,sans-serif}
 <button class="road-btn" onclick="toggleBoundaryWall(this)">
   Boundary Wall
 </button>
-<button onclick="showCSRWorks()">Existing CSR Works</button>
+<button onclick="showCSRWorks(this)">Existing CSR Works</button>
 
 
 
@@ -2065,14 +2088,13 @@ function updateDonut(features){
 }
 
 function showDonut() {
-  document.querySelector('.chart-box').style.display = 'block';
-  hideKpiHeader(); // 🔥 HIDE KPI TITLE WHEN DONUT IS SHOWN
+  document.getElementById('donutBox').style.display = 'block';
+  hideKpiHeader();
 }
 
 function hideDonut() {
-  document.querySelector('.chart-box').style.display = 'none';
+  document.getElementById('donutBox').style.display = 'none';
 }
-
 
 function showKPIs() {
   document.querySelector('.kpis').style.display = 'grid';
@@ -2392,44 +2414,78 @@ function zoomToFullExtent(){
 
 function resetAllFilters(){
 
-  // Clear filters
-  map.setFilter('points', null);
-  map.setFilter('asset-labels', null);
+  // 1️⃣ EXIT CSR MODE
+  document.getElementById('csrKpis').style.display = 'none';
+  document.getElementById('csrTableBox').style.display = 'none';
+  document.getElementById('assetTableBox').style.display = 'block';
 
-  // Show all layers
+  // 2️⃣ CLEAR MAP FILTERS
+  if(map.getLayer('points')) map.setFilter('points', null);
+  if(map.getLayer('asset-labels')) map.setFilter('asset-labels', null);
+
+  if(map.getLayer('roads-bt'))
+    map.setFilter('roads-bt', ['==',['get','LAYER'],'BT ROAD']);
+
+  if(map.getLayer('roads-cc'))
+    map.setFilter('roads-cc', ['==',['get','LAYER'],'CC ROAD']);
+
+  // 3️⃣ SHOW ALL MAIN LAYERS
   [
     'points','asset-labels',
     'roads-bt','roads-cc',
-    'drain','wall-3d'
+    'drain','wall-3d',
+    'boundary','para'
   ].forEach(id=>{
     if(map.getLayer(id)){
       map.setLayoutProperty(id,'visibility','visible');
     }
   });
 
-  // Reset table + KPIs
+  // 4️⃣ HIDE CSR MAP LAYERS
+  CSR_LAYERS.forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','none');
+    }
+  });
+
+  // 5️⃣ RESTORE DONUT MODE
+  document.getElementById('donutBox').style.display = 'block';
+
+  const kpiWrap = document.querySelector('.kpis');
+  kpiWrap.classList.remove('single-kpi');
+
+  // Hide all KPI cards
+  kpiWrap.querySelectorAll('.kpi').forEach(k=>{
+    k.style.display = 'none';
+    k.style.outline = 'none';
+  });
+
+  // Show KPI wrapper
+  kpiWrap.style.display = 'grid';
+
+  // 6️⃣ RESET DONUT DATA
+  if (allAssetsData && infraChart) {
+    updateDonut(allAssetsData.features);
+  }
+
+  // 7️⃣ RESET TABLE
   renderTable(getDefaultTableData());
-  updateKPIs(allAssetsData.features);
 
-  // ✅ DONUT ONLY MODE
-  hideKPIs();        // 🔴 hide KPI box
-  showDonut();       // 🟢 show donut
-  resetDonut();
-
-  // ❌ CSR KPIs OFF
-  document.getElementById('csrKpis').style.display = 'none';
-
-  // 🔁 Default table
-  document.getElementById('csrTableBox').style.display = 'none';
-  document.getElementById('assetTableBox').style.display = 'block';
-
-  // Clear buttons
+  // 8️⃣ CLEAR BUTTON ACTIVE STATES
   document.querySelectorAll('#categoryButtons button')
-    .forEach(b => b.classList.remove('active'));
+    .forEach(b=>b.classList.remove('active'));
 
+  // 9️⃣ CLEAR HIGHLIGHT
+  if (map.getSource('feature-highlight')) {
+    map.getSource('feature-highlight').setData({
+      type:'FeatureCollection',
+      features:[]
+    });
+  }
+
+  // 🔟 ZOOM FULL EXTENT
   zoomToFullExtent();
 }
-
 
 
 
@@ -2466,29 +2522,64 @@ function updateKPIs(features){
   kpiTypes.innerText = categories.size;
 }
 
-
 function exportTable(){
 
+  // 🔥 IF CSR TABLE IS VISIBLE → EXPORT CSR DATA
+  const csrVisible =
+    document.getElementById('csrTableBox').style.display === 'block';
+
+  if (csrVisible) {
+
+    if (!csrTableData.length) {
+      alert('No CSR data to export');
+      return;
+    }
+
+    let csv =
+      "Sl No,Activity Description,Work Status,Type,Remarks\n";
+
+    csrTableData.forEach(r => {
+      csv += `"${r.slno || ''}",` +
+             `"${r.activity || ''}",` +
+             `"${r.status || ''}",` +
+             `"${r.type || ''}",` +
+             `"${r.remarks || ''}"\n`;
+    });
+
+    downloadCSV(csv, "Samalwar_CSR_Works.csv");
+    return;
+  }
+
+  // 🔵 OTHERWISE → EXPORT PROPOSED ASSETS
   if (!currentTableData.length) {
     alert('No data to export');
     return;
   }
 
-  let csv = "Name,Type,Extra\n";
+  let csv = "Sl No,Name,Type,Extra\n";
 
-  currentTableData.forEach(f=>{
-    csv += `"${f.properties.NAME || ''}",` +
+  currentTableData.forEach((f, index)=>{
+    csv += `"${index+1}",` +
+           `"${f.properties.NAME || ''}",` +
            `"${f.properties.LAYER || ''}",` +
            `"${f.properties.Shape_Leng ? (f.properties.Shape_Leng/1000).toFixed(2)+' km' : ''}"\n`;
   });
 
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
+  downloadCSV(csv, "Samalwar_Proposed_Table.csv");
+}
 
+function downloadCSV(csvContent, fileName){
+
+  const blob = new Blob([csvContent], {
+    type: 'text/csv;charset=utf-8;'
+  });
+
+  const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = "Samalwar_Table_Export.csv";
+  link.download = fileName;
   link.click();
 }
+
 
 function toggleExistingAssets(cb){
 
@@ -2561,30 +2652,53 @@ function hideKpiHeader() {
 
 function toggleRoad(type, btn){
 
-  // 🔥 EXIT CSR MODE
-  exitCSRMode();
+  // 🔥 HARD RESET UI (NO CSR RESET)
+  document.getElementById('csrKpis').style.display = 'none';
+  document.getElementById('csrTableBox').style.display = 'none';
+  document.getElementById('assetTableBox').style.display = 'block';
 
-  document.getElementById('kpiHeader').style.display = 'block';
-
-  // 1️⃣ Hide everything
+  // 1️⃣ Hide all layers
   hideAllMapLayers();
 
-  // 2️⃣ Show only selected road
+  // 2️⃣ Show selected road
   const layerId = type === 'BT' ? 'roads-bt' : 'roads-cc';
-  map.setLayoutProperty(layerId,'visibility','visible');
+  if (map.getLayer(layerId)) {
+    map.setLayoutProperty(layerId,'visibility','visible');
+  }
 
-  // 3️⃣ Hide donut, show KPIs
-  hideDonut();
-  showRoadKPIs(type);
-  showKpiHeader();
+  // 3️⃣ Hide donut
+  document.getElementById('donutBox').style.display = 'none';
 
-  // 4️⃣ Table
+  // 4️⃣ Show KPI wrapper
+  const kpiWrap = document.querySelector('.kpis');
+  kpiWrap.style.display = 'grid';
+  kpiWrap.classList.add('single-kpi');
+
+  // 5️⃣ Hide all KPI cards first
+  kpiWrap.querySelectorAll('.kpi').forEach(k=>{
+    k.style.display='none';
+    k.style.outline='none';
+  });
+
+  // 6️⃣ Show correct KPI
+  if(type === 'BT'){
+    kpiBTCard.style.display='block';
+    kpiBTCard.style.outline='3px solid #7c3aed';
+  }
+
+  if(type === 'CC'){
+    kpiCCCard.style.display='block';
+    kpiCCCard.style.outline='3px solid #22c55e';
+  }
+
+  // 7️⃣ Update table
   const filtered = allRoadsData.features.filter(
     f => f.properties.LAYER === (type === 'BT' ? 'BT ROAD' : 'CC ROAD')
   );
+
   renderRoadTable(filtered);
 
-  // 5️⃣ Button UI
+  // 8️⃣ Button UI
   document.querySelectorAll('#categoryButtons button')
     .forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -2595,26 +2709,27 @@ function restoreNormalKPIState() {
   const kpiWrap = document.querySelector('.kpis');
   const csrBox  = document.getElementById('csrKpis');
 
-  // 🔁 Hide CSR KPIs
+  // Hide CSR KPIs
   csrBox.style.display = 'none';
 
-  // 🔁 Restore normal KPI layout
-  kpiWrap.style.display = 'grid';
+  // Remove single layout
   kpiWrap.classList.remove('single-kpi');
 
-  // 🔁 Show ONLY normal KPI cards
+  // Hide KPI cards
   kpiWrap.querySelectorAll('.kpi').forEach(k => {
-    k.style.display = 'block';
+    k.style.display = 'none';
     k.style.outline = 'none';
   });
 
-  // 🔁 Restore donut + header
-hideKPIs();
-showDonut();
-resetDonut();
-document.getElementById('kpiHeader').style.display = 'none';
-}
+  // Hide KPI header
+  hideKpiHeader();
 
+  // Show donut only
+  showDonut();
+
+  // Reset donut data
+  resetDonut();
+}
 function exitCSRMode() {
 
   // 🔁 TABLES
@@ -2634,43 +2749,49 @@ function exitCSRMode() {
 
   // 🔥 RESTORE KPI STATE
   restoreNormalKPIState();
+  restoreDonutMode();
 }
-
 
 
 
 function toggleBoundaryWall(btn){
 
-  // 🔥 EXIT CSR MODE FIRST
-  exitCSRMode();
+  document.getElementById('csrKpis').style.display = 'none';
+  document.getElementById('csrTableBox').style.display = 'none';
+  document.getElementById('assetTableBox').style.display = 'block';
 
-  document.getElementById('kpiHeader').style.display = 'block';
-
-  // 1️⃣ Hide everything
   hideAllMapLayers();
 
-  // 2️⃣ Show wall
   if (map.getLayer('wall-3d')) {
     map.setLayoutProperty('wall-3d','visibility','visible');
   }
 
-  // 3️⃣ Hide donut, show KPIs
-  hideDonut();
-  showRoadKPIs('BOUNDARY');
-  showKpiHeader();
+  // Hide donut
+  document.getElementById('donutBox').style.display = 'none';
 
-  // 4️⃣ Table (only wall features)
+  // Show KPI wrapper
+  const kpiWrap = document.querySelector('.kpis');
+  kpiWrap.style.display = 'grid';
+  kpiWrap.classList.add('single-kpi');
+
+  kpiWrap.querySelectorAll('.kpi').forEach(k=>{
+    k.style.display='none';
+    k.style.outline='none';
+  });
+
+  kpiBoundaryCard.style.display='block';
+  kpiBoundaryCard.style.outline='3px solid #6b7280';
+
   const filtered = allRoadsData.features.filter(
     f => f.properties.LAYER === 'BOUNDARY WALL'
   );
+
   renderRoadTable(filtered);
 
-  // 5️⃣ Button UI
   document.querySelectorAll('#categoryButtons button')
     .forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
-
 
 
 
@@ -2940,37 +3061,39 @@ function setInitialUIState() {
   hideKpiHeader();
 }
 
-function showCSRWorks(){
+function showCSRWorks(btn){
 
-  // 🔥 FORCE EXIT ANY PREVIOUS MODE
-  exitCSRMode();
+  // 🔥 Remove active from all
+  document.querySelectorAll('#categoryButtons button')
+    .forEach(b => b.classList.remove('active'));
 
-  // Tables
+  // ✅ Activate CSR button
+  btn.classList.add('active');
+
+  // Hide donut & normal KPIs
+  document.getElementById('donutBox').style.display = 'none';
+  document.querySelector('.kpis').style.display = 'none';
+
+  // Show CSR KPI block
+  document.getElementById('csrKpis').style.display = 'grid';
+
+  document.getElementById('csrCompleted').innerText = csrCompletedCount;
+  document.getElementById('csrNotStarted').innerText = csrNotStartedCount;
+
+  // Switch tables
   document.getElementById('assetTableBox').style.display = 'none';
   document.getElementById('csrTableBox').style.display = 'block';
 
-  // 🔥 HARD RESET KPI UI
-  hideKPIs();
-  hideDonut();
-  document.getElementById('kpiHeader').style.display = 'none';
-
-  // 🔥 CSR KPI MODE
-  showCSRKPIs();
-
   // Map layers
   hideAllMapLayers();
+
   CSR_LAYERS.forEach(id => {
     if (map.getLayer(id)) {
-      map.setLayoutProperty(id, 'visibility', 'visible');
+      map.setLayoutProperty(id,'visibility','visible');
     }
   });
 
-  // Render CSR table
   renderCSRTable();
-
-  // Button UI
-  document.querySelectorAll('#categoryButtons button')
-    .forEach(b => b.classList.remove('active'));
 }
 
 map.on('load', () => {
@@ -4878,6 +5001,36 @@ function updateHHMode(mode){
     });
     counts["Total Population"] = total;
   }
+  
+  // =======================
+// TOP NEEDS (COMBINED)
+// =======================
+if(mode === 'needs'){
+
+  hhData.forEach(f=>{
+
+    const n1 = f.properties.Top_Need_1;
+    const n2 = f.properties.Top_Need_2;
+    const n3 = f.properties.Top_Need_3;
+
+    [n1,n2,n3].forEach(n=>{
+      if(n){
+        counts[n] = (counts[n] || 0) + 1;
+      }
+    });
+
+  });
+}
+  
+  // =======================
+// SMARTPHONE AVAILABILITY
+// =======================
+if(mode === 'smartphone'){
+  hhData.forEach(f=>{
+    const phone = f.properties.Smartphone || "Unknown";
+    counts[phone] = (counts[phone] || 0) + 1;
+  });
+}
 
 // =======================
 // HEAD OF HOUSEHOLD GENDER
@@ -4997,7 +5150,7 @@ if(mode === 'livelihood'){
     });
   }
 
-  createHHChart(counts);
+  createHHChart(counts, mode);
   applyMapColor(mode);
 }
 
@@ -5009,6 +5162,15 @@ const HH_COLOR_MAP = {
 "Age-18-35": "#16a34a",
 "Age-36-59": "#f97316",
 "Age-60-Plus": "#dc2626",
+
+
+// Top Needs
+"Water": "#0284c7",
+"Housing": "#f97316",
+"Sanitation": "#16a34a",
+"Health": "#dc2626",
+"Education": "#2563eb",
+"Employment": "#7c3aed",
 
   // Gender
   "Male": "#2563eb",
@@ -5029,6 +5191,10 @@ const HH_COLOR_MAP = {
 "Business": "#7c3aed",
 "Other": "#9ca3af",
 
+// Smartphone
+"Yes": "#16a34a",
+"No": "#dc2626",
+
   // Water availability
   "Yes": "#16a34a",
   "No": "#dc2626",
@@ -5048,12 +5214,27 @@ const HH_COLOR_MAP = {
   "Handpump": "#2563eb",
   "Solar Tank": "#facc15"
 };
-function createHHChart(counts){
+function createHHChart(counts, mode){
 
   const labels = Object.keys(counts);
-  const values = Object.values(counts);
 
-  const total = values.reduce((a,b)=>a+b,0);
+  const rawValues = Object.values(counts);   // original counts
+  let values = [...rawValues];               // copy for chart
+
+  // 🔥 Convert to relative % ONLY for needs
+  if(mode === 'needs'){
+    const maxValue = Math.max(...rawValues);
+    values = rawValues.map(v =>
+      Number(((v / maxValue) * 100).toFixed(1))
+    );
+  }
+
+  const canvas = document.getElementById('hhChart');
+
+  // 🔥 Dynamic height
+  canvas.style.height = (mode === 'needs') ? "320px" : "220px";
+
+  const total = rawValues.reduce((a,b)=>a+b,0);
 
   const colors = labels.map(label =>
     HH_COLOR_MAP[label] || "#f59e0b"
@@ -5064,53 +5245,111 @@ function createHHChart(counts){
   hhChart = new Chart(
     document.getElementById('hhChart'),
     {
-      type:'doughnut',
+      type: (mode === 'needs') ? 'bar' : 'doughnut',
+
       data:{
         labels:labels,
-        datasets:[{
-          data:values,
-          backgroundColor:colors
-        }]
+datasets:[{
+  data:values,
+  backgroundColor:colors,
+  borderRadius:6,
+  ...(mode === 'needs' ? {
+      barThickness:35,
+      maxBarThickness:40,
+      categoryPercentage:0.9
+  } : {})
+}]
       },
+
       plugins:[ChartDataLabels],
-      options:{
-        responsive:true,
-        maintainAspectRatio:false,
 
-        plugins:{
-          legend:{
-            position:'bottom',
-            labels:{
-              generateLabels(chart){
-                const data = chart.data;
-                return data.labels.map((label, i)=>{
-                  const value = data.datasets[0].data[i];
-                  const percent = ((value/total)*100).toFixed(1)+"%";
-                  return {
-                    text: `${label} (${value} | ${percent})`,
-                    fillStyle: data.datasets[0].backgroundColor[i],
-                    index:i
-                  };
-                });
-              }
-            }
-          },
+   options:{
+  responsive:true,
+  maintainAspectRatio:false,
 
-          datalabels:{
-            color:'#fff',
-            font:{ weight:'bold', size:12 },
-            formatter:(value)=>{
-              const percent = ((value/total)*100).toFixed(1);
-              return percent+"%";
-            }
-          }
+  scales: (mode === 'needs') ? {
+    y:{
+      beginAtZero:true,
+      max:110
+    }
+  } : {},
+
+  plugins:{
+
+    tooltip:{
+      callbacks:{
+        label:function(context){
+          const index = context.dataIndex;
+          return "Households: " + rawValues[index];
         }
       }
+    },
+
+    legend:{
+      position:'bottom',
+      align:'start',
+      labels:{
+        boxWidth:15,
+        padding:10,
+        generateLabels(chart){
+          const data = chart.data;
+
+          return data.labels.map((label,i)=>{
+
+            const value = rawValues[i];
+
+            const percent = (mode === 'needs')
+              ? values[i] + "%"
+              : ((value / total) * 100).toFixed(1) + "%";
+
+            return {
+              text: `${label} (${value} | ${percent})`,
+              fillStyle: data.datasets[0].backgroundColor[i],
+              index:i
+            };
+          });
+        }
+      }
+    },
+
+    datalabels:{
+      color: (mode === 'needs') ? '#000' : '#fff',
+      font:{ weight:'bold', size:12 },
+      anchor: (mode === 'needs') ? 'end' : 'center',
+      align: (mode === 'needs') ? 'top' : 'center',
+      formatter:(value)=>{
+        return (mode === 'needs')
+          ? value + "%"
+          : ((value / total) * 100).toFixed(1) + "%";
+      }
     }
+
+  }
+}
+}
   );
 }
+function restoreDonutMode(){
 
+  // Hide CSR KPIs
+  document.getElementById('csrKpis').style.display = 'none';
 
+  // Remove single-kpi layout
+  const kpiWrap = document.querySelector('.kpis');
+  kpiWrap.classList.remove('single-kpi');
+
+  // Hide KPI cards
+  hideKPIs();
+
+  // Show donut chart box
+  document.querySelector('.chart-box').style.display = 'block';
+
+  // Hide KPI header
+  document.getElementById('kpiHeader').style.display = 'none';
+
+  // Reset donut data
+  resetDonut();
+}
 function applyMapColor(mode){
 
   if(!map.getLayer('para-buildings-3d')) return;
@@ -5155,6 +5394,21 @@ else if(mode === 'livelihood'){
   ];
 }
 
+// ================= TOP NEEDS =================
+else if(mode === 'needs'){
+  colorExpression = [
+    'match',
+    ['get','Top_Need_1'],   // 🔥 Use only top priority
+    'Water', '#0284c7',
+    'Housing', '#f97316',
+    'Sanitation', '#16a34a',
+    'Health', '#dc2626',
+    'Education', '#2563eb',
+    'Employment', '#7c3aed',
+    '#9ca3af'
+  ];
+}
+
   // ================= GENDER =================
   else if(mode === 'gender'){
     colorExpression = [
@@ -5176,6 +5430,17 @@ else if(mode === 'age'){
     ['>=', ['get','Age_6_17'], 1], '#2563eb',      // 6–17 → Blue
     ['>=', ['get','Age_0_5'], 1], '#a855f7',       // 0–5 → Purple
 
+    '#9ca3af'
+  ];
+}
+
+// ================= SMARTPHONE =================
+else if(mode === 'smartphone'){
+  colorExpression = [
+    'match',
+    ['get','Smartphone'],
+    'Yes', '#16a34a',
+    'No', '#dc2626',
     '#9ca3af'
   ];
 }
