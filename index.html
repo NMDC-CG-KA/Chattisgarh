@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title> Samalwar – Proposed Model Village Planning Dashboard</title>
+<title> NMDC - Village Infrastructure & CSR Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
 <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet"/>
@@ -11,7 +11,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
 
 
 
@@ -1163,12 +1163,12 @@ button:active {
          onchange="toggle('para-buildings-3d',this)">
   Para Household Buildings
 </label>
-      <label><input type="checkbox" checked onchange="toggleProposedAssets(this)"> Proposed Assets</label>
-      <label><input type="checkbox" checked onchange="toggle('roads-bt',this)"> Proposed BT Roads</label>
-      <label><input type="checkbox" checked onchange="toggle('roads-cc',this)"> Proposed CC Roads</label>
-      <label><input type="checkbox" checked onchange="toggle('wall-3d',this)"> Boundary Wall (3D)</label>
+      <label><input type="checkbox" onchange="toggleProposedAssets(this)"> Proposed Assets</label>
+      <label><input type="checkbox" onchange="toggle('roads-bt',this)"> Proposed BT Roads</label>
+      <label><input type="checkbox" onchange="toggle('roads-cc',this)"> Proposed CC Roads</label>
+      <label><input type="checkbox" onchange="toggle('wall-3d',this)"> Boundary Wall (3D)</label>
       <label><input type="checkbox" onchange="toggle('drain',this)"> Natural Drainage Network</label>
-      <label><input type="checkbox" checked onchange="toggle('para',this)"> Habitation / Para</label>
+      <label><input type="checkbox" onchange="toggle('para',this)"> Habitation / Para</label>
 
     </div>
 
@@ -1202,7 +1202,7 @@ button:active {
  <b>Landuse</b>
 <label>
   <input type="checkbox" onchange="toggleLanduse(this)">
-  Presnt Land use
+  Present Land use
 </label>
 
 
@@ -1220,7 +1220,7 @@ button:active {
   <!-- LEFT : LOGO + TITLE -->
   <div class="header-left">
     <img src="https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDCLOGO.png">
-    <span>Samalwar – Proposed Model Village Planning Dashboard</span>
+    <span>NMDC - Village Infrastructure & CSR Dashboard</span>
   </div>
   <div id="hamburger" title="Layers">☰</div>
 
@@ -1250,7 +1250,7 @@ button:active {
 <div class="main">
 <div id="householdPanel">
 
-  <h3>54 No's Of Household Analysis</h3>
+  <h3>Household Analysis</h3>
 
 
 
@@ -1318,8 +1318,8 @@ button:active {
   <li>
     <span class="exec-num">01</span>
     <div class="exec-body">
-      The Model Village Development Plan for <b>Samalwar</b> proposes a total of
-      <b>99 development assets</b> across Natural Resource Management, Transport,
+      The Model Village Development Plan proposes a comprehensive set of
+      <b>597 development assets</b> across Natural Resource Management, Transport,
       Drinking Water, Social Infrastructure, Energy & Lighting, and Economic Infrastructure.
     </div>
   </li>
@@ -1328,8 +1328,8 @@ button:active {
     <span class="exec-num">02</span>
     <div class="exec-body">
       <b>Natural Resource Management (NRM)</b> includes
-      <b>24 WHS</b>, <b>10 Check Dams</b>, <b>2 LBCD</b>, and
-      <b>3 Pond Renovation works</b>, aimed at groundwater recharge and climate resilience.
+      <b>56 WHS</b>, <b>71 Check Dams</b>, <b>7 LBCD</b>, and
+      <b>10 Pond Renovation works</b>, aimed at groundwater recharge and climate resilience.
     </div>
   </li>
 
@@ -1337,7 +1337,7 @@ button:active {
     <span class="exec-num">03</span>
     <div class="exec-body">
       <b>Drinking Water Infrastructure</b> strengthened through
-      <b>20 Solar Water Tanks</b> ensuring reliable and renewable water supply.
+      <b>116 Solar Water Tanks</b> ensuring reliable and renewable water supply.
     </div>
   </li>
 
@@ -1345,9 +1345,9 @@ button:active {
     <span class="exec-num">04</span>
     <div class="exec-body">
       <b>Transport Infrastructure</b> includes
-      <b>2 Bridges</b>, <b>2 Culverts</b>,
-      <b>15.84 km BT Roads</b> and <b>4.71 km CC Roads</b>
-      (total <b>20.55 km</b>).
+      <b>11 Bridges</b>, <b>25 Culverts</b>,
+      <b>84.11 km BT Roads</b> and <b>39.91 km CC Roads</b>
+      (total <b>124.02 km</b>).
     </div>
   </li>
 
@@ -1355,9 +1355,9 @@ button:active {
     <span class="exec-num">05</span>
     <div class="exec-body">
       <b>Social Infrastructure</b> covers
-      <b>4 Anganwadis</b>, <b>1 Community Hall</b>, <b>1 Mandap</b>,
+      <b>12 Anganwadis</b>, <b>12 Community Hall</b>, <b>12 Mandap</b>,<b>11 Domesheds</b>,
       <b>4 Handwashing Platforms</b>, <b>3 Toilets</b>,
-      and <b>0.69 km Boundary Walls</b>.
+      and <b>5.77 km Boundary Walls</b>.
     </div>
   </li>
 
@@ -1365,7 +1365,7 @@ button:active {
     <span class="exec-num">06</span>
     <div class="exec-body">
       <b>Energy & Lighting</b> interventions include
-      <b>9 High Mast Lights</b> and street lighting in
+      <b>176 High Mast Lights</b> and street lighting in
       <b>3 habitation locations</b>.
     </div>
   </li>
@@ -1374,7 +1374,7 @@ button:active {
   <span class="exec-num">07</span>
   <div class="exec-body">
     <b>Economic Infrastructure</b> supported through
-    <b>2 Market Complexes</b>.
+    <b>5 Market Complexes</b>.
   </div>
 </li>
 
@@ -1382,25 +1382,12 @@ button:active {
   <span class="exec-num">08</span>
   <div class="exec-body">
     Overall interventions benefit
-    <b>1,220 people</b> across <b>330 households</b>,
+    <b>14236 people</b> across <b>2854 households</b>,
     aligned with <b>NMDC CSR objectives</b>.
   </div>
 </li>
 
-<!-- 🔥 PASTE HERE -->
-<li>
-  <span class="exec-num">09</span>
-  <div class="exec-body">
-    <b>Existing CSR Works</b> implemented by NMDC include development of key
-    community and transport infrastructure assets such as an
-    <b>Anganwadi Centre with Kitchen at Patel Para</b>,
-    an <b>Anganwadi Kitchen and Store at Vichha Para</b>,
-    construction of a <b>CC Road Constructed by NMDC at Sarpanch Para</b>, and an
-    <b>Indian Overseas Bank–cum–Community Hall at Patel Para</b>.
-    These interventions have significantly strengthened social amenities
-    and local connectivity within the village.
-  </div>
-</li>
+
 
 
 
@@ -1614,11 +1601,6 @@ button:active {
     <h2 id="csrCompleted">0</h2>
   </div>
 
-  <div class="kpi" style="background:#dc2626;">
-    <span>Not Started CSR Works</span>
-    <h2 id="csrNotStarted">0</h2>
-  </div>
-
 </div>
 
 
@@ -1698,8 +1680,6 @@ button:active {
           <th>Sl No</th>
           <th>NMDC CSR - Activity description</th>
           <th>Work Status</th>
-          <th>Civil Works / Financial Assistance</th>
-          <th>Remarks</th>
         </tr>
       </thead>
       <tbody id="csrTableBody"></tbody>
@@ -1805,11 +1785,16 @@ let assetsLoaded = false;
 let roadsLoaded = false;
 let activeRoadType = null; // 'BT' | 'CC' | null
 let mobileInfraChart = null;
-let donutMode = 'percent'; // 'percent' | 'count'
+let infraDonutMode = 'count';   // 👉 for RIGHT donut only
 let csrTableData = [];
 let csrCompletedCount = 0;
 let csrNotStartedCount = 0;
 let clickedBuildingId = null;
+let flyThroughTimer = null;
+let flyThroughRunning = false;
+let activeVillage = null;
+
+
 
 
 const CATEGORY_ASSET_MAP = {
@@ -1847,38 +1832,49 @@ const CATEGORY_ASSET_MAP = {
 
 
 
-/* ===== EXISTING ASSETS : FINAL CATEGORY MAP ===== */
-
 const EXISTING_ASSET_CATEGORY_MAP = {
-  "Social & Educational Infrastructure": [
-    "ANGANWADI",
-    "SCHOOL",
-    "LIBRARY",
-    "COMMUNITY"
-  ],
 
-  "Religious & Cultural Assets": [
-    "DEVA GUDI",
-    "TEMPLE"
-  ],
+"Social & Educational Infrastructure": [
+"ANGANWADI",
+"SCHOOL",
+"LIBRARY",
+"COMMUNITY HALL",
+"BUS SHELTER"
+],
 
-  "Drinking Water Infrastructure": [
-    "SOLAR WATER TANK",
-    "WATER TANK",
-    "TUBE WELL"
-  ],
+"Religious & Cultural Assets": [
+"TEMPLE",
+"MASJID",
+"SMASAN"
+],
 
-  "Energy & Utilities": [
-    "SREET LIGHT",
-    "TRANSFORMER",
-    "TELOPHONE TOWER"
-  ],
+"Drinking Water Infrastructure": [
+"SOLAR WATER TANK",
+"OVER HEAD WATER TANK NOT WORKING",
+"TUBE WELL WORKING",
+"TUBE WELL NOT WORKING",
+"PUMP HOUSE",
+"RO WATER PLANT"
+],
 
-  "Institutional & Public Services": [
-    "PDS",
-    "PANCHAYAT",
-    "BANK"
-  ]
+"Energy & Utilities": [
+"STREET LIGHT WORKING",
+"STREET LIGHT NOT WORKING",
+"HIGH MAST LIGHT",
+"TRANSFORMER",
+"TELEPHONE TOWER"
+],
+
+"Institutional & Public Services": [
+"BANK",
+"PDS BUILDING",
+"PANCHAYAT BHAWAN",
+"POST OFFICE",
+"HOSPITAL",
+"MILK DAIRY",
+"PUBLIC TOILETS"
+]
+
 };
 
 const CSR_LAYERS = [
@@ -1887,28 +1883,35 @@ const CSR_LAYERS = [
   'csr-labels'
 ];
 
-const CSR_FLY_ASSETS = [
-  {
-    title: 'Indian Overseas Bank – Patel Para',
-    center: [81.3139771558, 18.6058387257],
-    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/bank.jpeg'
-  },
-  {
-    title: 'Anganwadi Centre – Patel Para',
-    center: [81.312659257, 18.6066494816],
-    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/anganwadi.jpeg'
-  },
-  {
-    title: 'Anganwadi Kitchen – Vichha Para',
-    center: [81.3053881561, 18.6036578765],
-    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/kitchen.jpeg'
-  },
-  {
-    title: 'CC Road – Sarpanch Para',
-    center: [81.3153714383, 18.6054242084],
-    image: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/ccroad.jpeg'
+
+
+function calculateRoadKPIs(type){
+
+  let bt = 0, cc = 0, boundaryLen = 0;
+
+  const filtered = getVillageFilteredData(allRoadsData.features);
+
+  filtered.forEach(f=>{
+    const len = f.properties.Shape_Leng / 1000;
+
+    if (f.properties.LAYER === 'BT ROAD') bt += len;
+    if (f.properties.LAYER === 'CC ROAD') cc += len;
+    if (f.properties.LAYER === 'BOUNDARY WALL') boundaryLen += len;
+  });
+
+  if(type === 'BT'){
+    kpiBT.innerText = bt.toFixed(2);
   }
-];
+
+  if(type === 'CC'){
+    kpiCC.innerText = cc.toFixed(2);
+  }
+
+  if(type === 'BOUNDARY'){
+    kpiBoundary.innerText = boundaryLen.toFixed(2);
+  }
+}
+
 
 function toggleAllCSR(cb) {
   const visibility = cb.checked ? 'visible' : 'none';
@@ -1917,6 +1920,49 @@ function toggleAllCSR(cb) {
     if (map.getLayer(layerId)) {
       map.setLayoutProperty(layerId, 'visibility', visibility);
     }
+  });
+}
+
+function addCustomPopup(layerId){
+
+  map.on('click', layerId, (e)=>{
+
+    const f = e.features[0];
+
+    // 🔥 REMOVE OLD POPUPS
+    document.querySelectorAll('.maplibregl-popup')
+      .forEach(p => p.remove());
+
+    // 🔥 HIGHLIGHT
+    map.getSource('feature-highlight').setData({
+      type:'FeatureCollection',
+      features:[f]
+    });
+
+    // 🔥 IMAGE (if exists)
+    const img = f.properties.IMAGE || '';
+
+    new maplibregl.Popup({ offset:10 })
+      .setLngLat(e.lngLat)
+      .setHTML(`
+        <div style="font-size:13px;">
+          <b>${f.properties.NAME || f.properties.DESCRIPTIO || 'Asset'}</b><br>
+          ${img ? `<img src="${img}" width="200"/>` : ''}
+          <br>
+          Type: ${f.properties.LAYER || ''}
+        </div>
+      `)
+      .addTo(map);
+
+    e.preventDefault();
+  });
+
+  map.on('mouseenter', layerId, () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  map.on('mouseleave', layerId, () => {
+    map.getCanvas().style.cursor = '';
   });
 }
 
@@ -1953,7 +1999,25 @@ function addCSRPopup(layerId) {
   });
 }
 
+function getPhotoURL(name){
 
+  if(!name) return '';
+
+  const clean = name.trim().replace(/\s+/g, '_');
+
+  const base = `https://raw.githubusercontent.com/hemanya2003/CSR_PHOTOS/main/${clean}`;
+
+  // Try JPG first, then JPEG
+  const img = new Image();
+
+  img.src = base + ".jpg";
+
+  img.onerror = () => {
+    img.src = base + ".jpeg";
+  };
+
+  return img.src;
+}
 
 
 function selectAllExistingAssets() {
@@ -1990,9 +2054,7 @@ function selectAllExistingAssets() {
   const filter = [
     'any',
     ...allowedKeywords.map(k => [
-      'in',
-      k,
-      ['upcase', ['get', 'DESCRIPTIO']]
+['==',['upcase',['get','Type']],k]
     ])
   ];
 
@@ -2073,9 +2135,9 @@ function showCSRKPIs() {
   csrBox.style.display = 'grid';
 
   // ✅ SET VALUES
-  document.getElementById('csrCompleted').innerText = csrCompletedCount;
-  document.getElementById('csrNotStarted').innerText = csrNotStartedCount;
-}
+  const el = document.getElementById('csrCompleted');
+if (el) el.innerText = csrCompletedCount;
+  }
 
 
 function buildAssetTypeCounts(features, allowedTypes) {
@@ -2182,6 +2244,42 @@ function setLayersVisibility(layerIds, visible){
   });
 }
 
+function addClickHighlight(layerId){
+
+  map.on('click', layerId, (e) => {
+
+    // ❌ IGNORE CSR layers
+    if(layerId.includes('csr')) return;
+
+    const f = e.features[0];
+
+    map.getSource('feature-highlight').setData({
+      type: 'FeatureCollection',
+      features: [f]
+    });
+
+    new maplibregl.Popup({ offset: 10 })
+      .setLngLat(e.lngLat)
+      .setHTML(`
+        <div style="font-size:13px;">
+          <b>${f.properties.NAME || 'Asset'}</b><br>
+          Type: ${f.properties.LAYER || ''}
+        </div>
+      `)
+      .addTo(map);
+  });
+
+
+  // cursor
+  map.on('mouseenter', layerId, () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  map.on('mouseleave', layerId, () => {
+    map.getCanvas().style.cursor = '';
+  });
+}
+
 function clearSelection() {
 
   // Clear highlight
@@ -2264,19 +2362,27 @@ function focusMode({ layers=[], tableData=[] }){
 
 
 function toggleProposedAssets(cb) {
+
   const visible = cb.checked ? 'visible' : 'none';
 
-  // 🔥 POINTS
   if (map.getLayer('points')) {
     map.setLayoutProperty('points', 'visibility', visible);
+
+    // 🔥 APPLY VILLAGE FILTER
+    if (cb.checked && activeVillage) {
+      map.setFilter('points', ['==', ['get', 'Village'], activeVillage]);
+    }
   }
 
-  // 🔥 LABELS (THIS WAS MISSING)
   if (map.getLayer('asset-labels')) {
     map.setLayoutProperty('asset-labels', 'visibility', visible);
+
+    // 🔥 APPLY FILTER HERE ALSO
+    if (cb.checked && activeVillage) {
+      map.setFilter('asset-labels', ['==', ['get', 'Village'], activeVillage]);
+    }
   }
 }
-
 
 
 function getDefaultTableData(){
@@ -2505,9 +2611,9 @@ function resetAllFilters(){
   kpiWrap.style.display = 'grid';
 
   // 6️⃣ RESET DONUT DATA
-  if (allAssetsData && infraChart) {
-    updateDonut(allAssetsData.features);
-  }
+if (allAssetsData && infraChart) {
+  resetDonut();   // 🔥 THIS IS THE FIX
+}
 
   // 7️⃣ RESET TABLE
   renderTable(getDefaultTableData());
@@ -2571,25 +2677,34 @@ function exportTable(){
 
   if (csrVisible) {
 
-    if (!csrTableData.length) {
-      alert('No CSR data to export');
-      return;
-    }
+  // 🔥 APPLY VILLAGE FILTER
+  let filtered = csrTableData;
 
-    let csv =
-      "Sl No,Activity Description,Work Status,Type,Remarks\n";
+  if (activeVillage) {
+    filtered = csrTableData.filter(r =>
+      r.village === activeVillage
+    );
+  }
 
-    csrTableData.forEach(r => {
-      csv += `"${r.slno || ''}",` +
-             `"${r.activity || ''}",` +
-             `"${r.status || ''}",` +
-             `"${r.type || ''}",` +
-             `"${r.remarks || ''}"\n`;
-    });
-
-    downloadCSV(csv, "Samalwar_CSR_Works.csv");
+  if (!filtered.length) {
+    alert('No CSR data to export');
     return;
   }
+
+  let csv =
+    "Sl No,Activity Description,Work Status,Type,Remarks\n";
+
+  filtered.forEach(r => {
+    csv += `"${r.slno || ''}",` +
+           `"${r.activity || ''}",` +
+           `"${r.status || ''}",` +
+           `"${r.type || ''}",` +
+           `"${r.remarks || ''}"\n`;
+  });
+
+  downloadCSV(csv, "NMDC_CSR_Works.csv");
+  return;
+}
 
   // 🔵 OTHERWISE → EXPORT PROPOSED ASSETS
   if (!currentTableData.length) {
@@ -2606,7 +2721,7 @@ function exportTable(){
            `"${f.properties.Shape_Leng ? (f.properties.Shape_Leng/1000).toFixed(2)+' km' : ''}"\n`;
   });
 
-  downloadCSV(csv, "Samalwar_Proposed_Table.csv");
+  downloadCSV(csv, "NMDC_Proposed_Table.csv");
 }
 
 function downloadCSV(csvContent, fileName){
@@ -2621,6 +2736,27 @@ function downloadCSV(csvContent, fileName){
   link.click();
 }
 
+
+function addCSRPhotoPopup(layerId){
+
+  map.on('click', layerId, (e)=>{
+
+    const f = e.features[0];
+    const name = f.properties.NAME;
+
+    new maplibregl.Popup({ offset:10 })
+      .setLngLat(e.lngLat)
+      .setHTML(`
+        <div style="font-size:13px;">
+          <b>${name}</b><br>
+          <img src="https://raw.githubusercontent.com/hemanya2003/CSR_PHOTOS/main/${name}.jpg"
+               onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/hemanya2003/CSR_PHOTOS/main/${name}.jpeg';"
+               style="width:100%;margin-top:6px;border-radius:6px;">
+        </div>
+      `)
+      .addTo(map);
+  });
+}
 
 function toggleExistingAssets(cb){
 
@@ -2733,11 +2869,13 @@ function toggleRoad(type, btn){
   }
 
   // 7️⃣ Update table
-  const filtered = allRoadsData.features.filter(
-    f => f.properties.LAYER === (type === 'BT' ? 'BT ROAD' : 'CC ROAD')
+const filtered = getVillageFilteredData(allRoadsData.features)
+  .filter(f =>
+    f.properties.LAYER === (type === 'BT' ? 'BT ROAD' : 'CC ROAD')
   );
 
   renderRoadTable(filtered);
+  calculateRoadKPIs(type);   // 🔥 ADD THIS
 
   // 8️⃣ Button UI
   document.querySelectorAll('#categoryButtons button')
@@ -2751,7 +2889,7 @@ function restoreNormalKPIState() {
   const csrBox  = document.getElementById('csrKpis');
 
   // Hide CSR KPIs
-  csrBox.style.display = 'none';
+  csrBox.style.display = 'none';  
 
   // Remove single layout
   kpiWrap.classList.remove('single-kpi');
@@ -2823,11 +2961,13 @@ function toggleBoundaryWall(btn){
   kpiBoundaryCard.style.display='block';
   kpiBoundaryCard.style.outline='3px solid #6b7280';
 
-  const filtered = allRoadsData.features.filter(
-    f => f.properties.LAYER === 'BOUNDARY WALL'
+const filtered = getVillageFilteredData(allRoadsData.features)
+  .filter(f =>
+    f.properties.LAYER === 'BOUNDARY WALL'
   );
 
   renderRoadTable(filtered);
+  calculateRoadKPIs('BOUNDARY');
 
   document.querySelectorAll('#categoryButtons button')
     .forEach(b => b.classList.remove('active'));
@@ -2862,21 +3002,50 @@ function buildInfraCategoryCounts(features){
   return counts;
 }
 
+function getVillageFilteredData(features){
 
+  if(!activeVillage) return features;
+
+  return features.filter(f =>
+    f.properties.Village === activeVillage
+  );
+}
 
 
 // ================= GLOBAL TOGGLE FUNCTIONS =================
 
 function toggle(id, cb){
-  if (!map || !map.getLayer(id)) {
-    console.warn('Layer not found:', id);
-    return;
+
+  if (!map || !map.getLayer(id)) return;
+
+  const visibility = cb.checked ? 'visible' : 'none';
+
+  // ✅ FIXED (THIS WAS ERROR)
+  map.setLayoutProperty(id, 'visibility', visibility);
+
+  // 🔥 APPLY FILTER
+  if(cb.checked && activeVillage){
+
+    if(id === 'roads-bt'){
+      map.setFilter(id, [
+        'all',
+        ['==',['get','Village'], activeVillage],
+        ['==',['get','LAYER'],'BT ROAD']
+      ]);
+    }
+
+    else if(id === 'roads-cc'){
+      map.setFilter(id, [
+        'all',
+        ['==',['get','Village'], activeVillage],
+        ['==',['get','LAYER'],'CC ROAD']
+      ]);
+    }
+
+    else if(id !== 'wall-3d'){
+      map.setFilter(id, ['==',['get','Village'], activeVillage]);
+    }
   }
-  map.setLayoutProperty(
-    id,
-    'visibility',
-    cb.checked ? 'visible' : 'none'
-  );
 }
 
 function toggleAllDroneImages(cb){
@@ -2923,92 +3092,11 @@ function toggleLanduse(cb) {
 
 
 
-function showCSRFlyStep(asset) {
 
-  // 🔴 remove old popups
-  document.querySelectorAll('.maplibregl-popup')
-    .forEach(p => p.remove());
 
-  // 🔴 clear old highlight
-  if (map.getSource('feature-highlight')) {
-    map.getSource('feature-highlight').setData({
-      type: 'FeatureCollection',
-      features: [{
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: asset.center
-        }
-      }]
-    });
-  }
 
-  // 🖼 PHOTO POPUP
-  new maplibregl.Popup({
-    closeButton: false,
-    offset: 30,
-    maxWidth: '320px'
-  })
-  .setLngLat(asset.center)
-  .setHTML(`
-    <div style="font-family:Segoe UI;">
-      <b style="font-size:14px;">${asset.title}</b><br>
-      <img src="${asset.image}"
-           style="width:100%;margin-top:6px;border-radius:8px;">
-    </div>
-  `)
-  .addTo(map);
-}
 
-function runCSRFlyThrough() {
-document.getElementById('csrNarrative').style.display = 'block';
 
-  map.boxZoom.disable();
-  map.dragPan.disable();
-  map.dragRotate.disable();
-  map.scrollZoom.disable();
-  map.doubleClickZoom.disable();
-  map.keyboard.disable();
-  map.touchZoomRotate.disable();
-
-  setTimeout(() => {
-
-    // 1️⃣ BANK
-    map.flyTo({ center: CSR_FLY_ASSETS[0].center, zoom:18.6, pitch:65, bearing:-25, speed:0.6 });
-    showCSRFlyStep(CSR_FLY_ASSETS[0]);
-
-    // 2️⃣ ANGANWADI
-    setTimeout(() => {
-      map.flyTo({ center: CSR_FLY_ASSETS[1].center, zoom:18.6, pitch:65, bearing:-15, speed:0.6 });
-      showCSRFlyStep(CSR_FLY_ASSETS[1]);
-    }, 3000);
-
-    // 3️⃣ KITCHEN
-    setTimeout(() => {
-      map.flyTo({ center: CSR_FLY_ASSETS[2].center, zoom:18.4, pitch:65, bearing:5, speed:0.6 });
-      showCSRFlyStep(CSR_FLY_ASSETS[2]);
-    }, 6000);
-
-    // 4️⃣ CC ROAD
-    setTimeout(() => {
-      map.flyTo({ center: CSR_FLY_ASSETS[3].center, zoom:17.9, pitch:55, bearing:-15, speed:0.6 });
-      showCSRFlyStep(CSR_FLY_ASSETS[3]);
-    }, 9000);
-
-    // 🔓 unlock
-    setTimeout(() => {
-      map.boxZoom.enable();
-      map.dragPan.enable();
-      map.dragRotate.enable();
-      map.scrollZoom.enable();
-      map.doubleClickZoom.enable();
-      map.keyboard.enable();
-      map.touchZoomRotate.enable();
-	  document.getElementById('csrNarrative').style.display = 'none';
-    }, 12000);
-
-  }, 1000);
-}
 
 
 
@@ -3042,44 +3130,54 @@ hamburger.onclick = () => {
     layerPanel.style.display === 'block' ? 'none' : 'block';
 };
 
-function addCSRPhotoPopup(layerId) {
-  map.on('click', layerId, (e) => {
-    const f = e.features[0];
-    const name = f.properties.NAME;
-
-    const asset = CSR_FLY_ASSETS.find(a =>
-      name && a.title.toUpperCase().includes(name.toUpperCase().split(' ')[0])
-    );
-
-    if (!asset) return;
-
-    new maplibregl.Popup({ maxWidth: '320px', offset: 20 })
-      .setLngLat(e.lngLat)
-      .setHTML(`
-        <div style="font-family:Segoe UI;">
-          <b>${asset.title}</b><br>
-          <img src="${asset.image}"
-               style="width:100%;margin-top:6px;border-radius:8px;">
-        </div>
-      `)
-      .addTo(map);
-  });
-}
 
 function renderCSRTable() {
+
   const tbody = document.getElementById('csrTableBody');
   tbody.innerHTML = '';
 
-  csrTableData.forEach(r => {
-    const tr = document.createElement('tr');
+  let filtered = csrTableData;
 
-    tr.innerHTML = `
-      <td>${r.slno}</td>
-      <td style="text-align:left;">${r.activity}</td>
-      <td>${r.status}</td>
-      <td>${r.type}</td>
-      <td>${r.remarks || ''}</td>
-    `;
+  // 🔥 APPLY VILLAGE FILTER
+  if (activeVillage) {
+    filtered = csrTableData.filter(d =>
+      d.village === activeVillage
+    );
+  }
+
+  filtered.forEach((r, index) => {
+
+const tr = document.createElement('tr');
+tr.style.cursor = 'pointer';
+
+tr.innerHTML = `
+  <td>${index + 1}</td>
+  <td style="text-align:left;">${r.activity}</td>
+  <td>${r.status}</td>
+  <td>${r.type}</td>
+  <td>${r.remarks || ''}</td>
+`;
+
+tr.onclick = () => {
+
+  // 🔥 CLEAR OLD POPUP
+  document.querySelectorAll('.maplibregl-popup')
+    .forEach(p => p.remove());
+
+  // 🔥 FLY TO POINT
+  map.flyTo({
+    center: r.geometry.coordinates,
+    zoom: 18,
+    pitch: 60,
+    speed: 0.8
+  });
+
+  // 🔥 SHOW POPUP
+  new maplibregl.Popup({ offset:10 })
+    .setLngLat(r.geometry.coordinates)
+    .setHTML(`<b>${r.activity}</b>`)
+    .addTo(map);
+};
 
     tbody.appendChild(tr);
   });
@@ -3102,6 +3200,26 @@ function setInitialUIState() {
   hideKpiHeader();
 }
 
+function updateCSRCount(){
+
+  let filtered = csrTableData;
+
+  // 🔥 Apply village filter
+  if (activeVillage) {
+    filtered = csrTableData.filter(d =>
+      d.village === activeVillage
+    );
+  }
+
+  // 🔥 Update count
+  csrCompletedCount = filtered.length;
+
+  // 🔥 Update UI safely
+  const el = document.getElementById('csrCompleted');
+  if (el) el.innerText = csrCompletedCount;
+}
+
+
 function showCSRWorks(btn){
 
   // 🔥 Remove active from all
@@ -3114,12 +3232,14 @@ function showCSRWorks(btn){
   // Hide donut & normal KPIs
   document.getElementById('donutBox').style.display = 'none';
   document.querySelector('.kpis').style.display = 'none';
+  
+  showCSRKPIs(); 
 
   // Show CSR KPI block
   document.getElementById('csrKpis').style.display = 'grid';
 
-  document.getElementById('csrCompleted').innerText = csrCompletedCount;
-  document.getElementById('csrNotStarted').innerText = csrNotStartedCount;
+  updateCSRCount();
+  
 
   // Switch tables
   document.getElementById('assetTableBox').style.display = 'none';
@@ -3135,6 +3255,7 @@ function showCSRWorks(btn){
   });
 
   renderCSRTable();
+  
 }
 
 map.on('load', () => {
@@ -3154,7 +3275,7 @@ map.addSource('feature-highlight', {
 // ===============================
 let villageData = null;
 
-fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_vbs.geojson')
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_vbs.geojson')
   .then(r => r.json())
   .then(data => {
     villageData = data;
@@ -3231,38 +3352,230 @@ function populateVillageFilters(data) {
   };
 }
 
+function activateVillageCSRMode(village){
+
+  // 1️⃣ TURN OFF EVERYTHING
+  const allLayers = [
+    'points','asset-labels',
+    'roads-bt','roads-cc',
+    'wall-3d','drain',
+    'existing-assets-icon',
+    'existing-assets-label',
+    'para','para-buildings-3d',
+    'landuse-3d','landuse-pick'
+  ];
+
+  allLayers.forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','none');
+    }
+  });
+
+  // 2️⃣ TURN ON ONLY REQUIRED
+const ON_LAYERS = [
+  'boundary',
+  'csr-points',   // 🔥 NEW
+  'csr-labels'
+];
+
+  ON_LAYERS.forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','visible');
+    }
+  });
+
+  // 3️⃣ FILTER BY VILLAGE
+  map.setFilter('boundary', ['==',['get','Village'], village]);
+
+  ['csr-points','csr-labels']
+    .forEach(layer=>{
+      if(map.getLayer(layer)){
+        map.setFilter(layer, ['==',['get','Village'], village]);
+      }
+    });
+
+  // 4️⃣ ZOOM TO VILLAGE
+  const feature = villageData.features.find(
+    f => f.properties.Village === village
+  );
+
+  if(feature){
+    map.fitBounds(turf.bbox(feature), {
+      padding: 60,
+      duration: 1200
+    });
+  }
+
+runDynamicFlyThrough(village);
+
+  // 6️⃣ SYNC LAYER PANEL CHECKBOXES
+  syncLayerPanelCheckboxes();
+}
+
 // ===============================
 // STEP-5: SEARCH & RESET BUTTONS
 // ===============================
 
+
+
+function applyVillageFilter(village){
+
+  const layers = [
+    'csr-points','csr-labels',
+    'points','asset-labels',
+    'roads-bt','roads-cc',
+    'drain','boundary',
+    'para','para-buildings-3d'
+  ];
+
+  layers.forEach(layer=>{
+    if(map.getLayer(layer)){
+      map.setFilter(layer, ['==',['get','Village'], village]);
+    }
+  });
+}
+
+function applyVillageFilterToAll(village){
+
+  // ✅ POINTS
+  if(map.getLayer('points')){
+    map.setFilter('points', ['==',['get','Village'], village]);
+  }
+
+  if(map.getLayer('asset-labels')){
+    map.setFilter('asset-labels', ['==',['get','Village'], village]);
+  }
+
+  // ✅ ROADS (IMPORTANT FIX)
+  if(map.getLayer('roads-bt')){
+    map.setFilter('roads-bt', [
+      'all',
+      ['==',['get','Village'], village],
+      ['==',['get','LAYER'],'BT ROAD']
+    ]);
+  }
+
+  if(map.getLayer('roads-cc')){
+    map.setFilter('roads-cc', [
+      'all',
+      ['==',['get','Village'], village],
+      ['==',['get','LAYER'],'CC ROAD']
+    ]);
+  }
+
+  // ✅ DRAIN
+  if(map.getLayer('drain')){
+    map.setFilter('drain', ['==',['get','Village'], village]);
+  }
+
+  // ✅ PARA
+  if(map.getLayer('para')){
+    map.setFilter('para', ['==',['get','Village'], village]);
+  }
+
+  if(map.getLayer('para-buildings-3d')){
+    map.setFilter('para-buildings-3d', ['==',['get','Village'], village]);
+  }
+
+  // ✅ CSR
+  if(map.getLayer('csr-points')){
+    map.setFilter('csr-points', ['==',['get','Village'], village]);
+  }
+
+  if(map.getLayer('csr-labels')){
+    map.setFilter('csr-labels', ['==',['get','Village'], village]);
+  }
+
+  // ✅ BOUNDARY
+  if(map.getLayer('boundary')){
+    map.setFilter('boundary', ['==',['get','Village'], village]);
+  }
+
+  // ❌ DO NOT FILTER wall-3d (buffer removes properties)
+}
+
 document.querySelector('.search-btn').onclick = () => {
+
   const village = document.getElementById('villageSelect').value;
+
   if (!village) {
     alert('Please select a village');
     return;
   }
 
-  map.setLayoutProperty('boundary', 'visibility', 'visible');
-  map.setFilter('boundary', ['==', ['get', 'Village'], village]);
-
-  const feature = villageData.features.find(
-    f => f.properties.Village === village
-  );
-
-  if (feature) {
-    map.fitBounds(turf.bbox(feature), {
-      padding: 60,
-      duration: 1200
-    });
-
-    // 🔥 START FLY-THROUGH AFTER ZOOM
-    setTimeout(() => {
-      runCSRFlyThrough();
-    }, 1500);
+  // 🛑 Stop flythrough
+  flyThroughRunning = false;
+  if (flyThroughTimer) {
+    clearTimeout(flyThroughTimer);
+    flyThroughTimer = null;
   }
+
+  // ✅ Set active village
+  activeVillage = village;
+
+  // ✅ APPLY FILTER TO ALL LAYERS
+  const layers = [
+    'csr-points','csr-labels',
+    'points','asset-labels',
+    'existing-assets-icon','existing-assets-label',
+    'roads-bt','roads-cc',
+    'drain','wall-3d',
+    'para','para-buildings-3d',
+    'boundary'
+  ];
+
+  layers.forEach(layer=>{
+    if(map.getLayer(layer)){
+      map.setFilter(layer, ['==',['get','Village'], village]);
+    }
+  });
+
+
+
+  // ✅ Ensure CSR + boundary visible
+  ['csr-points','csr-labels','boundary'].forEach(layer=>{
+    if(map.getLayer(layer)){
+      map.setLayoutProperty(layer, 'visibility', 'visible');
+    }
+  });
+  
+  if(map.getLayer('existing-assets-icon')){
+  map.setFilter('existing-assets-icon',
+    ['all',
+      ['==',['get','Village'], village],
+      ['!=',['get','DESCRIPTIO'], null]
+    ]
+  );
+}
+
+if(map.getLayer('existing-assets-label')){
+  map.setFilter('existing-assets-label',
+    ['==',['get','Village'], village]
+  );
+}
+
+
+applyVillageFilterToAll(village);
+resetDonut();   // 🔥 ADD THIS LINE
+renderCSRTable();   // 👈 ADD HERE
+updateCSRCount();
+
+  // 🚀 Flythrough
+  // runDynamicFlyThrough(village);
+
 };
 
 document.querySelector('.reset-btn').onclick = () => {
+
+  // 🛑 STOP flythrough
+  flyThroughRunning = false;
+
+  if (flyThroughTimer) {
+    clearTimeout(flyThroughTimer);
+    flyThroughTimer = null;
+  }
+
+  activeVillage = null;
 
   // 🔹 Reset dropdowns
   document.getElementById('stateSelect').value = '';
@@ -3271,69 +3584,98 @@ document.querySelector('.reset-btn').onclick = () => {
   document.getElementById('villageSelect').innerHTML =
     '<option value="">Select Village</option>';
 
-  // 🔥 SHOW ALL VILLAGE BOUNDARIES
-  map.setFilter('boundary', null);
-  map.setLayoutProperty('boundary', 'visibility', 'visible');
+  // 🔥 REMOVE ALL FILTERS (IMPORTANT)
+  [
+    'csr-points','csr-labels',
+    'points','asset-labels',
+    'existing-assets-icon','existing-assets-label',
+    'roads-bt','roads-cc',
+    'drain','wall-3d',
+    'para','para-buildings-3d',
+    'boundary'
+  ].forEach(layer=>{
+    if(map.getLayer(layer)){
+      map.setFilter(layer, null);
+    }
+  });
 
-  // 🔹 Hide CSR narrative
-  const csrBox = document.getElementById('csrNarrative');
-  if (csrBox) csrBox.style.display = 'none';
+  // 🔥 SHOW ONLY THESE
+  const SHOW = ['boundary','csr-points','csr-labels'];
 
-  // 🔹 Remove all popups
-  document.querySelectorAll('.maplibregl-popup')
-    .forEach(p => p.remove());
+  const ALL = [
+    'points','asset-labels',
+    'roads-bt','roads-cc',
+    'drain','wall-3d',
+    'existing-assets-icon','existing-assets-label',
+    'para','para-buildings-3d'
+  ];
+
+  SHOW.forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','visible');
+    }
+  });
+
+  ALL.forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','none');
+    }
+  });
 
   // 🔹 Clear highlight
   if (map.getSource('feature-highlight')) {
     map.getSource('feature-highlight').setData({
-      type: 'FeatureCollection',
-      features: []
+      type:'FeatureCollection',
+      features:[]
     });
   }
 
-  // 🔥 FORCE INDIA 2D VIEW
+  // 🔹 Remove popups
+  document.querySelectorAll('.maplibregl-popup')
+    .forEach(p=>p.remove());
+
+  // 🔥 BACK TO INDIA
   resetToIndia2D();
+  
+  renderCSRTable();
+  updateCSRCount();
+  syncLayerPanelCheckboxes();
 };
 
+// ===============================
+// CSR TABLE FROM GEOJSON (FINAL)
+// ===============================
 
-Papa.parse(
-  'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/SAMALWAR-NMDC%20CSR%20Works_25022026.csv',
-  {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    transformHeader: h => h.replace(/\uFEFF/g, '').trim(), // 🔥 BOM FIX
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/CSR_POINTS.geojson')
+  .then(r => r.json())
+  .then(data => {
 
-    complete: function (results) {
+    csrTableData = [];
+    csrCompletedCount = 0;
+    csrNotStartedCount = 0;
 
-      csrTableData = [];
-      csrCompletedCount = 0;
-      csrNotStartedCount = 0;
+    data.features.forEach((f, index) => {
 
-      results.data.forEach(row => {
+      const props = f.properties;
 
-        const status = (row['Work Status'] || row['Work status'] || '').trim();
+csrTableData.push({
+  slno: index + 1,
+  activity: props.NAME || '',
+  status: props.STATUS || 'Completed',
+  type: props.LAYER || '',
+  remarks: '',
+  village: props.Village || '',
+  geometry: f.geometry   // 🔥 ADD THIS
+});
 
-        csrTableData.push({
-          slno: row['Sl No'] || row['Sl. No'] || '',
-          activity: row['NMDC CSR - Activity description']
-                    || row['NMDC CSR – Activity description']
-                    || '',
-          status: status,
-          type: row['Civil Worlks / Financial Assistance']
-                || row['Civil Worlks / Financial Assistance']
-                || '',
-          remarks: row['Remarks (if any)'] || ''
-        });
+      // OPTIONAL (if STATUS exists)
+      if (props.STATUS === 'Completed') csrCompletedCount++;
+      if (props.STATUS === 'Not Started') csrNotStartedCount++;
+    });
 
-        if (status === 'Completed') csrCompletedCount++;
-        if (status === 'Not Started') csrNotStartedCount++;
-      });
+    renderCSRTable();   // 🔥 IMPORTANT
+  });
 
-      renderCSRTable();   // 🔥 IMPORTANT
-    }
-  }
-);
 
   // 🔴 POINT HIGHLIGHT
   map.addLayer({
@@ -3458,7 +3800,7 @@ map.addLayer({
 /* VILLAGE BOUNDARY */
 map.addSource('boundary',{
  type:'geojson',
- data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_vbs.geojson'
+ data:'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_vbs.geojson'
 });
 map.addLayer({
  id:'boundary',
@@ -3499,7 +3841,7 @@ map.addLayer({
   id: 'landuse-3d',
   type: 'fill-extrusion',
   source: 'landuse',
-  minzoom: 14,
+  minzoom: 10,
   layout: {
     visibility: 'none'   // controlled by layer panel
   },
@@ -3600,7 +3942,7 @@ map.loadImage(
   map.addImage('home',img);
   map.addSource('para',{
     type:'geojson',
-    data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Location_Name.geojson'
+    data:'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Location_Name.geojson'
   });
   map.addLayer({
     id:'para',
@@ -3643,6 +3985,7 @@ map.loadImage(
     }
   }
 );
+
 
 function createHandPumpIcon(colorPipe) {
   const size = 64;
@@ -3706,7 +4049,149 @@ map.addImage(
   'hand-pump-not-working',
   createHandPumpIcon('#dc2626')
 );
+function createDairyIcon(){
+  const s=64;
+  const c=document.createElement('canvas');
+  c.width=c.height=s;
+  const ctx=c.getContext('2d');
 
+  // building
+  ctx.fillStyle='#0ea5e9';
+  ctx.fillRect(16,28,32,22);
+
+  // roof
+  ctx.fillStyle='#0284c7';
+  ctx.beginPath();
+  ctx.moveTo(14,28);
+  ctx.lineTo(32,16);
+  ctx.lineTo(50,28);
+  ctx.closePath();
+  ctx.fill();
+
+  // milk drop
+  ctx.fillStyle='#ffffff';
+  ctx.beginPath();
+  ctx.moveTo(32,34);
+  ctx.bezierCurveTo(28,40,28,44,32,46);
+  ctx.bezierCurveTo(36,44,36,40,32,34);
+  ctx.fill();
+
+  return ctx.getImageData(0,0,s,s);
+}
+
+map.addImage('dairy-icon', createDairyIcon());
+
+function createROPlantIcon(){
+  const s=64;
+  const c=document.createElement('canvas');
+  c.width=c.height=s;
+  const ctx=c.getContext('2d');
+
+  // tank
+  ctx.fillStyle='#38bdf8';
+  ctx.fillRect(20,24,24,22);
+
+  // pipes
+  ctx.strokeStyle='#475569';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(20,30);
+  ctx.lineTo(12,30);
+  ctx.moveTo(44,30);
+  ctx.lineTo(52,30);
+  ctx.stroke();
+
+  // water drop
+  ctx.fillStyle='#0ea5e9';
+  ctx.beginPath();
+  ctx.moveTo(32,32);
+  ctx.bezierCurveTo(28,38,28,42,32,44);
+  ctx.bezierCurveTo(36,42,36,38,32,32);
+  ctx.fill();
+
+  return ctx.getImageData(0,0,s,s);
+}
+
+map.addImage('ro-water-icon', createROPlantIcon());
+
+function createPostOfficeIcon(){
+  const s=64;
+  const c=document.createElement('canvas');
+  c.width=c.height=s;
+  const ctx=c.getContext('2d');
+
+  ctx.fillStyle='#b91c1c';
+  ctx.fillRect(14,26,36,24);
+
+  ctx.fillStyle='#7f1d1d';
+  ctx.beginPath();
+  ctx.moveTo(12,26);
+  ctx.lineTo(32,14);
+  ctx.lineTo(52,26);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle='#fde047';
+  ctx.font='bold 18px Arial';
+  ctx.textAlign='center';
+  ctx.fillText('✉',32,40);
+
+  return ctx.getImageData(0,0,s,s);
+}
+
+map.addImage('postoffice-icon', createPostOfficeIcon());
+
+function createToiletIcon(){
+  const s=64;
+  const c=document.createElement('canvas');
+  c.width=c.height=s;
+  const ctx=c.getContext('2d');
+
+  ctx.fillStyle='#0ea5e9';
+  ctx.fillRect(14,24,36,28);
+
+  ctx.fillStyle='#1e293b';
+  ctx.font='bold 16px Arial';
+  ctx.textAlign='center';
+  ctx.fillText('WC',32,40);
+
+  return ctx.getImageData(0,0,s,s);
+}
+
+map.addImage('toilet-icon', createToiletIcon());
+
+
+
+function createMasjidIcon(){
+  const s = 64;
+  const c = document.createElement('canvas');
+  c.width = c.height = s;
+  const ctx = c.getContext('2d');
+
+  // Base
+  ctx.fillStyle = '#065f46';
+  ctx.fillRect(14,32,36,20);
+
+  // Dome
+  ctx.fillStyle = '#10b981';
+  ctx.beginPath();
+  ctx.arc(32,28,10,Math.PI,0);
+  ctx.fill();
+
+  // Minaret
+  ctx.fillRect(18,20,4,12);
+  ctx.fillRect(42,20,4,12);
+
+  // Crescent
+  ctx.strokeStyle='#fde047';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(32,18,4,0,Math.PI*2);
+  ctx.stroke();
+
+  return ctx.getImageData(0,0,s,s);
+}
+map.addImage('masjid-icon', createMasjidIcon());
 
 function createSolarTankIcon() {
   const size = 64;
@@ -4208,14 +4693,16 @@ map.addImage('anganwadi-icon', createAnganwadiIcon(), { pixelRatio: 2 });
 map.addImage('school-icon', createSchoolIcon(), { pixelRatio: 2 });
 map.addImage('library-icon', createLibraryIcon(), { pixelRatio: 2 });
 map.addImage('community-icon', createCommunityHallIcon(), { pixelRatio: 2 });
-
-
-
+map.addImage('masjid-icon', createMasjidIcon(), { pixelRatio: 2 });
+map.addImage('dairy-icon', createDairyIcon(), { pixelRatio: 2 });
+map.addImage('ro-water-icon', createROPlantIcon(), { pixelRatio: 2 });
+map.addImage('postoffice-icon', createPostOfficeIcon(), { pixelRatio: 2 });
+map.addImage('toilet-icon', createToiletIcon(), { pixelRatio: 2 });
 
 
 map.addSource('existing-assets', {
   type: 'geojson',
-  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Existing_Assets.geojson'
+  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Existing_Assets.geojson'
 });
 
 map.addLayer({
@@ -4251,6 +4738,26 @@ map.addLayer({
   ['in', 'SREET',  ['upcase', ['get', 'DESCRIPTIO']]]
 ],
 'street-light-working',
+
+// 🕌 MASJID
+['in','MASJID',['upcase',['get','DESCRIPTIO']]],
+'masjid-icon',
+
+// 🥛 MILK DAIRY
+['in','DAIRY',['upcase',['get','DESCRIPTIO']]],
+'dairy-icon',
+
+// 💧 RO WATER PLANT
+['in','RO',['upcase',['get','DESCRIPTIO']]],
+'ro-water-icon',
+
+// 📮 POST OFFICE
+['in','POST',['upcase',['get','DESCRIPTIO']]],
+'postoffice-icon',
+
+// 🚻 PUBLIC TOILETS
+['in','TOILET',['upcase',['get','DESCRIPTIO']]],
+'toilet-icon',
 
 
   // ⚡ TRANSFORMER
@@ -4321,35 +4828,20 @@ map.addLayer({
   'existing-working'
 ],
 
-
-    'icon-size': [
-  'case',
-
-  // 🏛 Institutional & Services → BIGGER
-  ['in', ['get', 'CATEGORY'], ['literal', [
-    'Institutional & Public Services'
-  ]]],
-  2.0,   // 👈 BIG SIZE (Bank, Panchayat, PDS)
-
-  // 🔹 All others → normal
-  1.1
-],
-
 'icon-size': [
   'case',
 
-  // Bigger for buildings
   ['any',
-    ['in', 'SCHOOL', ['upcase', ['get', 'DESCRIPTIO']]],
-    ['in', 'ANGANWADI', ['upcase', ['get', 'DESCRIPTIO']]],
-	['in', 'LIBRARY', ['upcase', ['get', 'DESCRIPTIO']]],
-    ['in', 'COMMUNITY', ['upcase', ['get', 'DESCRIPTIO']]]
+    ['in','SCHOOL',['upcase',['get','DESCRIPTIO']]],
+    ['in','ANGANWADI',['upcase',['get','DESCRIPTIO']]],
+    ['in','BANK',['upcase',['get','DESCRIPTIO']]],
+    ['in','PANCHAYAT',['upcase',['get','DESCRIPTIO']]]
   ],
- 2.0,
+  2.0,
 
-  // Normal
   1.2
 ],
+
 
 
     'icon-allow-overlap': true,
@@ -4368,19 +4860,28 @@ map.addLayer({
   layout: {
     visibility: 'none',
 
-    'text-field': ['get', 'DESCRIPTIO'],
+    'text-field': [
+      'case',
 
-    // 🔥 TEXT SIZE SCALES WITH ZOOM
+      [
+        'any',
+        ['in','STREET',['upcase',['get','DESCRIPTIO']]],
+        ['in','SREET',['upcase',['get','DESCRIPTIO']]]
+      ],
+      '',
+
+      ['get','DESCRIPTIO']
+    ],
+
     'text-size': [
       'interpolate',
       ['linear'],
       ['zoom'],
-      12, 9,     // zoom 12 → small
-      15, 11,    // zoom 15 → normal
-      18, 13     // zoom 18 → large
+      12, 9,
+      15, 11,
+      18, 13
     ],
 
-    // 🔥 OFFSET ADJUSTS WITH ZOOM
     'text-offset': [
       'interpolate',
       ['linear'],
@@ -4475,7 +4976,7 @@ map.on('click', 'existing-assets-label', (e) => {
 /* PROPOSED ASSETS – COLORED AS PER ACTUAL LAYER VALUES */
 map.addSource('points',{
   type:'geojson',
-  data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Points.geojson'
+  data:'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Points.geojson'
 });
 
 map.addLayer({
@@ -4581,7 +5082,7 @@ map.addLayer({
 /* PROPOSED ROADS */
 map.addSource('roads-src',{
  type:'geojson',
- data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson'
+ data:'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Lines.geojson'
 });
 /* BT ROADS */
 map.addLayer({
@@ -4611,7 +5112,7 @@ map.addLayer({
    3D BOUNDARY WALL (LINE → POLYGON → EXTRUSION)
    ======================= */
 
-fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson')
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Lines.geojson')
   .then(r => r.json())
   .then(data => {
 
@@ -4620,10 +5121,15 @@ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samal
       f => f.properties.LAYER === 'BOUNDARY WALL'
     );
 
-    // 2️⃣ Convert line → thin polygon (0.3m thickness)
-    const wallPolygons = wallLines.map(f =>
-      turf.buffer(f, 0.15, { units: 'meters' })
-    );
+const wallPolygons = wallLines.map(f => {
+
+  const poly = turf.buffer(f, 0.15, { units: 'meters' });
+
+  // 🔥 COPY PROPERTIES BACK
+  poly.properties = f.properties;
+
+  return poly;
+});
 
     // 3️⃣ Add polygon source
     map.addSource('wall-3d', {
@@ -4639,7 +5145,7 @@ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samal
   id: 'wall-3d',
   type: 'fill-extrusion',
   source: 'wall-3d',
-  minzoom: 15,
+  minzoom: 13,
   layout: {
     visibility: 'none'   // 🔥 THIS IS THE KEY FIX
   },
@@ -4668,38 +5174,15 @@ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samal
 });
 
 
-/* NMDC WORK COMPLETED */
 map.addSource('existing-csr', {
   type: 'geojson',
-  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/NMDC_EXISTING_CSR_WORK.geojson'
+  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/CSR_POINTS.geojson'
 });
 
 
-map.addLayer({
-  id: 'csr-buildings-3d',
-  type: 'fill-extrusion',
-  source: 'existing-csr',
-  filter: ['==', ['get', 'LAYER'], 'BUILDING'],
-  paint: {
-    'fill-extrusion-color': '#2563eb',
-    'fill-extrusion-height': 10,
-    'fill-extrusion-base': 0,
-    'fill-extrusion-opacity': 0.85
-  }
-});
 
-map.addLayer({
-  id: 'csr-ccroad-3d',
-  type: 'fill-extrusion',
-  source: 'existing-csr',
-  filter: ['==', ['get', 'LAYER'], 'CC ROAD'],
-  paint: {
-    'fill-extrusion-color': '#9ca3af',
-    'fill-extrusion-height': 1.8,
-    'fill-extrusion-base': 0,
-    'fill-extrusion-opacity': 0.9
-  }
-});
+
+
 
 /* ===============================
    PARA BUILDINGS (EXCEL LINKED)
@@ -4709,8 +5192,8 @@ map.addLayer({
 
 map.addSource('para-buildings', {
   type: 'geojson',
-  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Buildings_Updated.geojson',
-  generateId: true   // 👈 ADD THIS
+  data: 'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/badebacheli_joined.geojson',
+  promoteId: 'OBJECTID'   // ✅ FINAL FIX
 });
 
 map.addLayer({
@@ -4724,7 +5207,7 @@ map.addLayer({
     'fill-extrusion-color': [
   'case',
   ['boolean', ['feature-state', 'clicked'], false],
-  '#ef4444',   // RED when clicked
+  '#06b6d4', // cyan highlight ✅
   '#f97316'   // normal color
 ],
     'fill-extrusion-height': 10,
@@ -4771,15 +5254,20 @@ map.on('click', 'para-buildings-3d', (e) => {
       { clicked: false }
     );
   }
+  
+  // 🔥 CLEAR OTHER HIGHLIGHTS
+map.getSource('feature-highlight').setData({
+  type: 'FeatureCollection',
+  features: []
+});
 
   // 🔴 SET NEW HIGHLIGHT
-  clickedBuildingId = feature.id;
+ clickedBuildingId = feature.id || feature.properties.OBJECTID;
 
-  map.setFeatureState(
-    { source: 'para-buildings', id: clickedBuildingId },
-    { clicked: true }
-  );
-  
+map.setFeatureState(
+  { source: 'para-buildings', id: clickedBuildingId },
+  { clicked: true }
+);
   
 
   // 👇 THEN KEEP YOUR POPUP HTML BELOW THIS
@@ -4940,34 +5428,52 @@ map.addLayer({
   type: 'symbol',
   source: 'existing-csr',
   layout: {
-    'icon-image': 'nmdc-logo',
-    'icon-size': 0.35,
-    'icon-offset': [0, -12],
+        'icon-image': 'nmdc-logo',
+        'icon-size': 0.4,
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
 
-    'text-field': [
-      'concat',
-      'CSR – ',
-      ['get', 'NAME']
-    ],
-    'text-size': 12,
-    'text-offset': [0, 1.4],
-    'text-anchor': 'top',
-    'text-allow-overlap': true
+    //'text-field': ['get','NAME'],
+    //'text-size': 12,
+    //'text-offset': [0, 1.2],
+    //'text-anchor': 'top'
+		  //'text-allow-overlap': true,
+  //'text-ignore-placement': true
   },
   paint: {
     'text-color': '#0f4c81',
     'text-halo-color': '#ffffff',
     'text-halo-width': 2
+
   }
 });
+
+// 👆 Cursor pointer on hover (circle)
+map.on('mouseenter', 'csr-points', () => {
+  map.getCanvas().style.cursor = 'pointer';
+});
+
+map.on('mouseleave', 'csr-points', () => {
+  map.getCanvas().style.cursor = '';
+});
+
+// 👆 Cursor pointer on hover (icon + label)
+map.on('mouseenter', 'csr-labels', () => {
+  map.getCanvas().style.cursor = 'pointer';
+});
+
+map.on('mouseleave', 'csr-labels', () => {
+  map.getCanvas().style.cursor = '';
+});
+
+
 
   // ===============================
   // ✅ ADD POPUPS (THIS IS THE PLACE)
   // ===============================
-  addCSRPopup('csr-buildings-3d');
-  addCSRPopup('csr-ccroad-3d');
-  addCSRPhotoPopup('csr-buildings-3d');
-addCSRPhotoPopup('csr-ccroad-3d');
+
+ addCSRPhotoPopup('csr-points');
+addCSRPhotoPopup('csr-labels');
   
   
   
@@ -4978,7 +5484,7 @@ addCSRPhotoPopup('csr-ccroad-3d');
 	/* PROPOSED DRAIN */
 map.addSource('drain-src',{
  type:'geojson',
- data:'https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Drainage_Lines.geojson'
+ data:'https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Drainage_Lines.geojson'
 });
 map.addLayer({
  id:'drain',
@@ -5002,7 +5508,7 @@ hhBtn.onclick = () => {
 };
 
 applyInitialMapState();
-
+syncLayerPanelCheckboxes();
 
 // ==============================
 // STEP 5 – HOUSEHOLD ANALYSIS LOGIC
@@ -5011,7 +5517,7 @@ applyInitialMapState();
 let hhChart = null;
 let hhData = null;
 
-fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Buildings_Updated.geojson')
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/badebacheli_joined.geojson')
 .then(res => res.json())
 .then(data => {
 
@@ -5225,12 +5731,14 @@ const HH_COLOR_MAP = {
 "Male": "#2563eb",
 "Female": "#ec4899",
 
-// Livelihood (example colors)
+// Livelihood
 "Agriculture": "#16a34a",
-"Wage labour": "#f97316",
-"Service": "#2563eb",
+"Wage labour ": "#f97316",
+"Private job ": "#2563eb",
+"Govt job ": "#dc2626",
 "Business": "#7c3aed",
-"Other": "#9ca3af",
+"Others": "#6b7280",
+"NTFP": "#eab308",
 
 // Smartphone
 "Yes": "#16a34a",
@@ -5244,16 +5752,33 @@ const HH_COLOR_MAP = {
   "Kutcha": "#16a34a",
   "Pucca": "#dc2626",
   "Semi pucca": "#2563eb",
+  "RCC roof building": "#3b82f6",
+  
 
-  // Landholding
-  "<1 acre": "#2563eb",
-  "1-2.5 acre": "#16a34a",
-  "2.5-5 acres": "#facc15",
-  ">5 acres": "#dc2626",
+// Landholding
+  "0": "#6b7280",
+  "<1 acre ": "#3b82f6",
+  "1–2.5 acres ": "#22c55e",
+  "2.5–5 acres ": "#eab308",
+  ">5 acres": "#ef4444",
 
-  // Water Source
-  "Handpump": "#2563eb",
-  "Solar Tank": "#facc15"
+// Water Source
+"Handpump": "#3b82f6",
+"Well": "#16a34a",
+"Piped": "#f59e0b",
+"Tanker": "#ef4444",
+"River": "#06b6d4",
+"Solar Tank": "#eab308",
+  
+    // ================= CASTE (🔥 IMPORTANT FIX) =================
+  "ST": "#f59e0b",     // amber
+  "SC": "#ef4444",     // red
+  "OBC": "#3b82f6",    // blue
+  "General": "#22c55e" // green
+
+  
+  
+  
 };
 function createHHChart(counts, mode){
 
@@ -5423,14 +5948,22 @@ function applyMapColor(mode){
   ];
 }
 
+// ================= LIVELIHOOD =================
 else if(mode === 'livelihood'){
   colorExpression = [
     'match',
-    ['get','Primary_Livelihood'],
-    'Agriculture', HH_COLOR_MAP["Agriculture"],
-    'Wage labour', HH_COLOR_MAP["Wage labour"],
-    'Service', HH_COLOR_MAP["Service"],
-    'Business', HH_COLOR_MAP["Business"],
+    ['upcase', ['trim', ['get','Primary_Livelihood']]],
+
+    'AGRICULTURE', '#16a34a',
+    'WAGE LABOUR ', '#f97316',
+
+    'PRIVATE JOB ', '#2563eb',
+    'GOVT JOB ', '#dc2626',
+
+    'BUSINESS', '#7c3aed',
+    'OTHERS', '#6b7280',
+    'NTFP', '#eab308',
+
     '#9ca3af'
   ];
 }
@@ -5494,22 +6027,51 @@ else if(mode === 'smartphone'){
       'Kutcha', '#16a34a',
       'Pucca', '#dc2626',
       'Semi pucca', '#2563eb',
+	  'RCC roof building', '#3b82f6',
       '#f59e0b'
     ];
   }
+  // ================= CASTE =================
+else if(mode === 'caste'){
+  colorExpression = [
+    'match',
+    ['get','Caste_Category'],   // 👈 make sure this field name is correct
+
+    'ST', HH_COLOR_MAP["ST"],
+    'SC', HH_COLOR_MAP["SC"],
+    'OBC', HH_COLOR_MAP["OBC"],
+    'General', HH_COLOR_MAP["General"],
+
+    '#9ca3af' // default
+  ];
+}
   
-  // ================= LANDHOLDING =================
+// ================= LANDHOLDING =================
 else if(mode === 'land'){
   colorExpression = [
     'match',
     ['get','Landholding_Size'],
-    '<1 acre', HH_COLOR_MAP["<1 acre"],
-    '1-2.5 acre', HH_COLOR_MAP["1-2.5 acre"],
-    '2.5-5 acres', HH_COLOR_MAP["2.5-5 acres"],
-    '>5 acres', HH_COLOR_MAP[">5 acres"],
+
+    '0', '#6b7280',
+
+    '<1 acre', '#3b82f6',
+    '<1 acre ', '#3b82f6',
+
+    '1–2.5 acres', '#22c55e',
+    '1-2.5 acres', '#22c55e',
+    '1–2.5 acres ', '#22c55e',
+
+    '2.5–5 acres', '#eab308',   // 🔥 THIS WAS FAILING
+    '2.5-5 acres', '#eab308',
+    '2.5–5 acres ', '#eab308',
+
+    '>5 acres', '#ef4444',
+    '>5 acres ', '#ef4444',
+
     '#9ca3af'
   ];
 }
+
 
   // ================= WATER AVAILABILITY =================
   else if(mode === 'waterAvailability'){
@@ -5522,14 +6084,21 @@ else if(mode === 'land'){
     ];
   }
 
-  // ================= WATER SOURCE =================
+// ================= WATER SOURCE =================
 else if(mode === 'waterSource'){
   colorExpression = [
     'match',
     ['get','Drinking_Water_Source'],
-    'Handpump', HH_COLOR_MAP["Handpump"],
-    'Solar Tank', HH_COLOR_MAP["Solar Tank"],
-    '#f97316'
+
+    'Handpump', '#3b82f6',      // blue
+    'Well', '#16a34a',          // green
+    'Piped', '#f59e0b',         // amber
+    'Tanker', '#ef4444',        // red
+    'River', '#06b6d4',         // cyan
+
+    'Solar Tank', '#eab308',    // yellow (extra case)
+
+    '#9ca3af' // default
   ];
 }
 
@@ -5541,25 +6110,151 @@ else if(mode === 'waterSource'){
   map.setPaintProperty(
     'para-buildings-3d',
     'fill-extrusion-color',
-    [
-      'case',
-      ['boolean',['feature-state','clicked'],false],
-      '#ef4444',
-      colorExpression
-    ]
+[
+  'case',
+  ['boolean',['feature-state','clicked'],false],
+  '#06b6d4',   // ✅ NEW COLOR (cyan highlight)
+  colorExpression
+]
   );
 }
 
 
+  addClickHighlight('roads-bt');      // BT roads
+  addClickHighlight('roads-cc');      // CC roads
+  addClickHighlight('wall-3d');       // boundary wall
+  addClickHighlight('drain');         // drain
+  addClickHighlight('para');          // habitation
+ 
+// ✅ Existing assets
+addCustomPopup('existing-assets-icon');
+
+// ✅ Proposed assets
+addCustomPopup('points');
+addCSRPhotoPopup('csr-labels');   // 👈 YOUR NMDC LOGO LAYER
 
 
+map.on('click', (e) => {
 
+  const features = map.queryRenderedFeatures(e.point, {
+    layers: [
+      'para-buildings-3d',
+      'points',
+      'roads-bt',
+      'roads-cc',
+      'wall-3d',
+	  'existing-assets-icon',
+	  'csr-labels',
+      'drain'
+    ]
+  });
+
+  // 👉 If clicked empty space → clear everything
+  if (!features.length) {
+    clearSelection();
+  }
+});
 
 }); // ✅ CLOSE map.on('load')
 
+
+function runDynamicFlyThrough(village){
+
+  // 🛑 STOP previous flythrough
+  if (flyThroughTimer) {
+    clearTimeout(flyThroughTimer);
+    flyThroughTimer = null;
+  }
+
+  flyThroughRunning = true;
+
+  // 🔴 GET FEATURES
+  const rawFeatures = map.querySourceFeatures('existing-csr')
+    .filter(f => f.properties.Village === village);
+
+  // ✅ REMOVE DUPLICATES (VERY IMPORTANT)
+  const uniqueMap = {};
+  rawFeatures.forEach(f => {
+    const key = f.properties.NAME; // unique identifier
+    if (!uniqueMap[key]) {
+      uniqueMap[key] = f;
+    }
+  });
+
+  const features = Object.values(uniqueMap);
+
+  // ✅ OPTIONAL SORT (smooth order)
+  features.sort((a, b) =>
+    a.properties.NAME.localeCompare(b.properties.NAME)
+  );
+
+  // 🧪 DEBUG (you can remove later)
+  console.log("CSR count:", features.length);
+
+  if(!features.length) return;
+
+  let i = 0;
+
+  function fly(){
+
+    // 🛑 STOP if manually interrupted
+    if (!flyThroughRunning) return;
+
+    // 🛑 FINAL STOP CONDITION
+    if(i >= features.length){
+
+      flyThroughRunning = false;
+
+      if (flyThroughTimer) {
+        clearTimeout(flyThroughTimer);
+        flyThroughTimer = null;
+      }
+
+      return;
+    }
+
+    const f = features[i];
+
+    // 🧹 REMOVE OLD POPUPS
+    document.querySelectorAll('.maplibregl-popup')
+      .forEach(p => p.remove());
+
+    // ✈️ FLY
+    map.flyTo({
+      center: f.geometry.coordinates,
+      zoom: 17,
+      pitch: 60,
+      bearing: i * 40, // 🔥 dynamic rotation (optional)
+      speed: 0.6
+    });
+
+    const name = f.properties.NAME;
+
+
+new maplibregl.Popup({ offset:10 })
+  .setLngLat(f.geometry.coordinates)
+  .setHTML(`
+    <div style="font-size:13px;">
+      <b>${name}</b><br>
+      <img src="https://raw.githubusercontent.com/hemanya2003/CSR_PHOTOS/main/${name}.jpg"
+           onerror="this.onerror=null;this.src='https://raw.githubusercontent.com/hemanya2003/CSR_PHOTOS/main/${name}.jpeg';"
+           style="width:100%;margin-top:6px;border-radius:6px;">
+    </div>
+  `)
+  .addTo(map);
+
+    i++;
+
+    // ⏱️ NEXT STEP
+    flyThroughTimer = setTimeout(fly, 3500);
+  }
+
+  fly();
+}
+
 function applyInitialMapState() {
 
-  const ON = ['boundary', 'csr-buildings-3d', 'csr-ccroad-3d', 'csr-labels'];
+  const ON = ['boundary', 'csr-points', 'csr-labels'];
 
   const OFF = [
     'points',
@@ -5589,62 +6284,35 @@ function applyInitialMapState() {
   syncLayerPanelCheckboxes();
 }
 
-function syncLayerPanelCheckboxes() {
+function syncLayerPanelCheckboxes(){
 
-  document
-    .querySelectorAll('#layerPanel input[type="checkbox"]')
-    .forEach(cb => {
+  document.querySelectorAll('#layerPanel input[type="checkbox"]')
+    .forEach(cb=>{
 
       const fn = cb.getAttribute('onchange') || '';
 
-      if (fn.includes("toggle('boundary'")) cb.checked = true;
-      else if (fn.includes('toggleAllCSR')) cb.checked = true;
-      else cb.checked = false;
+      const match = fn.match(/toggle\('(.+?)'/);
+
+      if(match){
+        const layerId = match[1];
+
+        if(map.getLayer(layerId)){
+          const visibility =
+            map.getLayoutProperty(layerId,'visibility');
+
+          cb.checked = visibility === 'visible';
+        }
+      }
+
+      if(fn.includes('toggleAllCSR')){
+        cb.checked = true;
+      }
+
     });
 }
 
   
-const CSR_ASSETS = {
-  bank: {
-    name: 'Indian Overseas Bank – Community Hall',
-    center: [81.3139771558, 18.6058387257],
-    geometry: {
-      type: 'Point',
-      coordinates: [81.3139771558, 18.6058387257]
-    }
-  },
 
-  anganwadi: {
-    name: 'Anganwadi Centre – Patel Para',
-    center: [81.312659257, 18.6066494816],
-    geometry: {
-      type: 'Point',
-      coordinates: [81.312659257, 18.6066494816]
-    }
-  },
-
-  kitchen: {
-    name: 'Anganwadi Kitchen – Vichha Para',
-    center: [81.3053881561, 18.6036578765],
-    geometry: {
-      type: 'Point',
-      coordinates: [81.3053881561, 18.6036578765]
-    }
-  },
-
-  ccroad: {
-    name: 'CC Road – Sarpanch Para',
-    center: [81.3153714383, 18.6054242084],
-    geometry: {
-      type: 'LineString',
-      coordinates: [
-        [81.31510, 18.60520],
-        [81.31537, 18.60542],
-        [81.31560, 18.60560]
-      ]
-    }
-  }
-};
 
 // =========================================
 // STEP-B: CSR ASSET HIGHLIGHT FUNCTION
@@ -5671,7 +6339,7 @@ function highlightAsset(assetKey) {
 
 
 /* LOAD ASSET DATA FOR TABLE & FILTER (FILE:// SAFE) */
-fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Points.geojson')
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Points.geojson')
   .then(r => r.json())
   .then(data => {
     allAssetsData = data;
@@ -5696,7 +6364,7 @@ map.on('click', 'points', (e) => {
     `)
     .addTo(map);
 });
-fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson')
+fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Lines.geojson')
   .then(r => r.json())
   .then(data => {
     allRoadsData = data;
@@ -5728,7 +6396,7 @@ window.updateDonutByCategory = function(category, features) {
 
   if (!infraChart) return;
 
-  donutMode = 'count';
+  infraDonutMode === 'count'
 
   // 1️⃣ Asset types under this category
   const assetTypes = CATEGORY_ASSET_MAP[category];
@@ -5747,7 +6415,7 @@ window.updateDonutByCategory = function(category, features) {
 
 
 window.toggleCategory = function(category){
-donutMode = 'count';
+infraDonutMode === 'count'
 
 
 
@@ -5760,7 +6428,15 @@ donutMode = 'count';
     .filter(k => infraCategoryMap[k] === category);
 
   // 3️⃣ Apply MAP FILTER (IMPORTANT)
-  const filterExpr = ['in', ['get','LAYER'], ['literal', allowedTypes]];
+let filterExpr = ['in', ['get','LAYER'], ['literal', allowedTypes]];
+
+if(activeVillage){
+  filterExpr = [
+    'all',
+    ['==',['get','Village'], activeVillage],
+    ['in',['get','LAYER'], ['literal', allowedTypes]]
+  ];
+}
 
   map.setFilter('points', filterExpr);
   map.setFilter('asset-labels', filterExpr);
@@ -5783,10 +6459,13 @@ donutMode = 'count';
     }
   }
 
-  // 5️⃣ TABLE (ONLY POINT ASSETS)
-  const filtered = allAssetsData.features.filter(f =>
+// 5️⃣ TABLE (ONLY POINT ASSETS + VILLAGE FILTER)
+const filtered = getVillageFilteredData(allAssetsData.features)
+  .filter(f =>
     allowedTypes.includes(f.properties.LAYER)
   );
+  
+  
   renderTable(filtered);
 
   // 6️⃣ KPIs
@@ -5810,10 +6489,12 @@ window.resetDonut = function() {
 
   if (!infraChart || !allAssetsData) return;
 
-  donutMode = 'percent';
+ infraDonutMode === 'count'
 
-  const counts =
-    buildCountsFromCategoryAssetMap(allAssetsData.features);
+const counts =
+  buildCountsFromCategoryAssetMap(
+    getVillageFilteredData(allAssetsData.features)
+  );
 
   infraChart.data.labels = Object.keys(CATEGORY_ASSET_MAP);
   infraChart.data.datasets[0].data =
@@ -5823,7 +6504,7 @@ window.resetDonut = function() {
 };
 
 
-donutMode = 'percent';
+
 
 
 
@@ -5878,9 +6559,9 @@ donutMode = 'percent';
 
 /* DASHBOARD DATA */
 Promise.all([
- fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Points.geojson').then(r=>r.json()),
- fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Samalwar_Lines.geojson').then(r=>r.json()),
- fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-Chattisgarh/main/Drainage_Lines.geojson').then(r=>r.json())
+ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Points.geojson').then(r=>r.json()),
+ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Samalwar_Lines.geojson').then(r=>r.json()),
+ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/Drainage_Lines.geojson').then(r=>r.json())
 ]).then(([p,r,d])=>{
  let assetCounts={},types=new Set(),
     assets=0,bt=0,cc=0,boundaryLen=0,drainLen=0;
@@ -5909,7 +6590,9 @@ let infraCategoryCounts = {
 };
 
 // COUNT POINT FEATURES INTO CATEGORIES
-p.features.forEach(f => {
+const filteredPoints = getVillageFilteredData(p.features);
+
+filteredPoints.forEach(f => {
   const assetType = f.properties.LAYER;
   const category = infraCategoryMap[assetType];
   if (category) {
@@ -5918,7 +6601,9 @@ p.features.forEach(f => {
 });
 
 
-r.features.forEach(f=>{
+const filteredRoads = getVillageFilteredData(r.features);
+
+filteredRoads.forEach(f=>{
   const len = f.properties.Shape_Leng / 1000;
 
   if (f.properties.LAYER === 'BT ROAD') bt += len;
@@ -5927,7 +6612,11 @@ r.features.forEach(f=>{
 });
 
 
- d.features.forEach(f=>drainLen+=f.properties.Shape_Leng/1000);
+const filteredDrain = getVillageFilteredData(d.features);
+
+filteredDrain.forEach(f=>{
+  drainLen += f.properties.Shape_Leng / 1000;
+});
 
  kpiAssets.innerText=assets;
 const usedCategories = Object.values(infraCategoryCounts)
@@ -5977,7 +6666,9 @@ function buildInfraCategoryCounts(features){
 }
 
 /* ---------- CREATE DONUT ONCE ---------- */
-const initialCounts = buildCountsFromCategoryAssetMap(p.features);
+const initialCounts = buildCountsFromCategoryAssetMap(
+  getVillageFilteredData(p.features)
+);
 
 infraChart = new Chart(
   document.getElementById('assetChart'),
@@ -6018,7 +6709,7 @@ legend: {
 
         return {
           text:
-            donutMode === 'count'
+            infraDonutMode === 'count'
               ? `${label} — ${value}`
               : `${label} — ${percent}%`,
           fillStyle: data.datasets[0].backgroundColor[i],
@@ -6039,30 +6730,32 @@ datalabels: {
     const percent = (value / total) * 100;
 
     // 🔵 CATEGORY MODE → COUNT ONLY
-    if (donutMode === 'count') {
+    if (infraDonutMode === 'count') {
+	if (value === 0) return null;
       return value;
     }
+	 },
 
-    // 🔵 DEFAULT MODE → % ONLY IF >= 3%
-    if (percent < 3) return null;
-
-    return percent.toFixed(1) + '%';
+  display: function(context) {
+    return context.dataset.data[context.dataIndex] !== 0;
   },
   color: '#ffffff',
   font: { weight: '700', size: 11 },
   clamp: true
-
+  
 
 
           
         }
       }
+
+      
     },
     plugins: [ChartDataLabels]
   }
 );
 
-donutMode = 'percent';
+infraDonutMode === 'count'   
 
 
 // ===== DRAW LEGEND ICONS (SAME AS MAP) =====
