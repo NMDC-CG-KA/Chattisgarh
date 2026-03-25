@@ -1883,6 +1883,24 @@ const CSR_LAYERS = [
   'csr-labels'
 ];
 
+/* ---------- RESET DONUT (FULL DATA) ---------- */
+window.resetDonut = function() {
+
+  if (!infraChart || !allAssetsData) return;
+
+ infraDonutMode === 'count'
+
+const counts =
+  buildCountsFromCategoryAssetMap(
+    getVillageFilteredData(allAssetsData.features)
+  );
+
+  infraChart.data.labels = Object.keys(CATEGORY_ASSET_MAP);
+  infraChart.data.datasets[0].data =
+    Object.keys(CATEGORY_ASSET_MAP).map(c => counts[c]);
+
+  infraChart.update();
+};
 
 
 function calculateRoadKPIs(type){
@@ -4079,7 +4097,7 @@ function createDairyIcon(){
   return ctx.getImageData(0,0,s,s);
 }
 
-map.addImage('dairy-icon', createDairyIcon());
+
 
 function createROPlantIcon(){
   const s=64;
@@ -4112,7 +4130,7 @@ function createROPlantIcon(){
   return ctx.getImageData(0,0,s,s);
 }
 
-map.addImage('ro-water-icon', createROPlantIcon());
+
 
 function createPostOfficeIcon(){
   const s=64;
@@ -4139,7 +4157,7 @@ function createPostOfficeIcon(){
   return ctx.getImageData(0,0,s,s);
 }
 
-map.addImage('postoffice-icon', createPostOfficeIcon());
+
 
 function createToiletIcon(){
   const s=64;
@@ -4158,7 +4176,7 @@ function createToiletIcon(){
   return ctx.getImageData(0,0,s,s);
 }
 
-map.addImage('toilet-icon', createToiletIcon());
+
 
 
 
@@ -4191,7 +4209,7 @@ function createMasjidIcon(){
 
   return ctx.getImageData(0,0,s,s);
 }
-map.addImage('masjid-icon', createMasjidIcon());
+
 
 function createSolarTankIcon() {
   const size = 64;
@@ -6484,24 +6502,6 @@ updateDonutByCategory(category, filtered);
   setActiveButton(category);
 };
 
-/* ---------- RESET DONUT (FULL DATA) ---------- */
-window.resetDonut = function() {
-
-  if (!infraChart || !allAssetsData) return;
-
- infraDonutMode === 'count'
-
-const counts =
-  buildCountsFromCategoryAssetMap(
-    getVillageFilteredData(allAssetsData.features)
-  );
-
-  infraChart.data.labels = Object.keys(CATEGORY_ASSET_MAP);
-  infraChart.data.datasets[0].data =
-    Object.keys(CATEGORY_ASSET_MAP).map(c => counts[c]);
-
-  infraChart.update();
-};
 
 
 
