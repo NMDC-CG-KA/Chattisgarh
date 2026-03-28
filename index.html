@@ -1198,12 +1198,7 @@ button:active {
     Completed CSR Works-NMDC
   </label>
 
-  <hr style="margin:6px 0; opacity:0.3">
- <b>Landuse</b>
-<label>
-  <input type="checkbox" onchange="toggleLanduse(this)">
-  Present Land use
-</label>
+
 
 
 </div> <!-- ✅ END right-col -->
@@ -1883,51 +1878,28 @@ const CSR_LAYERS = [
   'csr-labels'
 ];
 
-/* ---------- RESET DONUT (FULL DATA) ---------- */
-window.resetDonut = function() {
-
-  if (!infraChart || !allAssetsData) return;
-
- infraDonutMode === 'count'
-
-const counts =
-  buildCountsFromCategoryAssetMap(
-    getVillageFilteredData(allAssetsData.features)
-  );
-
-  infraChart.data.labels = Object.keys(CATEGORY_ASSET_MAP);
-  infraChart.data.datasets[0].data =
-    Object.keys(CATEGORY_ASSET_MAP).map(c => counts[c]);
-
-  infraChart.update();
-};
 
 
-function calculateRoadKPIs(type){
+
+function calculateRoadKPIs(filteredRoads = null){
 
   let bt = 0, cc = 0, boundaryLen = 0;
 
-  const filtered = getVillageFilteredData(allRoadsData.features);
+  // 🔥 USE PASSED DATA OR FALLBACK
+  const data = filteredRoads || allRoadsData.features;
 
-  filtered.forEach(f=>{
+  data.forEach(f=>{
     const len = f.properties.Shape_Leng / 1000;
+    const layer = f.properties.LAYER?.toLowerCase();
 
-    if (f.properties.LAYER === 'BT ROAD') bt += len;
-    if (f.properties.LAYER === 'CC ROAD') cc += len;
-    if (f.properties.LAYER === 'BOUNDARY WALL') boundaryLen += len;
+    if (layer.includes('bt')) bt += len;
+    else if (layer.includes('cc')) cc += len;
+    else if (layer.includes('boundary')) boundaryLen += len;
   });
 
-  if(type === 'BT'){
-    kpiBT.innerText = bt.toFixed(2);
-  }
-
-  if(type === 'CC'){
-    kpiCC.innerText = cc.toFixed(2);
-  }
-
-  if(type === 'BOUNDARY'){
-    kpiBoundary.innerText = boundaryLen.toFixed(2);
-  }
+  kpiBT.innerText = bt.toFixed(2);
+  kpiCC.innerText = cc.toFixed(2);
+  kpiBoundary.innerText = boundaryLen.toFixed(2);
 }
 
 
@@ -1941,48 +1913,9 @@ function toggleAllCSR(cb) {
   });
 }
 
-function addCustomPopup(layerId){
 
-  map.on('click', layerId, (e)=>{
 
-    const f = e.features[0];
 
-    // 🔥 REMOVE OLD POPUPS
-    document.querySelectorAll('.maplibregl-popup')
-      .forEach(p => p.remove());
-
-    // 🔥 HIGHLIGHT
-    map.getSource('feature-highlight').setData({
-      type:'FeatureCollection',
-      features:[f]
-    });
-
-    // 🔥 IMAGE (if exists)
-    const img = f.properties.IMAGE || '';
-
-    new maplibregl.Popup({ offset:10 })
-      .setLngLat(e.lngLat)
-      .setHTML(`
-        <div style="font-size:13px;">
-          <b>${f.properties.NAME || f.properties.DESCRIPTIO || 'Asset'}</b><br>
-          ${img ? `<img src="${img}" width="200"/>` : ''}
-          <br>
-          Type: ${f.properties.LAYER || ''}
-        </div>
-      `)
-      .addTo(map);
-
-    e.preventDefault();
-  });
-
-  map.on('mouseenter', layerId, () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
-
-  map.on('mouseleave', layerId, () => {
-    map.getCanvas().style.cursor = '';
-  });
-}
 
 function addCSRPopup(layerId) {
 
@@ -2069,12 +2002,20 @@ function selectAllExistingAssets() {
   map.setLayoutProperty('existing-assets-label', 'visibility', 'visible');
 
   // 4️⃣ Apply DESCRIPTIO-based filter (🔥 THIS IS THE FIX)
-  const filter = [
+const filter = [
+  'all',
+
+  // ✅ KEEP VILLAGE FILTER (MAIN FIX)
+  ['==',['get','Village'], activeVillage],
+
+  // ✅ CATEGORY FILTER
+  [
     'any',
     ...allowedKeywords.map(k => [
-['==',['upcase',['get','Type']],k]
+      ['==',['upcase',['get','Type']],k]
     ])
-  ];
+  ]
+];
 
   map.setFilter('existing-assets-icon', filter);
   map.setFilter('existing-assets-label', filter);
@@ -2198,12 +2139,15 @@ function buildCountsFromCategoryAssetMap(features) {
 
 function updateDonut(features){
 
-  if (!infraChart) return; // 🔥 IMPORTANT
+  if (!infraChart) return;
 
-  const counts = buildInfraCategoryCounts(features);
+  // 🔥 ALWAYS RESET TO CATEGORY MODE
+  const counts = buildCountsFromCategoryAssetMap(features);
+
+  infraChart.data.labels = Object.keys(CATEGORY_ASSET_MAP);
 
   infraChart.data.datasets[0].data =
-    ALL_INFRA_CATEGORIES.map(c => counts[c]);
+    Object.keys(CATEGORY_ASSET_MAP).map(c => counts[c]);
 
   infraChart.update();
 }
@@ -2316,11 +2260,16 @@ function clearSelection() {
 
 document.addEventListener('keydown', (e) => {
 
-  // ESC key
   if (e.key === 'Escape') {
-    clearSelection();
-  }
 
+    // 🔥 1. Clear map selection
+    clearSelection();
+
+    // 🔥 2. Close Layer Panel (MAIN FIX)
+    const panel = document.getElementById('layerPanel');
+    if (panel) panel.style.display = 'none';
+
+  }
 });
 
 
@@ -2577,70 +2526,123 @@ function zoomToFullExtent(){
   });
 }
 
+
+
+
 function resetAllFilters(){
 
-  // 1️⃣ EXIT CSR MODE
-  document.getElementById('csrKpis').style.display = 'none';
-  document.getElementById('csrTableBox').style.display = 'none';
-  document.getElementById('assetTableBox').style.display = 'block';
+  if (!activeVillage) return;
 
-  // 2️⃣ CLEAR MAP FILTERS
-  if(map.getLayer('points')) map.setFilter('points', null);
-  if(map.getLayer('asset-labels')) map.setFilter('asset-labels', null);
+  // 🔥 RESET STATES
+  activeCategory = null;
+  activeRoadType = null;
+  infraDonutMode = null;
 
-  if(map.getLayer('roads-bt'))
-    map.setFilter('roads-bt', ['==',['get','LAYER'],'BT ROAD']);
+  // 1️⃣ CLEAR MAP FILTERS
+  clearAllMapFilters();
 
-  if(map.getLayer('roads-cc'))
-    map.setFilter('roads-cc', ['==',['get','LAYER'],'CC ROAD']);
-
-  // 3️⃣ SHOW ALL MAIN LAYERS
-  [
-    'points','asset-labels',
-    'roads-bt','roads-cc',
-    'drain','wall-3d',
-    'boundary','para'
-  ].forEach(id=>{
-    if(map.getLayer(id)){
-      map.setLayoutProperty(id,'visibility','visible');
-    }
-  });
-
-  // 4️⃣ HIDE CSR MAP LAYERS
-  CSR_LAYERS.forEach(id=>{
+  // 2️⃣ HIDE ALL LAYERS
+  Object.values(ALL_MAP_LAYERS).flat().forEach(id=>{
     if(map.getLayer(id)){
       map.setLayoutProperty(id,'visibility','none');
     }
   });
 
-  // 5️⃣ RESTORE DONUT MODE
-  document.getElementById('donutBox').style.display = 'block';
-
-  const kpiWrap = document.querySelector('.kpis');
-  kpiWrap.classList.remove('single-kpi');
-
-  // Hide all KPI cards
-  kpiWrap.querySelectorAll('.kpi').forEach(k=>{
-    k.style.display = 'none';
-    k.style.outline = 'none';
+  // 3️⃣ SHOW BASE LAYERS
+  ['boundary','csr-points','csr-labels'].forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','visible');
+    }
   });
 
-  // Show KPI wrapper
-  kpiWrap.style.display = 'grid';
-
-  // 6️⃣ RESET DONUT DATA
-if (allAssetsData && infraChart) {
-  resetDonut();   // 🔥 THIS IS THE FIX
+// 🔥 APPLY VILLAGE FILTER TO ALL MAIN LAYERS
+if (map.getLayer('points')) {
+  map.setFilter('points', ['==', ['get','Village'], activeVillage]);
 }
 
-  // 7️⃣ RESET TABLE
-  renderTable(getDefaultTableData());
+if (map.getLayer('asset-labels')) {
+  map.setFilter('asset-labels', ['==', ['get','Village'], activeVillage]);
+}
 
-  // 8️⃣ CLEAR BUTTON ACTIVE STATES
+if (map.getLayer('roads-bt')) {
+  map.setFilter('roads-bt', ['all',
+    ['==',['get','Village'], activeVillage],
+    ['==',['get','LAYER'],'BT ROAD']
+  ]);
+}
+
+if (map.getLayer('roads-cc')) {
+  map.setFilter('roads-cc', ['all',
+    ['==',['get','Village'], activeVillage],
+    ['==',['get','LAYER'],'CC ROAD']
+  ]);
+}
+
+  // 🔥 5️⃣ PURE FILTER (NO MAP DEPENDENCY)
+  const filteredAssets = allAssetsData.features.filter(f =>
+    f.properties.Village === activeVillage
+  );
+
+  const filteredRoads = allRoadsData.features.filter(f =>
+    f.properties.Village === activeVillage
+  );
+
+  // 🔥 6️⃣ RESET DONUT
+  updateDonut(filteredAssets);
+  // 🔥 FORCE DONUT BACK
+showDonut();
+
+  // 🔥 7️⃣ RESET TABLE
+  renderTable([...filteredAssets, ...filteredRoads]);
+  // 🔥 EXIT CSR MODE (MAIN FIX)
+
+  
+  // 🔥 SWITCH BACK TO NORMAL TABLE (MAIN FIX)
+document.getElementById('assetTableBox').style.display = 'block';
+document.getElementById('csrTableBox').style.display = 'none';
+  
+  // 🔥 RESET KPI VALUES (IMPORTANT)
+calculateRoadKPIs(filteredRoads);
+
+  // 🔥 8️⃣ RESET KPI PANEL
+// 🔥 RESET KPI + DONUT UI
+showDonut();   // 👈 IMPORTANT
+showKPIs();    // 👈 normal KPI grid
+
+// hide CSR special KPI
+document.getElementById('csrKpis').style.display = 'none';
+  // 🔥 FORCE NORMAL KPI VIEW (VERY IMPORTANT)
+const kpiWrap = document.querySelector('.kpis');
+// 🔥 REMOVE KPI HIGHLIGHT COLORS (MAIN FIX)
+document.querySelectorAll('.kpi').forEach(k => {
+  k.style.outline = 'none';
+  k.style.boxShadow = 'none';
+});
+
+// remove single KPI mode (road / csr mode)
+kpiWrap.classList.remove('single-kpi');
+
+// show all KPI cards again
+kpiWrap.querySelectorAll('.kpi').forEach(k=>{
+  k.style.display = 'block';
+  k.style.outline = 'none';
+});
+
+  // 9️⃣ REMOVE BUTTON ACTIVE STATES
   document.querySelectorAll('#categoryButtons button')
-    .forEach(b=>b.classList.remove('active'));
+    .forEach(b => b.classList.remove('active'));
+// 🔥 ALSO CLEAR ROAD BUTTON STATE
+document.querySelectorAll('.road-btn')
+  .forEach(btn => btn.classList.remove('active'));
+  
+  
+  // 🔥 ENSURE DONUT BOX VISIBLE
+document.getElementById('donutBox').style.display = 'block';
 
-  // 9️⃣ CLEAR HIGHLIGHT
+// 🔥 ENSURE KPI HEADER NORMAL
+document.getElementById('kpiHeader').style.display = 'none';
+
+  // 🔟 CLEAR HIGHLIGHT
   if (map.getSource('feature-highlight')) {
     map.getSource('feature-highlight').setData({
       type:'FeatureCollection',
@@ -2648,11 +2650,24 @@ if (allAssetsData && infraChart) {
     });
   }
 
-  // 🔟 ZOOM FULL EXTENT
-  zoomToFullExtent();
+  // 🔥 11️⃣ ZOOM TO VILLAGE ONLY
+  if (map.getLayer('boundary')) {
+    const features = map.querySourceFeatures('boundary')
+      .filter(f => f.properties.Village === activeVillage);
+
+    if (features.length) {
+      const bbox = turf.bbox({
+        type:'FeatureCollection',
+        features:features
+      });
+
+      map.fitBounds(bbox, {
+        padding:60,
+        duration:800
+      });
+    }
+  }
 }
-
-
 
 function hideAllMapLayers(){
 
@@ -2806,25 +2821,25 @@ function toggleExistingAssetCategory(category, cb) {
   const activeCategories = Object.keys(EXISTING_ASSET_CATEGORIES)
     .filter(k => EXISTING_ASSET_CATEGORIES[k]);
 
-  // 🔴 IF NONE ACTIVE → HIDE COMPLETELY
+  // 🔴 IF NONE ACTIVE → HIDE
   if (activeCategories.length === 0) {
     map.setLayoutProperty('existing-assets-icon', 'visibility', 'none');
     map.setLayoutProperty('existing-assets-label', 'visibility', 'none');
     return;
   }
 
-  // 🟢 SHOW LAYERS
+  // 🟢 SHOW
   map.setLayoutProperty('existing-assets-icon', 'visibility', 'visible');
   map.setLayoutProperty('existing-assets-label', 'visibility', 'visible');
 
-  // 🔥 BUILD FILTER FROM DESCRIPTIO
-  const filters = ['any'];
+  // 🔥 BUILD KEYWORD FILTER
+  const keywordFilters = [];
 
   activeCategories.forEach(cat => {
     const keywords = EXISTING_ASSET_CATEGORY_MAP[cat] || [];
 
     keywords.forEach(k => {
-      filters.push([
+      keywordFilters.push([
         'in',
         k,
         ['upcase', ['get', 'DESCRIPTIO']]
@@ -2832,8 +2847,20 @@ function toggleExistingAssetCategory(category, cb) {
     });
   });
 
-  map.setFilter('existing-assets-icon', filters);
-  map.setFilter('existing-assets-label', filters);
+  // 🔥 FINAL FILTER (IMPORTANT)
+  const finalFilter = [
+    'all',
+
+    // ✅ KEEP VILLAGE FILTER
+    ['==', ['get', 'Village'], activeVillage],
+
+    // ✅ CATEGORY FILTER
+    ['any', ...keywordFilters]
+  ];
+
+  // ✅ APPLY TO BOTH LAYERS
+  map.setFilter('existing-assets-icon', finalFilter);
+  map.setFilter('existing-assets-label', finalFilter);
 }
 
 function showKpiHeader() {
@@ -3022,9 +3049,10 @@ function buildInfraCategoryCounts(features){
 
 function getVillageFilteredData(features){
 
-  if(!activeVillage) return features;
+  if (!activeVillage) return features;
 
   return features.filter(f =>
+    f.properties &&
     f.properties.Village === activeVillage
   );
 }
@@ -3508,157 +3536,32 @@ function applyVillageFilterToAll(village){
   if(map.getLayer('boundary')){
     map.setFilter('boundary', ['==',['get','Village'], village]);
   }
+  
+  
+    // 🔥 ADD THIS PART (MAIN FIX)
+  // ===============================
+
+  const filteredAssets = getVillageFilteredData(allAssetsData.features);
+  const filteredRoads  = getVillageFilteredData(allRoadsData.features);
+
+  // ✅ RIGHT DONUT
+  updateDonut(filteredAssets);
+
+  // ✅ ASSET TABLE
+  renderTable([...filteredAssets, ...filteredRoads]);
+
+  // ✅ KPI (optional)
+  updateKPIs(filteredAssets);
+
 
   // ❌ DO NOT FILTER wall-3d (buffer removes properties)
 }
 
-document.querySelector('.search-btn').onclick = () => {
-
-  const village = document.getElementById('villageSelect').value;
-
-  if (!village) {
-    alert('Please select a village');
-    return;
-  }
-
-  // 🛑 Stop flythrough
-  flyThroughRunning = false;
-  if (flyThroughTimer) {
-    clearTimeout(flyThroughTimer);
-    flyThroughTimer = null;
-  }
-
-  // ✅ Set active village
-  activeVillage = village;
-
-  // ✅ APPLY FILTER TO ALL LAYERS
-  const layers = [
-    'csr-points','csr-labels',
-    'points','asset-labels',
-    'existing-assets-icon','existing-assets-label',
-    'roads-bt','roads-cc',
-    'drain','wall-3d',
-    'para','para-buildings-3d',
-    'boundary'
-  ];
-
-  layers.forEach(layer=>{
-    if(map.getLayer(layer)){
-      map.setFilter(layer, ['==',['get','Village'], village]);
-    }
-  });
 
 
-
-  // ✅ Ensure CSR + boundary visible
-  ['csr-points','csr-labels','boundary'].forEach(layer=>{
-    if(map.getLayer(layer)){
-      map.setLayoutProperty(layer, 'visibility', 'visible');
-    }
-  });
-  
-  if(map.getLayer('existing-assets-icon')){
-  map.setFilter('existing-assets-icon',
-    ['all',
-      ['==',['get','Village'], village],
-      ['!=',['get','DESCRIPTIO'], null]
-    ]
-  );
-}
-
-if(map.getLayer('existing-assets-label')){
-  map.setFilter('existing-assets-label',
-    ['==',['get','Village'], village]
-  );
-}
+ 
 
 
-applyVillageFilterToAll(village);
-resetDonut();   // 🔥 ADD THIS LINE
-renderCSRTable();   // 👈 ADD HERE
-updateCSRCount();
-
-  // 🚀 Flythrough
-  // runDynamicFlyThrough(village);
-
-};
-
-document.querySelector('.reset-btn').onclick = () => {
-
-  // 🛑 STOP flythrough
-  flyThroughRunning = false;
-
-  if (flyThroughTimer) {
-    clearTimeout(flyThroughTimer);
-    flyThroughTimer = null;
-  }
-
-  activeVillage = null;
-
-  // 🔹 Reset dropdowns
-  document.getElementById('stateSelect').value = '';
-  document.getElementById('blockSelect').innerHTML =
-    '<option value="">Select Block</option>';
-  document.getElementById('villageSelect').innerHTML =
-    '<option value="">Select Village</option>';
-
-  // 🔥 REMOVE ALL FILTERS (IMPORTANT)
-  [
-    'csr-points','csr-labels',
-    'points','asset-labels',
-    'existing-assets-icon','existing-assets-label',
-    'roads-bt','roads-cc',
-    'drain','wall-3d',
-    'para','para-buildings-3d',
-    'boundary'
-  ].forEach(layer=>{
-    if(map.getLayer(layer)){
-      map.setFilter(layer, null);
-    }
-  });
-
-  // 🔥 SHOW ONLY THESE
-  const SHOW = ['boundary','csr-points','csr-labels'];
-
-  const ALL = [
-    'points','asset-labels',
-    'roads-bt','roads-cc',
-    'drain','wall-3d',
-    'existing-assets-icon','existing-assets-label',
-    'para','para-buildings-3d'
-  ];
-
-  SHOW.forEach(id=>{
-    if(map.getLayer(id)){
-      map.setLayoutProperty(id,'visibility','visible');
-    }
-  });
-
-  ALL.forEach(id=>{
-    if(map.getLayer(id)){
-      map.setLayoutProperty(id,'visibility','none');
-    }
-  });
-
-  // 🔹 Clear highlight
-  if (map.getSource('feature-highlight')) {
-    map.getSource('feature-highlight').setData({
-      type:'FeatureCollection',
-      features:[]
-    });
-  }
-
-  // 🔹 Remove popups
-  document.querySelectorAll('.maplibregl-popup')
-    .forEach(p=>p.remove());
-
-  // 🔥 BACK TO INDIA
-  resetToIndia2D();
-  
-  renderCSRTable();
-  updateCSRCount();
-  syncLayerPanelCheckboxes();
-};
 
 // ===============================
 // CSR TABLE FROM GEOJSON (FINAL)
@@ -3969,7 +3872,7 @@ map.loadImage(
     layout:{
       'icon-image':'home',
       'icon-size':0.8,
-      'text-field':['get','LAYER'],
+      'text-field':['get','NAME'],
       'text-size':14,
       'text-offset':[0,1.5],
       'text-font':['Open Sans Bold']
@@ -5528,9 +5431,10 @@ hhBtn.onclick = () => {
 applyInitialMapState();
 syncLayerPanelCheckboxes();
 
-// ==============================
-// STEP 5 – HOUSEHOLD ANALYSIS LOGIC
-// ==============================
+
+
+
+
 
 let hhChart = null;
 let hhData = null;
@@ -5541,7 +5445,7 @@ fetch('https://raw.githubusercontent.com/hemanya2003/NMDC-CSR/main/badebacheli_j
 
   hhData = data.features;
 
-  updateHHMode('literacy');
+  updateHHMode('population');
 
 });
 
@@ -5550,9 +5454,19 @@ document.getElementById('hhMode').addEventListener('change', (e)=>{
 });
 
 
+// ==============================
+// STEP 5 – HOUSEHOLD ANALYSIS LOGIC
+// ==============================
+
+
 function updateHHMode(mode){
 
   if(!hhData) return;
+
+const village = activeVillage || null;
+const dataToUse = getVillageFilteredHHData(village);
+console.log("Selected Village:", village);
+console.log("Filtered Count:", dataToUse.length);
 
   let counts = {};
 
@@ -5561,7 +5475,7 @@ function updateHHMode(mode){
   // =======================
   if(mode === 'population'){
     let total = 0;
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       total += Number(f.properties.total_family_members || 0);
     });
     counts["Total Population"] = total;
@@ -5572,7 +5486,7 @@ function updateHHMode(mode){
 // =======================
 if(mode === 'needs'){
 
-  hhData.forEach(f=>{
+  dataToUse.forEach(f=>{
 
     const n1 = f.properties.Top_Need_1;
     const n2 = f.properties.Top_Need_2;
@@ -5591,7 +5505,7 @@ if(mode === 'needs'){
 // SMARTPHONE AVAILABILITY
 // =======================
 if(mode === 'smartphone'){
-  hhData.forEach(f=>{
+  dataToUse.forEach(f=>{
     const phone = f.properties.Smartphone || "Unknown";
     counts[phone] = (counts[phone] || 0) + 1;
   });
@@ -5601,7 +5515,7 @@ if(mode === 'smartphone'){
 // HEAD OF HOUSEHOLD GENDER
 // =======================
 if(mode === 'genderHead'){
-  hhData.forEach(f=>{
+  dataToUse.forEach(f=>{
     const head = f.properties.Gender || "Unknown";
     counts[head] = (counts[head] || 0) + 1;
   });
@@ -5611,7 +5525,7 @@ if(mode === 'genderHead'){
 // PRIMARY LIVELIHOOD
 // =======================
 if(mode === 'livelihood'){
-  hhData.forEach(f=>{
+  dataToUse.forEach(f=>{
     const job = f.properties.Primary_Livelihood || "Unknown";
     counts[job] = (counts[job] || 0) + 1;
   });
@@ -5623,7 +5537,7 @@ if(mode === 'livelihood'){
   if(mode === 'gender'){
     let male = 0;
     let female = 0;
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       male += Number(f.properties.male_members || 0);
       female += Number(f.properties.female_members || 0);
     });
@@ -5637,7 +5551,7 @@ if(mode === 'livelihood'){
   if(mode === 'literacy'){
     let literate = 0;
     let illiterate = 0;
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       literate += Number(f.properties.literate_members || 0);
       illiterate += Number(f.properties.illiterate_members || 0);
     });
@@ -5658,7 +5572,7 @@ if(mode === 'livelihood'){
     ];
     fields.forEach(field=>{
       let total = 0;
-      hhData.forEach(f=>{
+      dataToUse.forEach(f=>{
         total += Number(f.properties[field] || 0);
       });
       counts[field.replaceAll("_","-")] = total;
@@ -5669,7 +5583,7 @@ if(mode === 'livelihood'){
   // CASTE
   // =======================
   if(mode === 'caste'){
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       const caste = f.properties.Caste_Category || "Unknown";
       counts[caste] = (counts[caste] || 0) + 1;
     });
@@ -5679,7 +5593,7 @@ if(mode === 'livelihood'){
   // HOUSE TYPE
   // =======================
   if(mode === 'house'){
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       const type = f.properties.House_Type || "Unknown";
       counts[type] = (counts[type] || 0) + 1;
     });
@@ -5689,7 +5603,7 @@ if(mode === 'livelihood'){
   // LANDHOLDING
   // =======================
   if(mode === 'land'){
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       const land = f.properties.Landholding_Size || "Unknown";
       counts[land] = (counts[land] || 0) + 1;
     });
@@ -5699,7 +5613,7 @@ if(mode === 'livelihood'){
   // WATER SOURCE
   // =======================
   if(mode === 'waterSource'){
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       const source = f.properties.Drinking_Water_Source || "Unknown";
       counts[source] = (counts[source] || 0) + 1;
     });
@@ -5709,15 +5623,298 @@ if(mode === 'livelihood'){
   // WATER AVAILABILITY
   // =======================
   if(mode === 'waterAvailability'){
-    hhData.forEach(f=>{
+    dataToUse.forEach(f=>{
       const water = f.properties.Water_Available_Year || "Unknown";
       counts[water] = (counts[water] || 0) + 1;
     });
   }
-
-  createHHChart(counts, mode);
+    createHHChart(counts, mode);
   applyMapColor(mode);
 }
+
+ 
+  function getVillageFilteredHHData(village){
+
+  if(!hhData) return [];
+
+  if(!village) return hhData;
+
+  return hhData.filter(f => {
+
+    const geoVillage = String(f.properties.Village || "")
+                      .trim()
+                      .toLowerCase();
+
+    const selectedVillage = String(village || "")
+                      .trim()
+                      .toLowerCase();
+
+    return geoVillage === selectedVillage;
+
+  });
+}
+
+document.getElementById('villageSelect').addEventListener('change', (e)=>{
+
+  const village = e.target.value.trim();
+
+  if(!village) return;
+
+  activeVillage = village;
+
+  applyVillageFilterToAll(village);
+
+  updateHHMode(document.getElementById('hhMode').value);
+ 
+ 
+
+});
+
+function zoomToVillage(village){
+
+  const features = map.querySourceFeatures('boundary')
+    .filter(f => f.properties.Village === village);
+
+  if(features.length){
+
+    const bbox = turf.bbox({
+      type: 'FeatureCollection',
+      features: features
+    });
+
+    map.fitBounds(bbox, {
+      padding: 60,
+      duration: 1000
+    });
+  }
+}
+
+document.querySelector('.search-btn').onclick = () => {
+
+  const village = document.getElementById('villageSelect').value.trim();
+
+  if (!village) {
+    alert('Please select a village');
+    return;
+  }
+
+  // 🛑 Stop flythrough
+  flyThroughRunning = false;
+  if (flyThroughTimer) {
+    clearTimeout(flyThroughTimer);
+    flyThroughTimer = null;
+  }
+
+  // ✅ Set active village
+  activeVillage = village;
+
+  // ✅ APPLY FILTER TO MAP
+  const layers = [
+    'csr-points','csr-labels',
+    'points','asset-labels',
+    'existing-assets-icon','existing-assets-label',
+    'roads-bt','roads-cc',
+    'drain','wall-3d',
+    'para','para-buildings-3d',
+    'boundary'
+  ];
+
+  layers.forEach(layer=>{
+    if(map.getLayer(layer)){
+      map.setFilter(layer, ['==',['get','Village'], village]);
+    }
+  });
+
+  // ✅ Ensure visibility
+  ['csr-points','csr-labels','boundary'].forEach(layer=>{
+    if(map.getLayer(layer)){
+      map.setLayoutProperty(layer, 'visibility', 'visible');
+    }
+  });
+
+  // ✅ Existing assets filter
+  if(map.getLayer('existing-assets-icon')){
+    map.setFilter('existing-assets-icon', [
+      'all',
+      ['==',['get','Village'], village],
+      ['!=',['get','DESCRIPTIO'], null]
+    ]);
+  }
+
+  if(map.getLayer('existing-assets-label')){
+    map.setFilter('existing-assets-label', [
+      '==',['get','Village'], village
+    ]);
+  }
+
+
+
+  // 🔥 ONLY THIS LINE NEEDED
+  updateHHMode(document.getElementById('hhMode').value);
+
+  renderCSRTable();
+  updateCSRCount();
+  
+  // 🔥 FILTER DATA FOR SELECTED VILLAGE
+const filteredAssets = allAssetsData.features.filter(f =>
+  f.properties.Village === activeVillage
+);
+
+const filteredRoads = allRoadsData.features.filter(f =>
+  f.properties.Village === activeVillage
+);
+
+// 🔥 UPDATE DONUT (already working but keep consistent)
+updateDonut(filteredAssets);
+
+// 🔥 UPDATE TABLE
+renderTable([...filteredAssets, ...filteredRoads]);
+
+// 🔥 UPDATE KPI VALUES (MAIN FIX)
+calculateRoadKPIs(filteredRoads);
+
+// 🔥 RESET UI STATE (IMPORTANT)
+showDonut();
+showKPIs();
+
+// ===============================
+// 🔥 FINAL FIX (ZOOM + PARA)
+// ===============================
+
+// ✅ Zoom to village
+zoomToVillage(village);
+
+// ✅ Ensure para visible
+['para'].forEach(layer=>{
+  if(map.getLayer(layer)){
+    map.setLayoutProperty(layer,'visibility','visible');
+  }
+});
+
+// ✅ Force para labels
+if(map.getLayer('para')){
+  map.setLayoutProperty('para','text-allow-overlap', true);
+}
+  
+};
+
+
+
+document.querySelector('.reset-btn').onclick = () => {
+
+  // 🛑 STOP flythrough
+  flyThroughRunning = false;
+
+  if (flyThroughTimer) {
+    clearTimeout(flyThroughTimer);
+    flyThroughTimer = null;
+  }
+
+  activeVillage = null;
+
+  // 🔹 Reset dropdowns
+  document.getElementById('stateSelect').value = '';
+  document.getElementById('blockSelect').innerHTML =
+    '<option value="">Select Block</option>';
+  document.getElementById('villageSelect').innerHTML =
+    '<option value="">Select Village</option>';
+
+  // 🔥 REMOVE ALL FILTERS (IMPORTANT)
+  [
+    'csr-points','csr-labels',
+    'points','asset-labels',
+    'existing-assets-icon','existing-assets-label',
+    'roads-bt','roads-cc',
+    'drain','wall-3d',
+    'para','para-buildings-3d',
+    'boundary'
+  ].forEach(layer=>{
+    if(map.getLayer(layer)){
+      map.setFilter(layer, null);
+    }
+  });
+
+  // 🔥 SHOW ONLY THESE
+  const SHOW = ['boundary','csr-points','csr-labels'];
+
+  const ALL = [
+    'points','asset-labels',
+    'roads-bt','roads-cc',
+    'drain','wall-3d',
+    'existing-assets-icon','existing-assets-label',
+    'para','para-buildings-3d'
+  ];
+
+  SHOW.forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','visible');
+    }
+  });
+
+  ALL.forEach(id=>{
+    if(map.getLayer(id)){
+      map.setLayoutProperty(id,'visibility','none');
+    }
+  });
+
+  // 🔹 Clear highlight
+  if (map.getSource('feature-highlight')) {
+    map.getSource('feature-highlight').setData({
+      type:'FeatureCollection',
+      features:[]
+    });
+  }
+
+  // 🔹 Remove popups
+  document.querySelectorAll('.maplibregl-popup')
+    .forEach(p=>p.remove());
+
+  // 🔥 BACK TO INDIA
+  resetToIndia2D();
+  
+  renderCSRTable();
+  updateCSRCount();
+  syncLayerPanelCheckboxes();
+  
+  updateHHMode(document.getElementById('hhMode').value);
+  
+  // 🔥 RESET FULL DASHBOARD DATA
+if (allAssetsData && allRoadsData) {
+
+  const allAssets = allAssetsData.features;
+  const allRoads  = allRoadsData.features;
+
+  // donut
+  updateDonut(allAssets);
+
+  // table
+  renderTable([...allAssets, ...allRoads]);
+
+  // KPI
+  calculateRoadKPIs(allRoads);
+}
+// 🔥 RESET UI MODES (STEP 3)
+activeCategory = null;
+activeRoadType = null;
+infraDonutMode = null;
+
+// remove category button highlights
+document.querySelectorAll('#categoryButtons button')
+  .forEach(b => b.classList.remove('active'));
+
+// remove road button highlights
+document.querySelectorAll('.road-btn')
+  .forEach(b => b.classList.remove('active'));
+
+// reset KPI styles
+document.querySelectorAll('.kpi').forEach(k=>{
+  k.style.outline = 'none';
+  k.style.boxShadow = 'none';
+});
+
+};
+
+
 
 const HH_COLOR_MAP = {
 
@@ -5800,9 +5997,25 @@ const HH_COLOR_MAP = {
 };
 function createHHChart(counts, mode){
 
-  const labels = Object.keys(counts);
+const LAND_ORDER = [
+  "0",
+  "<1 acre ",
+  "1–2.5 acres ",
+  "2.5–5 acres ",
+  ">5 acres"
+];
 
-  const rawValues = Object.values(counts);   // original counts
+
+
+
+  let labels = Object.keys(counts);
+
+// 🔥 APPLY ORDER ONLY FOR LAND MODE
+if(mode === 'land'){
+  labels = LAND_ORDER.filter(l => counts[l] !== undefined);
+}
+
+  const rawValues = labels.map(l => counts[l]);  // original counts
   let values = [...rawValues];               // copy for chart
 
   // 🔥 Convert to relative % ONLY for needs
@@ -5816,7 +6029,7 @@ function createHHChart(counts, mode){
   const canvas = document.getElementById('hhChart');
 
   // 🔥 Dynamic height
-  canvas.style.height = (mode === 'needs') ? "320px" : "220px";
+  canvas.style.height = (mode === 'needs') ? "340px" : "320px";
 
   const total = rawValues.reduce((a,b)=>a+b,0);
 
@@ -5824,7 +6037,10 @@ function createHHChart(counts, mode){
     HH_COLOR_MAP[label] || "#f59e0b"
   );
 
-  if(hhChart) hhChart.destroy();
+  if(hhChart && typeof hhChart.destroy === "function"){
+  hhChart.destroy();
+  hhChart = null;
+}
 
   hhChart = new Chart(
     document.getElementById('hhChart'),
@@ -5850,13 +6066,21 @@ datasets:[{
    options:{
   responsive:true,
   maintainAspectRatio:false,
+  
+layout: {
+  padding: {
+    top: 1,
+    bottom: 1   // 🔥 ADD THIS
+  }
+},
 
-  scales: (mode === 'needs') ? {
-    y:{
-      beginAtZero:true,
-      max:110
-    }
-  } : {},
+scales: (mode === 'needs') ? {
+
+  y:{
+    beginAtZero:true,
+    max:130
+  }
+} : {},
 
   plugins:{
 
@@ -5901,11 +6125,19 @@ datasets:[{
       font:{ weight:'bold', size:12 },
       anchor: (mode === 'needs') ? 'end' : 'center',
       align: (mode === 'needs') ? 'top' : 'center',
-      formatter:(value)=>{
-        return (mode === 'needs')
-          ? value + "%"
-          : ((value / total) * 100).toFixed(1) + "%";
-      }
+formatter:(value)=>{
+
+  const percent = (mode === 'needs')
+    ? value
+    : (value / total) * 100;
+
+  // 🔥 HIDE SMALL SLICES (<5%)
+  if(percent < 5) return '';
+
+  return (mode === 'needs')
+    ? percent + "%"
+    : percent.toFixed(1) + "%";
+}
     }
 
   }
@@ -6138,14 +6370,10 @@ else if(mode === 'waterSource'){
 }
 
 
-  addClickHighlight('roads-bt');      // BT roads
-  addClickHighlight('roads-cc');      // CC roads
-  addClickHighlight('wall-3d');       // boundary wall
-  addClickHighlight('drain');         // drain
-  addClickHighlight('para');          // habitation
+
  
 // ✅ Existing assets
-addCustomPopup('existing-assets-icon');
+
 
 // ✅ Proposed assets
 addCustomPopup('points');
@@ -6526,11 +6754,17 @@ updateDonutByCategory(category, filtered);
       ? (props.Shape_Leng / 1000).toFixed(2)
       : 'N/A';
 
+    // 🔥 FIX TITLE
+    const title =
+      props.LAYER === 'BOUNDARY WALL'
+        ? 'Boundary Wall'
+        : 'Proposed Road';
+
     new maplibregl.Popup({ offset: 10 })
       .setLngLat(e.lngLat)
       .setHTML(`
         <div style="font-size:13px;">
-          <b>Proposed Road</b><br/>
+          <b>${title}</b><br/>
           <b>Type:</b> ${props.LAYER}<br/>
           <b>Name:</b> ${props.NAME || 'N/A'}<br/>
           <b>Length:</b> ${lengthKm} km
@@ -6540,7 +6774,7 @@ updateDonutByCategory(category, filtered);
 
   });
 
-}); // ✅ THIS LINE FIXES THE ERROR
+});
 
 
 
